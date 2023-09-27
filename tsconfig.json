@@ -23,5 +23,6 @@
   "include": [
     "src",
     ".eslintrc.js",
+    "types/svg.d.ts"
   ]
 }
