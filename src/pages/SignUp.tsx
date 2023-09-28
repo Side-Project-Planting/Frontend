@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { styled } from 'styled-components';
 import Logo from '../components/Logo';
+import plus from '../assets/plus.svg';
 
 const MainWrapper = styled.div`
   min-height: 100dvh;
@@ -11,6 +12,70 @@ const MainWrapper = styled.div`
   align-items: center;
 `;
 
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5rem;
+`;
+
+const ProfileImageContainer = styled.div`
+  width: 250px;
+  height: 250px;
+  position: relative;
+`;
+
+const ProfileImage = styled.img`
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+`;
+
+const AddImageButton = styled.button`
+  position: absolute;
+  bottom: 4%;
+  right: 4%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #64d4ab;
+  border-radius: 50%;
+  border: 5px solid #ffffff;
+  cursor: pointer;
+`;
+
+const InputContainer = styled.div`
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  height: 50px;
+  padding: 1rem;
+  color: #3033e;
+  font-size: 1rem;
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 1rem;
+  outline: none;
+`;
+
+const SubmitButton = styled.button`
+  width: 216px;
+  height: 50px;
+  border-radius: 0.8rem;
+  color: #fafafa;
+  background-color: #64d4ab;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+`;
 export default function SignUp() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -37,16 +102,20 @@ export default function SignUp() {
   return (
     <MainWrapper>
       <Logo />
-      <form onSubmit={handleSubmit}>
-        {imagePreview && <img src={imagePreview} alt="" />}
-        <input type="file" accept="image/*" onChange={uploadImage} style={{ display: 'none' }} ref={inputRef} />
-        <button type="button" onClick={handleButtonClick}>
-          +
-        </button>
-        <input type="text" placeholder="이름" readOnly />
-        <input type="text" placeholder="이메일" readOnly />
-        <button type="submit">시작하기</button>
-      </form>
+      <Form onSubmit={handleSubmit}>
+        <ProfileImageContainer>
+          {imagePreview && <ProfileImage src={imagePreview} alt="preview" />}
+          <input type="file" accept="image/*" onChange={uploadImage} style={{ display: 'none' }} ref={inputRef} />
+          <AddImageButton type="button" onClick={handleButtonClick}>
+            <img src={plus} alt="plus-icon" />
+          </AddImageButton>
+        </ProfileImageContainer>
+        <InputContainer>
+          <Input type="text" placeholder="이름" readOnly />
+          <Input type="text" placeholder="이메일" readOnly />
+        </InputContainer>
+        <SubmitButton type="submit">시작하기</SubmitButton>
+      </Form>
     </MainWrapper>
   );
 }
