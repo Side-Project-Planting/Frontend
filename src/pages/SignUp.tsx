@@ -6,6 +6,7 @@ import defaultProfileImg from '../assets/defaultProfileImg.svg';
 
 const MainWrapper = styled.div`
   min-height: 100dvh;
+  padding-block: 3rem;
   display: flex;
   gap: 4rem;
   flex-direction: column;
@@ -59,10 +60,8 @@ const Input = styled.input`
   height: 50px;
   padding: 1rem;
   color: #3033e;
-  font-size: 1rem;
   background-color: #f5f5f5;
-  border: none;
-  border-radius: 1rem;
+  border-radius: 0.8rem;
   outline: none;
 `;
 
@@ -74,6 +73,7 @@ const SubmitButton = styled.button`
   background-color: #64d4ab;
   font-weight: 700;
 `;
+
 export default function SignUp() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -94,7 +94,7 @@ export default function SignUp() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: 서버에 로그인 POST 요청
+    // TODO: 서버에 회원가입 POST 요청
   };
 
   return (
