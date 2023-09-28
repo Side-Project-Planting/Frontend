@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { styled } from 'styled-components';
 import Logo from '../components/Logo';
 import plus from '../assets/plus.svg';
+import defaultProfileImg from '../assets/defaultProfileImg.svg';
 
 const MainWrapper = styled.div`
   min-height: 100dvh;
@@ -43,7 +44,6 @@ const AddImageButton = styled.button`
   background-color: #64d4ab;
   border-radius: 50%;
   border: 5px solid #ffffff;
-  cursor: pointer;
 `;
 
 const InputContainer = styled.div`
@@ -72,8 +72,6 @@ const SubmitButton = styled.button`
   border-radius: 0.8rem;
   color: #fafafa;
   background-color: #64d4ab;
-  border: none;
-  cursor: pointer;
   font-weight: 700;
 `;
 export default function SignUp() {
@@ -104,7 +102,7 @@ export default function SignUp() {
       <Logo />
       <Form onSubmit={handleSubmit}>
         <ProfileImageContainer>
-          {imagePreview && <ProfileImage src={imagePreview} alt="preview" />}
+          <ProfileImage src={imagePreview || defaultProfileImg} alt="preview" />
           <input type="file" accept="image/*" onChange={uploadImage} style={{ display: 'none' }} ref={inputRef} />
           <AddImageButton type="button" onClick={handleButtonClick}>
             <img src={plus} alt="plus-icon" />
