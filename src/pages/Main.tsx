@@ -5,6 +5,7 @@ import Logo from '../components/Logo';
 
 const MainWrapper = styled.div`
   min-height: 100dvh;
+  padding-block: 3rem;
   display: flex;
   gap: 4rem;
   flex-direction: column;

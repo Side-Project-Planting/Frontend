@@ -1,8 +1,9 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import SignUp from './pages/SignUp';
 import Main from './pages/Main';
+import SignUp from './pages/SignUp';
 import './App.css';
+import GlobalStyle from './styles/GlobalStyle';
 
 function App() {
   const router = createBrowserRouter([
@@ -15,7 +16,12 @@ function App() {
       element: <SignUp />,
     },
   ]);
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <GlobalStyle />
+      <RouterProvider router={router} />
+    </>
+  );
 }
 
 export default App;
