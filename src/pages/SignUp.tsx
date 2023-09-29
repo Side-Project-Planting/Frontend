@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { styled } from 'styled-components';
 import Logo from '../components/Logo';
-import plus from '../assets/plus.svg';
-import defaultProfileImg from '../assets/defaultProfileImg.svg';
+import plus from '../assets/images/plus.svg';
+import defaultProfileImg from '../assets/images/defaultProfileImg.svg';
 
 const MainWrapper = styled.div`
   min-height: 100dvh;
@@ -59,7 +59,7 @@ const Input = styled.input`
   width: 100%;
   height: 50px;
   padding: 1rem;
-  color: #3033e;
+  color: #30333e;
   background-color: #f5f5f5;
   border-radius: 0.8rem;
   outline: none;

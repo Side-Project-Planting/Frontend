@@ -1,3 +1,4 @@
+// Image
 declare module '*.svg' {
   import React = require('react');
 
@@ -5,3 +6,6 @@ declare module '*.svg' {
   const value: string;
   export default value;
 }
+
+// Fonts
+declare module '*.ttf';

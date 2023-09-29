@@ -1,7 +1,7 @@
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 
-const GlobalStyle = createGlobalStyle`
+export default createGlobalStyle`
   ${reset}
 
   /* 여기에 추가적인 전역 스타일을 설정할 수 있습니다 */
@@ -25,5 +25,3 @@ const GlobalStyle = createGlobalStyle`
     font-size: inherit;
   }
 `;
-
-export default GlobalStyle;
