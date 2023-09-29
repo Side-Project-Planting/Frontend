@@ -24,6 +24,13 @@ const GlobalStyle = createGlobalStyle`
     cursor: pointer;
     font-size: inherit;
   }
+
+  @font-face {
+  font-family: "itim";
+  font-style: normal;
+  font-weight: normal;
+  src: url("./fonts/Itim-Regular.ttf");
+}
 `;
 
 export default GlobalStyle;
