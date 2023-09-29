@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled } from 'styled-components';
-import { ReactComponent as HomeIllust } from '../assets/homeIllust.svg';
+import { ReactComponent as HomeIllust } from '../assets/images/homeIllust.svg';
 import Logo from '../components/Logo';
 
 const MainWrapper = styled.div`

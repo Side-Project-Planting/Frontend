@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { styled } from 'styled-components';
 import Logo from '../components/Logo';
-import plus from '../assets/plus.svg';
-import defaultProfileImg from '../assets/defaultProfileImg.svg';
+import plus from '../assets/images/plus.svg';
+import defaultProfileImg from '../assets/images/defaultProfileImg.svg';
 
 const MainWrapper = styled.div`
   min-height: 100dvh;
