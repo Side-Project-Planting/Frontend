@@ -2,6 +2,7 @@ import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Main from './pages/Main';
 import SignUp from './pages/SignUp';
+import './App.css';
 import GlobalStyle from './styles/GlobalStyle';
 
 function App() {
