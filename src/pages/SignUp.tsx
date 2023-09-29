@@ -59,7 +59,7 @@ const Input = styled.input`
   width: 100%;
   height: 50px;
   padding: 1rem;
-  color: #3033e;
+  color: #30333e;
   background-color: #f5f5f5;
   border-radius: 0.8rem;
   outline: none;
