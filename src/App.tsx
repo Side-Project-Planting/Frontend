@@ -2,8 +2,8 @@ import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Main from './pages/Main';
 import SignUp from './pages/SignUp';
-import './App.css';
 import GlobalStyle from './styles/GlobalStyle';
+import GlobalFonts from './styles/GlobalFont';
 
 function App() {
   const router = createBrowserRouter([
@@ -19,6 +19,7 @@ function App() {
   return (
     <>
       <GlobalStyle />
+      <GlobalFonts />
       <RouterProvider router={router} />
     </>
   );
