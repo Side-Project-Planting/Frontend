@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import styled from 'styled-components';
+import defaultProfileImg from '../assets/images/defaultProfileImg.svg';
 
 type DropdownOption = {
   id: number;
@@ -6,14 +8,46 @@ type DropdownOption = {
   value: string;
 };
 
-type DropdownProp = { options: DropdownOption[] };
+type DropdownProp = {
+  options: DropdownOption[];
+};
+
+const ProfileImg = styled.img`
+  width: 50px;
+  height: 50px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  cursor: pointer;
+`;
+
+const DropdownList = styled.ul`
+  position: absolute;
+  top: 80px;
+  right: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #efefef;
+  border-radius: 8px;
+`;
+
+const DropdownItem = styled.li`
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+
+  &:first-child {
+    border-bottom: 1px solid #efefef;
+  }
+`;
 
 function Dropdown({ options }: DropdownProp) {
-  const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => !prev);
   };
 
   const handleOutsideClick = (e: MouseEvent) => {
@@ -22,9 +56,9 @@ function Dropdown({ options }: DropdownProp) {
     }
   };
 
-  //   const handleOptionClick = () => {
-  //     setIsOpen(false);
-  //   };
+  const handleOptionClick = () => {
+    setIsOpen(false);
+  };
 
   useEffect(() => {
     window.addEventListener('click', handleOutsideClick);
@@ -34,16 +68,16 @@ function Dropdown({ options }: DropdownProp) {
   }, []);
 
   return (
-    <div className="dropdown" ref={dropdownRef}>
-      <button type="button" className="dropdown-toggle" onClick={toggleDropdown}>
-        Select an option
-      </button>
+    <div ref={dropdownRef}>
+      <ProfileImg src={defaultProfileImg} alt="profile-img" onClick={toggleDropdown} />
       {isOpen && (
-        <ul className="dropdown-menu">
+        <DropdownList>
           {options.map((option: DropdownOption) => (
-            <li key={option.id}>{option.label}</li>
+            <DropdownItem key={option.id} onClick={handleOptionClick}>
+              {option.label}
+            </DropdownItem>
           ))}
-        </ul>
+        </DropdownList>
       )}
     </div>
   );

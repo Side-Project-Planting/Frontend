@@ -4,7 +4,6 @@ import { styled } from 'styled-components';
 import { MdHome, MdCalendarMonth } from 'react-icons/md';
 import { ImCompass2 } from 'react-icons/im';
 import Logo from './Logo';
-import defaultProfileImg from '../assets/images/defaultProfileImg.svg';
 import Dropdown from './Dropdown';
 
 const HeadeContainerr = styled.header`
@@ -20,13 +19,6 @@ const HeadeContainerr = styled.header`
   border-bottom: 1px solid #f5f5f7;
 `;
 
-const LogoLink = styled(Link)`
-  height: 100%;
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-`;
-
 const Nav = styled.ul`
   width: 300px;
   height: 100%;
@@ -40,7 +32,7 @@ const NavItem = styled.li`
   width: 70px;
 `;
 
-const NavLink = styled(Link)<{ isSelected: boolean }>`
+const NavLink = styled(Link)<{ selected: boolean }>`
   display: block;
   height: 100%;
   display: flex;
@@ -50,7 +42,7 @@ const NavLink = styled(Link)<{ isSelected: boolean }>`
 
   /* 선택된 메뉴에 대한 스타일링 */
   ${(props) =>
-    props.isSelected &&
+    props.selected &&
     `
     &::after {
       content: '';
@@ -67,13 +59,6 @@ const NavLink = styled(Link)<{ isSelected: boolean }>`
   `}
 `;
 
-const ProfileImg = styled.img`
-  width: 50px;
-  height: 50px;
-  aspect-ratio: 1/1;
-  border-radius: 50%;
-`;
-
 // TODO: navMenu link 수정
 const navMenu = [
   { id: 1, value: 'home', icon: MdHome, link: '/#' },
@@ -82,33 +67,32 @@ const navMenu = [
 ];
 
 const dropdownOptions = [
-  { id: 1, label: '프로필 사진 변경', value: 'profile' },
+  { id: 1, label: '프로필 변경', value: 'profile' },
   { id: 2, label: '로그아웃', value: 'logout' },
 ];
 
 function Header() {
   const [selectedMenu, setSelectedMenu] = useState<string>('home');
 
-  const isSelected = (value: string) => {
+  const isSelected = (value: string): boolean => {
     if (selectedMenu === value) return true;
     return false;
   };
 
   return (
     <HeadeContainerr>
-      <LogoLink to="/">
-        <Logo />
-      </LogoLink>
+      <Logo />
+
       <Nav>
         {navMenu.map((item) => (
           <NavItem key={item.id}>
-            <NavLink to={item.link} isSelected={isSelected(item.value)} onClick={() => setSelectedMenu(item.value)}>
+            <NavLink to={item.link} selected={isSelected(item.value)} onClick={() => setSelectedMenu(item.value)}>
               <item.icon size="30" color={`${isSelected(item.value) ? '#64d4ab' : '#999999 '}`} />
             </NavLink>
           </NavItem>
         ))}
       </Nav>
-      <ProfileImg src={defaultProfileImg} alt="profile-img" />
+
       <Dropdown options={dropdownOptions} />
     </HeadeContainerr>
   );
