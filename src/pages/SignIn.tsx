@@ -53,7 +53,7 @@ const LoginPolicy = styled.div`
   color: #8993a1;
 `;
 
-export default function Main() {
+export default function SignIn() {
   const requestGoogleOAuth = () => {
     // TODO: Google OAuth 요청
   };
