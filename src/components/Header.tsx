@@ -5,6 +5,7 @@ import { MdHome, MdCalendarMonth } from 'react-icons/md';
 import { ImCompass2 } from 'react-icons/im';
 import Logo from './Logo';
 import defaultProfileImg from '../assets/images/defaultProfileImg.svg';
+import Dropdown from './Dropdown';
 
 const HeadeContainerr = styled.header`
   width: 100%;
@@ -80,6 +81,11 @@ const navMenu = [
   { id: 3, value: 'explore', icon: ImCompass2, link: '/#' },
 ];
 
+const dropdownOptions = [
+  { id: 1, label: '프로필 사진 변경', value: 'profile' },
+  { id: 2, label: '로그아웃', value: 'logout' },
+];
+
 function Header() {
   const [selectedMenu, setSelectedMenu] = useState<string>('home');
 
@@ -103,6 +109,7 @@ function Header() {
         ))}
       </Nav>
       <ProfileImg src={defaultProfileImg} alt="profile-img" />
+      <Dropdown options={dropdownOptions} />
     </HeadeContainerr>
   );
 }
