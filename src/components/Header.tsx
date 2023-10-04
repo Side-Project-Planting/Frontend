@@ -6,7 +6,7 @@ import { ImCompass2 } from 'react-icons/im';
 import Logo from './Logo';
 import Dropdown from './Dropdown';
 
-const HeadeContainerr = styled.header`
+const HeadeContainer = styled.header`
   width: 100%;
   height: 70px;
   display: flex;
@@ -17,6 +17,8 @@ const HeadeContainerr = styled.header`
   left: 0;
   padding-inline: 70px;
   border-bottom: 1px solid #f5f5f7;
+  background-color: #ffffff;
+  z-index: 10;
 `;
 
 const Nav = styled.ul`
@@ -80,7 +82,7 @@ function Header() {
   };
 
   return (
-    <HeadeContainerr>
+    <HeadeContainer>
       <Logo />
 
       <Nav>
@@ -94,7 +96,7 @@ function Header() {
       </Nav>
 
       <Dropdown options={dropdownOptions} />
-    </HeadeContainerr>
+    </HeadeContainer>
   );
 }
 
