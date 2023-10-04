@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import member from '../assets/images/member.svg';
+import ToggleSwitch from '../components/ToggleSwitch';
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -78,8 +79,6 @@ const MemberList = styled.ul`
   gap: 1rem;
 `;
 
-const ToggleButton = styled.div``;
-
 const Button = styled.button`
   align-self: center;
   width: 216px;
@@ -132,10 +131,7 @@ function CreatePlan() {
           </InviteContainer>
           <ImageContainer src={member} alt="member-illust" />
         </BottomContainer>
-        <ToggleButton>
-          <div>애니메이션</div>
-          <p>플랜을 공개할게요</p>
-        </ToggleButton>
+        <ToggleSwitch />
         <Button type="submit">생성하기</Button>
       </FormContainer>
     </Wrapper>
