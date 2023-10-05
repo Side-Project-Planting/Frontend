@@ -5,23 +5,21 @@ import ToggleSwitch from '../components/ToggleSwitch';
 import member from '../assets/images/member.svg';
 
 const Wrapper = styled.div`
+  width: 100vw;
   min-height: 100vh;
-  width: 80%;
-  margin-inline: auto;
-  padding-top: 110px;
-  padding-bottom: 70px;
+  padding: 110px 70px 40px;
 `;
 
 const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 `;
 
 const InputField = styled.fieldset`
   legend.label {
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 600;
   }
 
   input {
@@ -143,14 +141,14 @@ function CreatePlan() {
     setMemberList(updatedMembers);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // TODO: 백엔드로 POST 요청
   };
 
   return (
     <Wrapper>
-      <FormContainer>
+      <FormContainer onSubmit={handleSubmit}>
         <InputField>
           <legend className="label">플랜 이름</legend>
           <input
@@ -160,7 +158,6 @@ function CreatePlan() {
             value={planInfo.title}
             onChange={changePlanInfo}
             placeholder="플랜 이름을 알려주세요"
-            aria-label="plan-title"
           />
         </InputField>
         <InputField>
@@ -172,7 +169,6 @@ function CreatePlan() {
             value={planInfo.description}
             onChange={changePlanInfo}
             placeholder="플랜에 대해 알려주세요"
-            aria-label="plan-description"
           />
         </InputField>
         <BottomContainer>
@@ -186,7 +182,6 @@ function CreatePlan() {
                 name="members"
                 onKeyUp={addMember}
                 placeholder="초대할 팀원의 이메일을 알려주세요"
-                aria-label="invite-email"
               />
             </InputField>
             <MemberContainer>
@@ -209,9 +204,7 @@ function CreatePlan() {
           <ToggleSwitch isPublic={isPublic} onChange={togglePublic} />
           <p> {isPublic ? '플랜을 공개합니다.' : '플랜을 공개하지 않습니다.'}</p>
         </PublicContainer>
-        <Button type="submit" onSubmit={handleSubmit}>
-          생성하기
-        </Button>
+        <Button type="submit">생성하기</Button>
       </FormContainer>
     </Wrapper>
   );
