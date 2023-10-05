@@ -1,6 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
+type ToggleSwitchProps = {
+  isPublic: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
 const ToggleSwitchContainer = styled.label`
   cursor: pointer;
   width: 72px;
@@ -20,10 +25,6 @@ const ToggleSwitchContainer = styled.label`
     background-color: #ffffff;
     border-radius: 90px;
     transition: 0.2s ease-out;
-  }
-
-  &:active::after {
-    width: 38px;
   }
 
   .hidden {
@@ -51,10 +52,10 @@ const ToggleCheckbox = styled.input`
   }
 `;
 
-function ToggleSwitch() {
+function ToggleSwitch({ isPublic, onChange }: ToggleSwitchProps) {
   return (
     <>
-      <ToggleCheckbox type="checkbox" id="switch" />
+      <ToggleCheckbox type="checkbox" id="switch" name="isPublic" checked={isPublic} onChange={onChange} />
       <ToggleSwitchContainer htmlFor="switch">
         <span className="hidden">toggle switch</span>
       </ToggleSwitchContainer>
