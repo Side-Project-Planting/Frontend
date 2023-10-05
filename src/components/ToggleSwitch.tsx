@@ -8,8 +8,8 @@ type ToggleSwitchProps = {
 
 const ToggleSwitchContainer = styled.label`
   cursor: pointer;
-  width: 72px;
-  height: 36px;
+  width: 64px;
+  height: 30px;
   background: #b8b8b8;
   display: block;
   border-radius: 100px;
@@ -20,8 +20,8 @@ const ToggleSwitchContainer = styled.label`
     position: absolute;
     top: 5px;
     left: 5px;
-    width: 26px;
-    height: 26px;
+    width: 20px;
+    height: 20px;
     background-color: #ffffff;
     border-radius: 90px;
     transition: 0.2s ease-out;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { MdOutlineClose } from 'react-icons/md';
 import ToggleSwitch from '../components/ToggleSwitch';
-import member from '../assets/images/member.svg';
+import boardIllust from '../assets/images/boardIllust.svg';
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -13,12 +13,11 @@ const Wrapper = styled.div`
 const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
 `;
 
-const InputField = styled.fieldset`
-  legend.label {
-    font-size: 18px;
+const InputField = styled.div`
+  label {
     font-weight: 600;
   }
 
@@ -37,16 +36,24 @@ const InputField = styled.fieldset`
 `;
 
 const BottomContainer = styled.div`
-  max-height: 480px;
+  width: calc(100vw - 140px);
+  max-height: 450px;
   display: flex;
   align-items: flex-end;
 `;
 
+const ImageContainer = styled.img`
+  width: 45%;
+  max-height: 340px;
+`;
+
 const InviteContainer = styled.div`
+  width: 45%;
+  height: 350px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  margin-right: 50px;
+  gap: 8px;
+  margin-right: 48px;
 
   p.label {
     font-size: 18px;
@@ -54,25 +61,16 @@ const InviteContainer = styled.div`
   }
 `;
 
-const ImageContainer = styled.img``;
-
-const MemberContainer = styled.div`
-  width: 530px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
 const MemberList = styled.ul`
   width: 100%;
-  min-height: 260px;
+  height: 300px;
   border-radius: 8px;
   padding: 1.5rem 1rem;
   background-color: #fafafa;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow-y: scroll;
 `;
 
 const MemberItem = styled.li`
@@ -116,7 +114,7 @@ function CreatePlan() {
     description: '',
   });
 
-  const [memberList, setMemberList] = useState<string[]>([]);
+  const [memberEmailList, setMemberEmailList] = useState<string[]>([]);
 
   const [isPublic, setIsPublic] = useState<boolean>(false);
 
@@ -132,13 +130,13 @@ function CreatePlan() {
   const addMember = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value.trim();
     if (e.key !== 'Enter' || !value) return;
-    setMemberList((prev) => [...prev, value]);
+    setMemberEmailList((prev) => [...prev, value]);
     e.currentTarget.value = '';
   };
 
   const deleteMember = (deletedEmail: string) => {
-    const updatedMembers = memberList.filter((email) => email !== deletedEmail);
-    setMemberList(updatedMembers);
+    const updatedMembers = memberEmailList.filter((email) => email !== deletedEmail);
+    setMemberEmailList(updatedMembers);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -150,60 +148,65 @@ function CreatePlan() {
     <Wrapper>
       <FormContainer onSubmit={handleSubmit}>
         <InputField>
-          <legend className="label">플랜 이름</legend>
-          <input
-            type="text"
-            id="planTitle"
-            name="title"
-            value={planInfo.title}
-            onChange={changePlanInfo}
-            placeholder="플랜 이름을 알려주세요"
-          />
+          <label htmlFor="title">
+            플랜 제목
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={planInfo.title}
+              onChange={changePlanInfo}
+              placeholder="플랜 이름을 알려주세요"
+            />
+          </label>
         </InputField>
         <InputField>
-          <legend className="label">플랜 설명</legend>
-          <input
-            type="text"
-            id="planDescription"
-            name="description"
-            value={planInfo.description}
-            onChange={changePlanInfo}
-            placeholder="플랜에 대해 알려주세요"
-          />
+          <label htmlFor="description">
+            플랜 설명
+            <input
+              type="text"
+              id="description"
+              name="description"
+              value={planInfo.description}
+              onChange={changePlanInfo}
+              placeholder="플랜을 설명해주세요"
+            />
+          </label>
         </InputField>
+
         <BottomContainer>
           <InviteContainer>
-            <p className="label">함께 할 팀원</p>
             <InputField>
-              <legend>팀원 초대</legend>
-              <input
-                type="email"
-                id="inviteEmail"
-                name="members"
-                onKeyUp={addMember}
-                placeholder="초대할 팀원의 이메일을 알려주세요"
-              />
+              <label htmlFor="members">
+                팀원 초대
+                <input
+                  type="email"
+                  id="members"
+                  name="members"
+                  onKeyUp={addMember}
+                  placeholder="초대할 팀원의 이메일을 알려주세요"
+                />
+              </label>
             </InputField>
-            <MemberContainer>
-              <p>초대할 팀원 목록</p>
-              <MemberList>
-                {memberList.map((item) => (
-                  <MemberItem key={item}>
-                    {item}
-                    <button type="button" onClick={() => deleteMember(item)}>
-                      <MdOutlineClose size="18" color="red" />
-                    </button>
-                  </MemberItem>
-                ))}
-              </MemberList>
-            </MemberContainer>
+            <MemberList>
+              {memberEmailList.map((item) => (
+                <MemberItem key={item}>
+                  {item}
+                  <button type="button" onClick={() => deleteMember(item)}>
+                    <MdOutlineClose size="18" color="red" />
+                  </button>
+                </MemberItem>
+              ))}
+            </MemberList>
           </InviteContainer>
-          <ImageContainer src={member} alt="member-illust" />
+          <ImageContainer src={boardIllust} alt="member-illust" />
         </BottomContainer>
+
         <PublicContainer>
           <ToggleSwitch isPublic={isPublic} onChange={togglePublic} />
           <p> {isPublic ? '플랜을 공개합니다.' : '플랜을 공개하지 않습니다.'}</p>
         </PublicContainer>
+
         <Button type="submit">생성하기</Button>
       </FormContainer>
     </Wrapper>
