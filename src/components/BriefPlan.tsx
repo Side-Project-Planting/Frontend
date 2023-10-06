@@ -167,7 +167,11 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
   const hashStringToColor = (id: string) => {
     let hash = 0;
     for (let i = 0; i < id.length; i += 1) {
-      hash = id.charCodeAt(i) + ((hash << 5) - hash); // eslint-disable-line no-bitwise
+      // TODO: 가중치를 이용해 색상 조정 로직 보완
+      const code = id.charCodeAt(i);
+      let weight = 1;
+      if (code >= 48 && code <= 57) weight += 500;
+      hash = code * weight + ((hash << 5) - hash); // eslint-disable-line no-bitwise
     }
 
     const hue = ((hash % 120) + 90) % 240;
@@ -225,7 +229,7 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
                         <div className="task-name">{task.name}</div>
                       </div>
                       <div className="task-item">
-                        <TaskDeadline color={hashStringToColor(task.id)}>
+                        <TaskDeadline color={hashStringToColor(changeDateToDday(task.deadline))}>
                           {task.deadline.length > 0 ? (
                             <span>{changeDateToDday(task.deadline)}</span>
                           ) : (
