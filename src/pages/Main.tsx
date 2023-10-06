@@ -8,7 +8,7 @@ const Wrapper = styled.main`
   height: 100dvh;
   padding: 70px 0 0 0;
   background-clip: content-box;
-  background-color: #f5f5f7;
+  background-color: #fafafa;
 `;
 
 const Container = styled.div`
