@@ -169,7 +169,22 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   };
 
-  // const changeDateToDday = (date: string) => {};
+  const changeDateToDday = (deadline: string) => {
+    // TODO: 이후 서버와 통신할 때 전달 받는 날짜 형식이 수정된다면 함께 수정 필요
+    const splitDeadline = deadline.split('-');
+    const deadlineYear = parseInt(splitDeadline[0], 10);
+    const deadlineMonth = parseInt(splitDeadline[1], 10) - 1; // 월은 0부터 시작하므로 1을 빼줍니다.
+    const deadlineDay = parseInt(splitDeadline[2], 10);
+    const targetDate = new Date(deadlineYear, deadlineMonth, deadlineDay);
+
+    const currentDate = new Date();
+    const timeDiff = targetDate.getTime() - currentDate.getTime();
+    const dDay = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+    if (dDay === 0) return 'D-Day';
+    if (dDay > 0) return `D-${dDay}`;
+    return `D+${Math.abs(dDay)}`;
+  };
 
   return (
     <CustomLink to="/">
@@ -194,7 +209,7 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
                     <div className="task-item">
                       <TaskDeadline color={hashStringToColor(task.id)}>
                         {task.deadline.length > 0 ? (
-                          <span>D-5</span>
+                          <span>{changeDateToDday(task.deadline)}</span>
                         ) : (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
