@@ -86,6 +86,11 @@ const plans = [
       { name: 'task8', id: '8', status: 1, labels: ['label1', 'label2'], deadline: '' },
     ],
   },
+  {
+    name: 'Team Plan3',
+    id: '4',
+    tasks: [],
+  },
 ];
 
 function Main() {
