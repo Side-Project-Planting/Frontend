@@ -15,14 +15,30 @@ const Container = styled.div`
   height: 100%;
   padding: 3rem 0;
   display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const Plans = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow-x: scroll;
 `;
 
-const MyPlanTapContainer = styled.div``;
-const PlanTapContainer = styled.div`
-  overflow-x: scroll;
-  height: 95%;
+const MyPlanTap = styled.div`
+  padding-right: 1rem;
+  margin-right: 1rem;
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-right: 2px solid rgba(173, 173, 173, 0.5);
+`;
+
+const TeamPlanTaps = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
 `;
 
 /* 테스트용 데이터 */
@@ -76,24 +92,26 @@ function Main() {
   return (
     <Wrapper>
       <Container>
-        <MyPlanTapContainer>
-          <BriefPlan
-            key={plans[0].id}
-            planName={plans[0].name}
-            planId={plans[0].id}
-            tabName={tabName}
-            tasks={plans[0].tasks}
-          />
-        </MyPlanTapContainer>
-        <PlanTapContainer>
-          {plans.map((plan, idx) => {
-            if (idx !== 0)
-              return (
-                <BriefPlan key={plan.id} planName={plan.name} planId={plan.id} tabName={tabName} tasks={plan.tasks} />
-              );
-            return null;
-          })}
-        </PlanTapContainer>
+        <Plans>
+          <MyPlanTap>
+            <BriefPlan
+              key={plans[0].id}
+              planName={plans[0].name}
+              planId={plans[0].id}
+              tabName={tabName}
+              tasks={plans[0].tasks}
+            />
+          </MyPlanTap>
+          <TeamPlanTaps>
+            {plans.map((plan, idx) => {
+              if (idx !== 0)
+                return (
+                  <BriefPlan key={plan.id} planName={plan.name} planId={plan.id} tabName={tabName} tasks={plan.tasks} />
+                );
+              return null;
+            })}
+          </TeamPlanTaps>
+        </Plans>
       </Container>
     </Wrapper>
   );
