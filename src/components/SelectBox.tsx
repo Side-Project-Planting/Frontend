@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import styled from 'styled-components';
 
 const SelectBoxContainer = styled.div`
@@ -63,9 +63,10 @@ interface SelectOption {
 
 interface Props {
   options: SelectOption[];
+  setValue: Dispatch<SetStateAction<string>>;
 }
 
-export default function SelectBox({ options }: Props) {
+export default function SelectBox({ options, setValue }: Props) {
   const [selectedValue, setSelectedValue] = useState<SelectOption>(options[0]);
   const [showOptions, setShowOptions] = useState<boolean>(false);
   return (
@@ -74,7 +75,14 @@ export default function SelectBox({ options }: Props) {
       {showOptions && (
         <SelectOptions>
           {options.map((option) => (
-            <Option key={option.value} value={option.value} onClick={() => setSelectedValue(option)}>
+            <Option
+              key={option.value}
+              value={option.value}
+              onClick={() => {
+                setSelectedValue(option);
+                setValue(option.value);
+              }}
+            >
               {option.label}
             </Option>
           ))}

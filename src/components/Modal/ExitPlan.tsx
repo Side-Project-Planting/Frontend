@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ModalButton, ModalButtonContainer, ModalDescription } from './CommonModalStyles';
 import SelectBox from '../SelectBox';
@@ -22,15 +22,19 @@ interface ExitPlanProps {
 
 // 관리자가 플랜을 나갈떄 사용할 모달
 export default function ExitPlanModal({ description, members, requestAPI, onClose }: ExitPlanProps) {
+  const [admin, setAdmin] = useState<string>('');
   const options = members.map((member) => {
     return { value: member[1], label: member[0] };
   });
+
+  console.log(admin);
+
   return (
     <>
       <ModalDescription>{description}</ModalDescription>
       <SelectAdminContainer>
         <SelectAdminText>관리자 지정</SelectAdminText>
-        <SelectBox options={options} />
+        <SelectBox options={options} setValue={setAdmin} />
       </SelectAdminContainer>
       <ModalButtonContainer>
         <ModalButton type="button" onClick={requestAPI}>
