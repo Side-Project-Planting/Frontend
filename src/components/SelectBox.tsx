@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const SelectBoxContainer = styled.div`
@@ -69,6 +69,11 @@ interface Props {
 export default function SelectBox({ options, setValue }: Props) {
   const [selectedValue, setSelectedValue] = useState<SelectOption>(options[0]);
   const [showOptions, setShowOptions] = useState<boolean>(false);
+
+  useEffect(() => {
+    setValue(options[0].value);
+  }, [setValue]);
+
   return (
     <SelectBoxContainer onClick={() => setShowOptions((prev) => !prev)}>
       <Selected>{selectedValue.label}</Selected>
