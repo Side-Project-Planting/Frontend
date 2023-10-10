@@ -55,9 +55,9 @@ const LoginPolicy = styled.div`
 `;
 
 export default function SignIn() {
-  const requestGoogleOAuth = () => {
+  const requestGoogleOAuth = async () => {
     // TODO: Google OAuth 요청
-    const data = axios.get('http://localhost:8443/oauth/google/authorized-uri');
+    const data = await axios.get('/oauth/google/authorized-uri');
     console.log(data);
   };
 
