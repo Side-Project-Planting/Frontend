@@ -51,9 +51,9 @@ const SelectBoxArrowContainer = styled.div`
   justify-content: center;
 `;
 
-const SelectBoxArrow = styled.svg<{ showOptions: boolean }>`
+const SelectBoxArrow = styled.svg<{ $showOptions: boolean }>`
   transition-duration: 0.3s;
-  transform: rotate(${(props) => (props.showOptions ? '180deg' : 0)});
+  transform: rotate(${(props) => (props.$showOptions ? '180deg' : 0)});
 `;
 
 interface SelectOption {
@@ -90,7 +90,7 @@ export default function SelectBox({ options, setValue }: Props) {
       )}
       <SelectBoxArrowContainer>
         <SelectBoxArrow
-          showOptions={showOptions}
+          $showOptions={showOptions}
           xmlns="http://www.w3.org/2000/svg"
           width="11"
           height="6"
