@@ -17,10 +17,10 @@ const ModalOverlay = styled.div`
   background: rgba(100, 212, 171, 0.1);
 `;
 
-const ModalWrapper = styled.div`
+const ModalWrapper = styled.div<{ type: string }>`
   padding: 4rem 2.5rem;
-  width: 32rem;
-  height: 18rem;
+  width: ${(props) => (props.type === 'addTask' ? '56' : '32')}rem;
+  height: ${(props) => (props.type === 'addTask' ? '32' : '18')}rem;
   background: rgba(255, 255, 255, 1);
   border-radius: 8px;
   box-shadow: 0px 4px 16px 4px rgba(0, 0, 0, 0.2);
@@ -35,7 +35,7 @@ const ModalContainer = styled.div`
   justify-content: space-between;
 `;
 
-type ModalType = 'normal' | 'exitPlan';
+type ModalType = 'normal' | 'exitPlan' | 'addTask';
 
 interface Props {
   type: ModalType;
@@ -54,7 +54,7 @@ export default function Modal({ type, description, requestAPI, onClose }: Props)
   return (
     <ModalPortal>
       <ModalOverlay>
-        <ModalWrapper>
+        <ModalWrapper type={type}>
           <ModalContainer>
             {type === 'normal' && <NormalModal description={description} requestAPI={requestAPI} onClose={onClose} />}
             {type === 'exitPlan' && (
