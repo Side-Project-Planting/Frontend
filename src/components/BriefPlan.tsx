@@ -168,12 +168,15 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
       // TODO: 가중치를 이용해 색상 조정 로직 보완
       const code = id.charCodeAt(i);
       let weight = 1;
-      if (code >= 48 && code <= 57) weight += 500;
+      if (code >= '0'.charCodeAt(0) && code <= '9'.charCodeAt(0)) weight += 500;
       hash = code * weight + ((hash << 5) - hash); // eslint-disable-line no-bitwise
     }
 
-    const hue = ((hash % 120) + 90) % 240;
+    // range: 90 ~ 219
+    const hue = 90 + (hash % 120);
+    // range: 30 ~ 59
     const saturation = 30 + (hash % 30);
+    // range: 50 ~ 69
     const lightness = 50 + ((hash >> 1) % 20); // eslint-disable-line no-bitwise
 
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
