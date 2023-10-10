@@ -3,6 +3,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Main from './pages/Main';
+import GoogleOauthCallback from './pages/GoogleOauthCallback';
 import CreatePlan from './pages/CreatePlan';
 import GlobalStyle from './styles/GlobalStyle';
 import GlobalFonts from './styles/GlobalFont';
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <SignUp />,
+  },
+  {
+    path: '/login/oauth2/code/google?',
+    element: <GoogleOauthCallback />,
   },
 ]);
 function App() {
