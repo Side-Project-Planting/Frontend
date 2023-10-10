@@ -1,5 +1,6 @@
 import React from 'react';
 import { styled } from 'styled-components';
+import axios from 'axios';
 import { ReactComponent as HomeIllust } from '../assets/images/homeIllust.svg';
 import Logo from '../components/Logo';
 
@@ -56,6 +57,8 @@ const LoginPolicy = styled.div`
 export default function SignIn() {
   const requestGoogleOAuth = () => {
     // TODO: Google OAuth 요청
+    const data = axios.get('http://localhost:8443/oauth/google/authorized-uri');
+    console.log(data);
   };
 
   return (
