@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactComponent as NoData } from '../assets/images/noData.svg';
+import { TaskInfo } from '../types/Plan';
+import { hashStringToColor, parseTasksByStatus } from '../utils';
 
 const CustomLink = styled(Link)`
   height: 100%;
@@ -128,14 +130,6 @@ const EmptyTaskFrame = styled.div`
   justify-content: center;
 `;
 
-interface TaskInfo {
-  name: string;
-  id: string;
-  status: number;
-  labels: string[];
-  deadline: string;
-}
-
 interface Props {
   planName: string;
   planId: string;
@@ -144,44 +138,6 @@ interface Props {
 }
 
 function BriefPlan({ planName, planId, tabName, tasks }: Props) {
-  /* TODO: 아래 두 함수는 나중에 칸반보드 페이지에서도 조금 수정하여 활용할 수 있을 것 같다. */
-  const parseTasks = () => {
-    const parsedTasks = [];
-
-    tasks.sort((a, b) => {
-      if (a.deadline === b.deadline && a.deadline.length === 0) return 0;
-      if (a.deadline.length === 0 && b.deadline.length > 0) return 1;
-      if (b.deadline.length === 0 && a.deadline.length > 0) return -1;
-      if (a.deadline < b.deadline) return -1;
-      if (a.deadline === b.deadline) return 0;
-      return 1;
-    });
-
-    for (let i = 0; i < tabName.length - 1; i += 1) {
-      parsedTasks.push(tasks.filter((task) => task.status === i));
-    }
-    return parsedTasks;
-  };
-  const hashStringToColor = (id: string) => {
-    let hash = 0;
-    for (let i = 0; i < id.length; i += 1) {
-      // TODO: 가중치를 이용해 색상 조정 로직 보완
-      const code = id.charCodeAt(i);
-      let weight = 1;
-      if (code >= '0'.charCodeAt(0) && code <= '9'.charCodeAt(0)) weight += 500;
-      hash = code * weight + ((hash << 5) - hash); // eslint-disable-line no-bitwise
-    }
-
-    // range: 90 ~ 219
-    const hue = 90 + (hash % 120);
-    // range: 30 ~ 59
-    const saturation = 30 + (hash % 30);
-    // range: 50 ~ 69
-    const lightness = 50 + ((hash >> 1) % 20); // eslint-disable-line no-bitwise
-
-    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-  };
-
   const changeDateToDday = (deadline: string) => {
     // TODO: 이후 서버와 통신할 때 전달 받는 날짜 형식이 수정된다면 함께 수정 필요
     const splitDeadline = deadline.split('-');
@@ -218,13 +174,13 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
               </div>
             </EmptyTaskFrame>
           ) : (
-            parseTasks().map((taskList, idx) => (
+            parseTasksByStatus(tasks, tabName).map((taskList, idx) => (
               <TaskContainer key={`${planId}-${tabName[idx]}`}>
                 <TaskStatusName>
                   <p>{`${tabName[idx]}(${taskList.length})`}</p>
                 </TaskStatusName>
                 <TaskFrame>
-                  {taskList.map((task) => (
+                  {taskList.map((task: TaskInfo) => (
                     <Task key={task.id}>
                       <div className="task-item">
                         <div className="task-name">{task.name}</div>
