@@ -147,15 +147,13 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
   /* TODO: 아래 두 함수는 나중에 칸반보드 페이지에서도 조금 수정하여 활용할 수 있을 것 같다. */
   const parseTasks = () => {
     const parsedTasks = [];
+
     tasks.sort((a, b) => {
-      if (a.status < b.status) return -1;
-      if (a.status === b.status) {
-        if (a.deadline === b.deadline && a.deadline.length === 0) return 0;
-        if (a.deadline.length === 0 && b.deadline.length > 0) return 1;
-        if (b.deadline.length === 0 && a.deadline.length > 0) return -1;
-        if (a.deadline < b.deadline) return -1;
-        if (a.deadline === b.deadline) return 0;
-      }
+      if (a.deadline === b.deadline && a.deadline.length === 0) return 0;
+      if (a.deadline.length === 0 && b.deadline.length > 0) return 1;
+      if (b.deadline.length === 0 && a.deadline.length > 0) return -1;
+      if (a.deadline < b.deadline) return -1;
+      if (a.deadline === b.deadline) return 0;
       return 1;
     });
 
