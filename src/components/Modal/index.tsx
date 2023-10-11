@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import ModalPortal from './Portal';
 import ExitPlanModal from './ExitPlan';
 import NormalModal from './Normal';
+import AddTaskModal from './AddTask';
 
 const ModalOverlay = styled.div`
   position: absolute;
@@ -65,6 +66,7 @@ export default function Modal({ type, description, requestAPI, onClose }: Props)
                 onClose={onClose}
               />
             )}
+            {type === 'addTask' && <AddTaskModal members={testMemebers} />}
           </ModalContainer>
         </ModalWrapper>
       </ModalOverlay>
