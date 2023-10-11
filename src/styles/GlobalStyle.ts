@@ -20,9 +20,14 @@ export default createGlobalStyle`
   }
 
   button {
+    background: none;
     border: none;
     padding: 0;
     cursor: pointer;
     font-size: inherit;
+  }
+
+  ul,li{
+    list-style: none;
   }
 `;
