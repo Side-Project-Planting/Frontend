@@ -4,6 +4,7 @@ import { IoClose } from 'react-icons/io5';
 import { ModalButton } from './CommonModalStyles';
 import SelectBox from '../SelectBox';
 import { ReactComponent as DeadlineCheck } from '../../assets/images/deadlineCheck.svg';
+import { hashStringToColor } from '../../utils';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -122,15 +123,15 @@ const LabelsContainer = styled.div`
   }
 `;
 
-const LabelItem = styled.li`
+const LabelItem = styled.li<{ color: string }>`
   position: relative;
   padding: 0.5rem 1rem;
   height: 2rem;
   border-radius: 10px;
-  color: black;
+  color: white;
   text-align: center;
   line-height: 100%;
-  background-color: skyblue;
+  background-color: ${(prop) => prop.color};
 
   button {
     display: none;
@@ -243,7 +244,7 @@ export default function AddTaskModal({ members }: Props) {
             <LabelsContainer>
               <ul id="tags">
                 {tags.map((tag) => (
-                  <LabelItem key={tag}>
+                  <LabelItem key={tag} color={hashStringToColor(tag)}>
                     <span>{tag}</span>
                     <button id={`delete-${tag}`} type="button" onClick={onClickDeleteTag}>
                       <IoClose />
