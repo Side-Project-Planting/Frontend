@@ -172,8 +172,6 @@ export default function AddTaskModal({ members }: Props) {
     return { value: member[1], label: member[0] };
   });
 
-  console.log(assignee);
-
   const enterTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (tagInput.current === null) return;
     if (e.key === 'Enter') {
@@ -197,9 +195,21 @@ export default function AddTaskModal({ members }: Props) {
     setTags(updateTags);
   };
 
+  const submitAddTask = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // TODO: 백엔드로 할 일 추가 요청
+    const requestData = {
+      taskName,
+      assignee,
+      deadline: checkDeadline ? deadline : '',
+      tags,
+    };
+    console.log(requestData);
+  };
+
   return (
     <Wrapper>
-      <FormContainer>
+      <FormContainer onSubmit={submitAddTask}>
         <InputField>
           <label htmlFor="task-name">
             할 일
@@ -256,7 +266,7 @@ export default function AddTaskModal({ members }: Props) {
             </LabelsContainer>
           </label>
         </InputField>
-        <ModalButton type="button">추가하기</ModalButton>
+        <ModalButton type="submit">추가하기</ModalButton>
       </FormContainer>
     </Wrapper>
   );
