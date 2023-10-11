@@ -54,8 +54,8 @@ export default function Modal({ type, description, requestAPI, onClose }: Props)
   ];
   return (
     <ModalPortal>
-      <ModalOverlay>
-        <ModalWrapper type={type}>
+      <ModalOverlay onClick={onClose}>
+        <ModalWrapper type={type} onClick={(e) => e.stopPropagation()}>
           <ModalContainer>
             {type === 'normal' && <NormalModal description={description} requestAPI={requestAPI} onClose={onClose} />}
             {type === 'exitPlan' && (
