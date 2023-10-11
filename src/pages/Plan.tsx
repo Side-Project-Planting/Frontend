@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { IoIosStarOutline, IoIosMore } from 'react-icons/io';
+import { IoIosStarOutline } from 'react-icons/io';
 import { CiSettings } from 'react-icons/ci';
 import { SlPlus } from 'react-icons/sl';
+import Tab from '../components/Tab';
 
 const Wrapper = styled.main`
   width: 100vw;
@@ -91,6 +92,7 @@ const UtilContainer = styled.div`
     justify-content: center;
     align-items: center;
     border-radius: 50%;
+    cursor: pointer;
   }
 `;
 
@@ -104,56 +106,12 @@ const TabGroup = styled.ul`
   position: relative;
 `;
 
-const Tab = styled.li`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const PlanHeader = styled.div`
-  padding-inline: 0.8rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .planTitle {
-    font-size: 1.126rem;
-  }
-
-  .icon {
-    cursor: pointer;
-  }
-`;
-
-const TabContainer = styled.div`
-  width: 19rem;
-  height: calc(100% - 2rem);
-  padding: 1rem;
-  border-radius: 1.1rem;
-  background-color: #ffffff;
-  position: relative;
-`;
-
 const AddTapButton = styled.button`
   background: none;
   position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-`;
-
-const AddButton = styled.button`
-  position: absolute;
-  width: 17rem;
-  height: 3rem;
-  border-radius: 0.5rem;
-  background-color: #fafafa;
-  color: #8993a1;
-  font-weight: 600;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
 `;
 
 function Plan() {
@@ -200,6 +158,10 @@ function Plan() {
     { id: 4, name: 'Team Plan3' },
   ];
 
+  const editTabInfo = () => {
+    // TODO 탭 정보 수정 및 삭제
+  };
+
   return (
     <Wrapper>
       <SideContainer>
@@ -211,6 +173,7 @@ function Plan() {
               key={item.id}
               onClick={() => {
                 setSelectedPlanName(item.name);
+                // TODO 서버에 planId로 플랜 정보 요청
               }}
             >
               {item.name}
@@ -218,13 +181,18 @@ function Plan() {
           ))}
         </PlanCategory>
         <LabelFilter>
+          {/* TODO 라벨 필터링 */}
           <span>레이블</span>
         </LabelFilter>
       </SideContainer>
       <MainContainer>
         <TopContainer>
-          <MemberFilter>member</MemberFilter>
+          <MemberFilter>
+            {/* TODO 멤버 필터링 */}
+            member
+          </MemberFilter>
           <UtilContainer>
+            {/* TODO 클릭시 즐겨찾기 토글, 설정으로 이동 */}
             <div className="icon">
               <IoIosStarOutline size={25} />
             </div>
@@ -235,21 +203,9 @@ function Plan() {
         </TopContainer>
         <TabGroup>
           {planObject.tabs.map((item) => (
-            <Tab key={item.id}>
-              <PlanHeader>
-                <span className="planTitle">{item.title}</span>
-                <span className="icon">
-                  <IoIosMore size="24" />
-                </span>
-              </PlanHeader>
-
-              <TabContainer>
-                <AddButton type="button" className="add">
-                  Add Item
-                </AddButton>
-              </TabContainer>
-            </Tab>
+            <Tab key={item.id} title={item.title} onEdit={editTabInfo} />
           ))}
+          {/* TODO 클릭시 탭 추가 */}
           <AddTapButton>
             <SlPlus size={35} color="#8993A1" />
           </AddTapButton>
