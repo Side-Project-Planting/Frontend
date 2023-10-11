@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const SelectBoxContainer = styled.div`
@@ -51,9 +51,9 @@ const SelectBoxArrowContainer = styled.div`
   justify-content: center;
 `;
 
-const SelectBoxArrow = styled.svg<{ showOptions: boolean }>`
+const SelectBoxArrow = styled.svg<{ $showOptions: boolean }>`
   transition-duration: 0.3s;
-  transform: rotate(${(props) => (props.showOptions ? '180deg' : 0)});
+  transform: rotate(${(props) => (props.$showOptions ? '180deg' : 0)});
 `;
 
 interface SelectOption {
@@ -63,18 +63,31 @@ interface SelectOption {
 
 interface Props {
   options: SelectOption[];
+  setValue: Dispatch<SetStateAction<string>>;
 }
 
-export default function SelectBox({ options }: Props) {
+export default function SelectBox({ options, setValue }: Props) {
   const [selectedValue, setSelectedValue] = useState<SelectOption>(options[0]);
   const [showOptions, setShowOptions] = useState<boolean>(false);
+
+  useEffect(() => {
+    setValue(options[0].value);
+  }, [setValue]);
+
   return (
     <SelectBoxContainer onClick={() => setShowOptions((prev) => !prev)}>
       <Selected>{selectedValue.label}</Selected>
       {showOptions && (
         <SelectOptions>
           {options.map((option) => (
-            <Option key={option.value} value={option.value} onClick={() => setSelectedValue(option)}>
+            <Option
+              key={option.value}
+              value={option.value}
+              onClick={() => {
+                setSelectedValue(option);
+                setValue(option.value);
+              }}
+            >
               {option.label}
             </Option>
           ))}
@@ -82,7 +95,7 @@ export default function SelectBox({ options }: Props) {
       )}
       <SelectBoxArrowContainer>
         <SelectBoxArrow
-          showOptions={showOptions}
+          $showOptions={showOptions}
           xmlns="http://www.w3.org/2000/svg"
           width="11"
           height="6"
