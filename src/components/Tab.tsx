@@ -65,7 +65,8 @@ function TabHeader({ title, onEdit }: Props) {
 function TasksContainer() {
   return (
     <Container>
-      {/* TODO 할일 리스트 */}
+      {/* TODO 할일 칸반 리스트 */}
+      {/* TODO 할일 drag&drop */}
       <AddButton type="button" className="add">
         {/* TODO 클릭시 일정 추가(모달) */}
         Add Item

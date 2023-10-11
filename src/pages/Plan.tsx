@@ -4,6 +4,8 @@ import { IoIosStarOutline } from 'react-icons/io';
 import { CiSettings } from 'react-icons/ci';
 import { SlPlus } from 'react-icons/sl';
 import Tab from '../components/Tab';
+import MemberFilter from '../components/MemberFilter';
+import LabelFilter from '../components/LabelFilter';
 
 const Wrapper = styled.main`
   width: 100vw;
@@ -50,18 +52,6 @@ const PlanCategory = styled.ul`
   }
 `;
 
-const LabelFilter = styled.ul`
-  width: 11rem;
-  height: 50%;
-  border-radius: 1rem;
-  padding: 1rem;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #ffffff;
-`;
-
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -73,11 +63,6 @@ const TopContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
-
-const MemberFilter = styled.ul`
-  width: fit-content;
-  background-color: #ffffff;
 `;
 
 const UtilContainer = styled.div`
@@ -180,17 +165,13 @@ function Plan() {
             </li>
           ))}
         </PlanCategory>
-        <LabelFilter>
-          {/* TODO 라벨 필터링 */}
-          <span>레이블</span>
-        </LabelFilter>
+        <LabelFilter />
+        {/* TODO 라벨 필터링 */}
       </SideContainer>
       <MainContainer>
+        {/* TODO 멤버 필터링 */}
         <TopContainer>
-          <MemberFilter>
-            {/* TODO 멤버 필터링 */}
-            member
-          </MemberFilter>
+          <MemberFilter />
           <UtilContainer>
             {/* TODO 클릭시 즐겨찾기 토글, 설정으로 이동 */}
             <div className="icon">
