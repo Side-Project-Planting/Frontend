@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
 import { ModalButton } from './CommonModalStyles';
 import SelectBox from '../SelectBox';
-import { ReactComponent as DeadlineCheck } from '../../assets/images/deadlineCheck.svg';
+import { ReactComponent as StartDate } from '../../assets/images/startDate.svg';
+import { ReactComponent as DeadlineDate } from '../../assets/images/deadlineCheck.svg';
 import { hashStringToColor } from '../../utils';
 
 const Wrapper = styled.div`
@@ -163,14 +164,29 @@ export default function AddTaskModal({ members }: Props) {
   const [taskName, setTaskName] = useState<string>('');
   const [assignee, setAssignee] = useState<string>('');
   const [checkDeadline, setCheckDeadline] = useState<boolean>(false);
-  const [deadline, setDeadline] = useState<string>(
+  const [startDate, setStartDate] = useState<string>(
     [today.getFullYear(), today.getMonth() + 1, today.getDate()].join('-'),
   );
+  const [endDate, setEndDate] = useState<string>(startDate);
   const [tags, setTags] = useState<string[]>(['label1', 'label2']);
 
   const options = members.map((member) => {
     return { value: member[1], label: member[0] };
   });
+
+  const changeStartDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.currentTarget.value > endDate) {
+      setEndDate(e.currentTarget.value);
+    }
+    setStartDate(e.currentTarget.value);
+  };
+
+  const changeEndDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.currentTarget.value < startDate) {
+      setStartDate(e.currentTarget.value);
+    }
+    setEndDate(e.currentTarget.value);
+  };
 
   const enterTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (tagInput.current === null) return;
@@ -201,7 +217,7 @@ export default function AddTaskModal({ members }: Props) {
     const requestData = {
       taskName,
       assignee,
-      deadline: checkDeadline ? deadline : '',
+      dateRange: checkDeadline ? [null, null] : [startDate, endDate],
       tags,
     };
     console.log(requestData);
@@ -234,17 +250,22 @@ export default function AddTaskModal({ members }: Props) {
               <div className="label-name">기간</div>
             </div>
             {checkDeadline && (
-              <div className="deadline-prop">
-                <div className="prop-name-container">
-                  <DeadlineCheck width="1rem" height="1rem" />
-                  <div className="prop-name">종료일</div>
+              <>
+                <div className="deadline-prop">
+                  <div className="prop-name-container">
+                    <StartDate width="1rem" height="1rem" />
+                    <div className="prop-name">시작일</div>
+                  </div>
+                  <input type="date" value={startDate} onChange={changeStartDate} />
                 </div>
-                <input
-                  type="date"
-                  value={deadline}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDeadline(e.target.value)}
-                />
-              </div>
+                <div className="deadline-prop">
+                  <div className="prop-name-container">
+                    <DeadlineDate width="1rem" height="1rem" />
+                    <div className="prop-name">종료일</div>
+                  </div>
+                  <input type="date" value={endDate} onChange={changeEndDate} />
+                </div>
+              </>
             )}
           </DeadlineField>
         </Fields>
