@@ -62,7 +62,7 @@ function TabHeader({ title, onEdit }: Props) {
   );
 }
 
-function TasksContainer() {
+export function TasksContainer() {
   return (
     <Container>
       {/* TODO 할일 칸반 리스트 */}
@@ -75,7 +75,7 @@ function TasksContainer() {
   );
 }
 
-export default function Tab({ title, onEdit }: Props) {
+export function Tab({ title, onEdit }: Props) {
   return (
     <Wrapper>
       <TabHeader title={title} onEdit={onEdit} />
