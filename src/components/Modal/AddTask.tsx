@@ -95,6 +95,28 @@ const DeadlineField = styled.div`
   }
 `;
 
+const LabelsWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  #tag-search {
+    position: absolute;
+    width: 100%;
+    max-height: 10rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-top: 1px solid lightgray;
+    border-radius: 0 0 8px 8px;
+    background-color: #fafafa;
+  }
+
+  #no-coincide-tag {
+    padding: 1rem;
+  }
+`;
+
 const LabelsContainer = styled.div`
   height: 5rem;
   padding: 0.3rem 1rem;
@@ -107,7 +129,7 @@ const LabelsContainer = styled.div`
   border-radius: 8px;
   font-size: 0.9rem;
 
-  ul {
+  #tags {
     padding: 1rem 0;
     width: 100%;
     height: 100%;
@@ -125,9 +147,10 @@ const LabelsContainer = styled.div`
 `;
 
 const LabelItem = styled.li<{ color: string }>`
+  list-style: none;
   position: relative;
   padding: 0.5rem 1rem;
-  height: 2rem;
+  height: 80%;
   border-radius: 10px;
   color: white;
   text-align: center;
@@ -147,20 +170,29 @@ const LabelItem = styled.li<{ color: string }>`
     border-radius: 50%;
     line-height: 110%;
   }
-
   &:hover button {
     display: flex;
   }
 `;
 
+const SearchedTag = styled.button<{ $isFocus: boolean }>`
+  padding: 0.5rem 1rem;
+  border: 0;
+  background-color: ${(prop) => (prop.$isFocus ? 'rgb(127, 127, 127, 0.3)' : 'transparent')};
+  text-align: start;
+`;
+
 interface Props {
   members: string[][];
+  allTags: string[];
 }
 
-export default function AddTaskModal({ members }: Props) {
+export default function AddTaskModal({ members, allTags }: Props) {
   const today = new Date();
 
   const tagInput = useRef<HTMLInputElement>(null);
+  const searchWindowRef = useRef<HTMLDivElement>(null);
+
   const [taskName, setTaskName] = useState<string>('');
   const [assignee, setAssignee] = useState<string>('');
   const [checkDeadline, setCheckDeadline] = useState<boolean>(false);
@@ -168,7 +200,12 @@ export default function AddTaskModal({ members }: Props) {
     [today.getFullYear(), today.getMonth() + 1, today.getDate()].join('-'),
   );
   const [endDate, setEndDate] = useState<string>(startDate);
+  const [searchedTags, setSearchedTags] = useState<string[]>(allTags);
   const [tags, setTags] = useState<string[]>(['label1', 'label2']);
+  // TODO: 새로 추가된 라벨들을 서버에 따로 보내줘야하지 않을까 해서 만든 상태
+  // const [newTags, setNewTags] = useState<string[]>([]);
+  const [showSearchTag, setShowSearchTag] = useState<boolean>(false);
+  const [tagButtonIdx, setTagButtonIdx] = useState<number>(-1);
 
   const options = members.map((member) => {
     return { value: member[1], label: member[0] };
@@ -188,21 +225,58 @@ export default function AddTaskModal({ members }: Props) {
     setEndDate(e.currentTarget.value);
   };
 
-  const enterTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (tagInput.current === null) return;
-    if (e.key === 'Enter') {
-      // TODO: alert decoration
-      if (tagInput.current.value.length === 0) {
-        alert('최소 1글자 이상 입력해주세요!');
-        return;
-      }
-      if (tags.includes(tagInput.current.value)) {
-        alert('이미 등록된 라벨입니다!');
-        return;
-      }
-      setTags([...tags, tagInput.current.value]);
-      tagInput.current.value = '';
+  const searchTagName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.currentTarget.value.length === 0) setSearchedTags(allTags);
+    else setSearchedTags(allTags.filter((tag) => tag.includes(e.currentTarget.value)));
+  };
+
+  const isIncludeInTagState = (currentTag: string) => {
+    return tags.includes(currentTag);
+  };
+
+  const addTag = (currentTag: string) => {
+    if (isIncludeInTagState(currentTag)) {
+      alert('이미 등록된 레이블입니다!');
+      return;
     }
+    allTags.push(currentTag);
+    setSearchedTags(allTags);
+    setTags([...tags, currentTag]);
+    tagInput.current!.value = '';
+  };
+
+  const onKeyDownInTagInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (searchedTags.length > 0) {
+      if (e.key === 'ArrowDown') {
+        setTagButtonIdx((prev) => (prev + 1 >= searchedTags.length ? 0 : prev + 1));
+      }
+      if (e.key === 'ArrowUp') {
+        setTagButtonIdx((prev) => (prev - 1 < 0 ? searchedTags.length - 1 : prev - 1));
+      }
+    }
+    if (e.key === 'Escape') {
+      setTagButtonIdx(-1);
+      setShowSearchTag(false);
+    }
+    if (e.key === 'Enter') {
+      if (tagInput.current === null) return;
+      if (tagInput.current.value.length === 0) {
+        if (tagButtonIdx < 0) {
+          alert('최소 1글자 이상 입력해주세요!');
+          return;
+        }
+        addTag(searchedTags[tagButtonIdx]);
+        return;
+      }
+      addTag(tagInput.current.value);
+    }
+  };
+
+  const selectTag = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const currentTag = searchedTags[tagButtonIdx];
+    if (isIncludeInTagState(currentTag)) alert('이미 등록된 레이블입니다!');
+    else addTag(currentTag);
   };
 
   const onClickDeleteTag = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -272,19 +346,50 @@ export default function AddTaskModal({ members }: Props) {
         <InputField>
           <label htmlFor="task-label-input">
             레이블
-            <LabelsContainer>
-              <ul id="tags">
-                {tags.map((tag) => (
-                  <LabelItem key={tag} color={hashStringToColor(tag)}>
-                    <span>{tag}</span>
-                    <button id={`delete-${tag}`} type="button" onClick={onClickDeleteTag}>
-                      <IoClose />
-                    </button>
-                  </LabelItem>
-                ))}
-                <input id="task-label-input" type="text" onKeyUp={enterTag} ref={tagInput} />
-              </ul>
-            </LabelsContainer>
+            <LabelsWrapper>
+              <LabelsContainer>
+                <ul id="tags">
+                  {tags.map((tag) => (
+                    <LabelItem key={tag} color={hashStringToColor(tag)}>
+                      <span>{tag}</span>
+                      <button id={`delete-${tag}`} type="button" onClick={onClickDeleteTag}>
+                        <IoClose />
+                      </button>
+                    </LabelItem>
+                  ))}
+                  <input
+                    id="task-label-input"
+                    type="text"
+                    autoComplete="off"
+                    onKeyDown={onKeyDownInTagInput}
+                    onFocus={() => setShowSearchTag(true)}
+                    onBlur={() => setShowSearchTag(false)}
+                    onChange={searchTagName}
+                    ref={tagInput}
+                  />
+                </ul>
+              </LabelsContainer>
+              {showSearchTag && (
+                <div id="tag-search" ref={searchWindowRef}>
+                  {searchedTags.length === 0 ? (
+                    <p id="no-coincide-tag">일치하는 레이블이 없습니다.</p>
+                  ) : (
+                    searchedTags.map((tag, idx) => (
+                      <SearchedTag
+                        key={tag}
+                        type="button"
+                        $isFocus={idx === tagButtonIdx}
+                        onMouseDown={selectTag}
+                        onMouseOver={() => setTagButtonIdx(idx)}
+                        onMouseOut={() => setTagButtonIdx(-1)}
+                      >
+                        {tag}
+                      </SearchedTag>
+                    ))
+                  )}
+                </div>
+              )}
+            </LabelsWrapper>
           </label>
         </InputField>
         <ModalButton type="submit">추가하기</ModalButton>

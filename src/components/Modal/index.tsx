@@ -40,36 +40,35 @@ type ModalType = 'normal' | 'exitPlan' | 'addTask';
 
 interface Props {
   type: ModalType;
-  description: string;
+  description?: string;
   requestAPI: () => void;
   onClose: () => void;
+  members?: string[][];
+  allTags?: string[];
 }
 
-export default function Modal({ type, description, requestAPI, onClose }: Props) {
-  // 테스트용 더미데이터
-  const testMemebers = [
-    ['신우성', 'sws@gmail.com'],
-    ['김태훈', 'kth@gmail.com'],
-    ['한현', 'hh@gmail.com'],
-  ];
+export default function Modal({ type, description, requestAPI, onClose, members, allTags }: Props) {
   return (
     <ModalPortal>
       <ModalOverlay onClick={onClose}>
         <ModalWrapper type={type} onClick={(e) => e.stopPropagation()}>
           <ModalContainer>
-            {type === 'normal' && <NormalModal description={description} requestAPI={requestAPI} onClose={onClose} />}
-            {type === 'exitPlan' && (
-              <ExitPlanModal
-                description={description}
-                members={testMemebers}
-                requestAPI={requestAPI}
-                onClose={onClose}
-              />
+            {type === 'normal' && description && (
+              <NormalModal description={description} requestAPI={requestAPI} onClose={onClose} />
             )}
-            {type === 'addTask' && <AddTaskModal members={testMemebers} />}
+            {type === 'exitPlan' && description && members && (
+              <ExitPlanModal description={description} members={members} requestAPI={requestAPI} onClose={onClose} />
+            )}
+            {type === 'addTask' && members && allTags && <AddTaskModal members={members} allTags={allTags} />}
           </ModalContainer>
         </ModalWrapper>
       </ModalOverlay>
     </ModalPortal>
   );
 }
+
+Modal.defaultProps = {
+  description: '',
+  members: [],
+  allTags: [],
+};
