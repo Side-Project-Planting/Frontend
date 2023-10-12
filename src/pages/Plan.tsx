@@ -111,19 +111,15 @@ const UtilContainer = styled.div`
 const TabGroup = styled.ul`
   width: calc(100vw - 22rem);
   height: calc(100% - 4rem);
-  padding-right: 10rem;
   display: flex;
   gap: 1.5rem;
   overflow-x: auto;
-  position: relative;
 `;
 
 const AddTapButton = styled.button`
+  height: 100%;
   background: none;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  margin-left: 5rem;
 `;
 
 const TabWrapper = styled.li`
@@ -208,6 +204,7 @@ function Plan() {
       setPlan({ ...plan!, tabs: [...plan!.tabs, newTab] });
       setIsAddingTab(false);
     }
+    // TODO newTabTitle===""일떄 enter를 누르면 탭 추가 취소
   };
 
   const editTabInfo = () => {

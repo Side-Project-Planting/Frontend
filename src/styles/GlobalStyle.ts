@@ -25,6 +25,9 @@ export default createGlobalStyle`
     padding: 0;
     cursor: pointer;
     font-size: inherit;
+    &:focus{
+      outline: none;
+    } 
   }
 
   ul,li{
