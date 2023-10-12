@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
 import { IoIosMore } from 'react-icons/io';
 
 type Props = {
   title: string;
+  // eslint-disable-next-line react/require-default-props
+  newTabTitle?: string;
+  // eslint-disable-next-line react/require-default-props
+  setNewTabTitle?: Dispatch<SetStateAction<string>>;
   onEdit: () => void;
 };
 
@@ -51,9 +55,10 @@ const AddButton = styled.button`
   transform: translateX(-50%);
 `;
 
-function TabHeader({ title, onEdit }: Props) {
+function TabHeader({ title, newTabTitle, setNewTabTitle, onEdit }: Props) {
   return (
     <Header>
+      <input type="text" value={title || newTabTitle} onChange={(e) => setNewTabTitle!(e.target.value)} />
       <span className="planTitle">{title}</span>
       <button type="button" className="icon" onClick={onEdit}>
         <IoIosMore size="24" />
@@ -75,10 +80,10 @@ function TasksContainer() {
   );
 }
 
-export default function Tab({ title, onEdit }: Props) {
+export default function Tab({ title, newTabTitle, setNewTabTitle, onEdit }: Props) {
   return (
     <Wrapper>
-      <TabHeader title={title} onEdit={onEdit} />
+      <TabHeader title={title} newTabTitle={newTabTitle} setNewTabTitle={setNewTabTitle} onEdit={onEdit} />
       <TasksContainer />
     </Wrapper>
   );

@@ -7,6 +7,33 @@ import Tab from '../components/Tab';
 import MemberFilter from '../components/MemberFilter';
 import LabelFilter from '../components/LabelFilter';
 
+interface Task {
+  title: string;
+  labels: string[];
+  assignee: string;
+  order: number;
+}
+
+type TabType = {
+  id: number;
+  title?: string;
+  order?: number;
+  tasks?: Task[];
+};
+
+type MemberType = {
+  id: number;
+  name: string;
+  imgUrl?: string;
+  isAdmin: boolean;
+};
+type PlanType = {
+  title: string;
+  description: string;
+  isPublic: boolean;
+  members: MemberType[];
+  tabs: TabType[];
+};
 const Wrapper = styled.main`
   width: 100vw;
   min-height: 100vh;
@@ -99,42 +126,44 @@ const AddTapButton = styled.button`
   transform: translateY(-50%);
 `;
 
+const planObject = {
+  title: 'planting',
+  description: '안녕하세요 저희는 일정 공유 관리 서비스를 개발하고 있는 플랜팅입니다.',
+  isPublic: true,
+  members: [
+    { id: 1, name: '신우성', imgUrl: '', isAdmin: true },
+    { id: 2, name: '김태훈', imgUrl: '', isAdmin: false },
+    { id: 3, name: '허준영', imgUrl: '', isAdmin: false },
+    { id: 4, name: '한현', imgUrl: '', isAdmin: false },
+  ],
+  tabs: [
+    {
+      id: 1,
+      title: 'To do',
+      order: 0,
+      tasks: [{ title: '이펙티브 완독', labels: ['개발도서'], assignee: '허준영', order: 0 }],
+    },
+    {
+      id: 2,
+      title: 'In Progress',
+      order: 1,
+      tasks: [
+        { title: '타입스크립트 Chap1', labels: ['개발도서'], assignee: '허준영', order: 0 },
+        { title: '백준 삼성 기출', labels: ['코테'], assignee: '허준영', order: 1 },
+      ],
+    },
+    {
+      id: 3,
+      title: 'Done',
+      order: 2,
+      tasks: [{ title: 'NC SOFT 서류 제출', labels: ['이력서'], assignee: '허준영', order: 0 }],
+    },
+  ],
+};
 function Plan() {
+  const [plan, setPlan] = useState<PlanType>(planObject);
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
-  const planObject = {
-    title: 'planting',
-    description: '안녕하세요 저희는 일정 공유 관리 서비스를 개발하고 있는 플랜팅입니다.',
-    isPublic: true,
-    members: [
-      { id: 1, name: '신우성', imgUrl: '', isAdmin: true },
-      { id: 2, name: '김태훈', imgUrl: '', isAdmin: false },
-      { id: 3, name: '허준영', imgUrl: '', isAdmin: false },
-      { id: 4, name: '한현', imgUrl: '', isAdmin: false },
-    ],
-    tabs: [
-      {
-        id: 1,
-        title: 'To do',
-        order: 0,
-        tasks: [{ title: '이펙티브 완독', labels: ['개발도서'], assignee: '허준영', order: 0 }],
-      },
-      {
-        id: 2,
-        title: 'In Progress',
-        order: 1,
-        tasks: [
-          { title: '타입스크립트 Chap1', labels: ['개발도서'], assignee: '허준영', order: 0 },
-          { title: '백준 삼성 기출', labels: ['코테'], assignee: '허준영', order: 1 },
-        ],
-      },
-      {
-        id: 3,
-        title: 'Done',
-        order: 2,
-        tasks: [{ title: 'NC SOFT 서류 제출', labels: ['이력서'], assignee: '허준영', order: 0 }],
-      },
-    ],
-  };
+  const [newTabTitle, setNewTabTitle] = useState<string>('');
 
   const planNameList = [
     { id: 1, name: 'My Plan' },
@@ -142,6 +171,13 @@ function Plan() {
     { id: 3, name: 'Team Plan2' },
     { id: 4, name: 'Team Plan3' },
   ];
+  console.log(plan);
+  const addTab = () => {
+    const newTab: TabType = {
+      id: planObject.tabs.length + 1,
+    };
+    setPlan({ ...plan, tabs: [...plan.tabs, newTab] });
+  };
 
   const editTabInfo = () => {
     // TODO 탭 정보 수정 및 삭제
@@ -184,10 +220,16 @@ function Plan() {
         </TopContainer>
         <TabGroup>
           {planObject.tabs.map((item) => (
-            <Tab key={item.id} title={item.title} onEdit={editTabInfo} />
+            <Tab
+              key={item.id}
+              title={item.title}
+              newTabTitle={newTabTitle}
+              onEdit={editTabInfo}
+              setNewTabTitle={setNewTabTitle}
+            />
           ))}
           {/* TODO 클릭시 탭 추가 */}
-          <AddTapButton>
+          <AddTapButton onClick={addTab}>
             <SlPlus size={35} color="#8993A1" />
           </AddTapButton>
         </TabGroup>
