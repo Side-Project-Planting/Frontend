@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
 import { ModalButton } from './CommonModalStyles';
 import SelectBox from '../SelectBox';
-import { ReactComponent as DeadlineCheck } from '../../assets/images/deadlineCheck.svg';
+import { ReactComponent as StartDate } from '../../assets/images/startDate.svg';
+import { ReactComponent as DeadlineDate } from '../../assets/images/deadlineCheck.svg';
 import { hashStringToColor } from '../../utils';
 
 const Wrapper = styled.div`
@@ -94,6 +95,28 @@ const DeadlineField = styled.div`
   }
 `;
 
+const LabelsWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  #label-search {
+    position: absolute;
+    width: 100%;
+    max-height: 10rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-top: 1px solid lightgray;
+    border-radius: 0 0 8px 8px;
+    background-color: #fafafa;
+  }
+
+  #no-coincide-label {
+    padding: 1rem;
+  }
+`;
+
 const LabelsContainer = styled.div`
   height: 5rem;
   padding: 0.3rem 1rem;
@@ -106,7 +129,7 @@ const LabelsContainer = styled.div`
   border-radius: 8px;
   font-size: 0.9rem;
 
-  ul {
+  #labels {
     padding: 1rem 0;
     width: 100%;
     height: 100%;
@@ -124,9 +147,10 @@ const LabelsContainer = styled.div`
 `;
 
 const LabelItem = styled.li<{ color: string }>`
+  list-style: none;
   position: relative;
   padding: 0.5rem 1rem;
-  height: 2rem;
+  height: 80%;
   border-radius: 10px;
   color: white;
   text-align: center;
@@ -146,53 +170,118 @@ const LabelItem = styled.li<{ color: string }>`
     border-radius: 50%;
     line-height: 110%;
   }
-
   &:hover button {
     display: flex;
   }
 `;
 
+const SearchedLabel = styled.button<{ $isFocus: boolean }>`
+  padding: 0.5rem 1rem;
+  border: 0;
+  background-color: ${(prop) => (prop.$isFocus ? 'rgb(127, 127, 127, 0.3)' : 'transparent')};
+  text-align: start;
+`;
+
 interface Props {
   members: string[][];
+  allLabels: string[];
 }
 
-export default function AddTaskModal({ members }: Props) {
+export default function AddTaskModal({ members, allLabels }: Props) {
   const today = new Date();
 
-  const tagInput = useRef<HTMLInputElement>(null);
+  const labelInput = useRef<HTMLInputElement>(null);
+  const searchWindowRef = useRef<HTMLDivElement>(null);
+
   const [taskName, setTaskName] = useState<string>('');
   const [assignee, setAssignee] = useState<string>('');
   const [checkDeadline, setCheckDeadline] = useState<boolean>(false);
-  const [deadline, setDeadline] = useState<string>(
+  const [startDate, setStartDate] = useState<string>(
     [today.getFullYear(), today.getMonth() + 1, today.getDate()].join('-'),
   );
-  const [tags, setTags] = useState<string[]>(['label1', 'label2']);
+  const [endDate, setEndDate] = useState<string>(startDate);
+  const [searchedLabels, setSearchedLabels] = useState<string[]>(allLabels);
+  const [selectedLabels, setSelectedLabels] = useState<string[]>(['label1', 'label2']);
+  // TODO: 새로 추가된 라벨들을 서버에 따로 보내줘야하지 않을까 해서 만든 상태
+  // const [newLabels, setNewLabels] = useState<string[]>([]);
+  const [showSearchLabel, setShowSearchLabel] = useState<boolean>(false);
+  const [searchedLabelIdx, setSearchedLabelIdx] = useState<number>(-1);
 
   const options = members.map((member) => {
     return { value: member[1], label: member[0] };
   });
 
-  const enterTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (tagInput.current === null) return;
+  const changeStartDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.currentTarget.value > endDate) {
+      setEndDate(e.currentTarget.value);
+    }
+    setStartDate(e.currentTarget.value);
+  };
+
+  const changeEndDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.currentTarget.value < startDate) {
+      setStartDate(e.currentTarget.value);
+    }
+    setEndDate(e.currentTarget.value);
+  };
+
+  const searchLabelName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.currentTarget.value.length === 0) setSearchedLabels(allLabels);
+    else setSearchedLabels(allLabels.filter((label) => label.includes(e.currentTarget.value)));
+  };
+
+  const isIncludeInSelectedLabels = (currentLabel: string) => {
+    return selectedLabels.includes(currentLabel);
+  };
+
+  const addLabel = (currentLabel: string) => {
+    if (isIncludeInSelectedLabels(currentLabel)) {
+      alert('이미 등록된 레이블입니다!');
+      return;
+    }
+    allLabels.push(currentLabel);
+    setSearchedLabels(allLabels);
+    setSelectedLabels([...selectedLabels, currentLabel]);
+    labelInput.current!.value = '';
+  };
+
+  const onKeyDownInlabelInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (searchedLabels.length > 0) {
+      if (e.key === 'ArrowDown') {
+        setSearchedLabelIdx((prev) => (prev + 1 >= searchedLabels.length ? 0 : prev + 1));
+      }
+      if (e.key === 'ArrowUp') {
+        setSearchedLabelIdx((prev) => (prev - 1 < 0 ? searchedLabels.length - 1 : prev - 1));
+      }
+    }
+    if (e.key === 'Escape') {
+      setSearchedLabelIdx(-1);
+      setShowSearchLabel(false);
+    }
     if (e.key === 'Enter') {
-      // TODO: alert decoration
-      if (tagInput.current.value.length === 0) {
-        alert('최소 1글자 이상 입력해주세요!');
+      if (labelInput.current === null) return;
+      if (labelInput.current.value.length === 0) {
+        if (searchedLabelIdx < 0) {
+          alert('최소 1글자 이상 입력해주세요!');
+          return;
+        }
+        addLabel(searchedLabels[searchedLabelIdx]);
         return;
       }
-      if (tags.includes(tagInput.current.value)) {
-        alert('이미 등록된 라벨입니다!');
-        return;
-      }
-      setTags([...tags, tagInput.current.value]);
-      tagInput.current.value = '';
+      addLabel(labelInput.current.value);
     }
   };
 
-  const onClickDeleteTag = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickSearchedLabel = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const currentLabel = searchedLabels[searchedLabelIdx];
+    addLabel(currentLabel);
+  };
+
+  const onClickDeleteLabel = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.currentTarget.id.split('-')[1];
-    const updateTags = tags.filter((tag) => tag !== target);
-    setTags(updateTags);
+    const updateLabels = selectedLabels.filter((label) => label !== target);
+    setSelectedLabels(updateLabels);
   };
 
   const submitAddTask = (e: React.FormEvent<HTMLFormElement>) => {
@@ -201,8 +290,8 @@ export default function AddTaskModal({ members }: Props) {
     const requestData = {
       taskName,
       assignee,
-      deadline: checkDeadline ? deadline : '',
-      tags,
+      dateRange: checkDeadline ? [null, null] : [startDate, endDate],
+      selectedLabels,
     };
     console.log(requestData);
   };
@@ -234,36 +323,72 @@ export default function AddTaskModal({ members }: Props) {
               <div className="label-name">기간</div>
             </div>
             {checkDeadline && (
-              <div className="deadline-prop">
-                <div className="prop-name-container">
-                  <DeadlineCheck width="1rem" height="1rem" />
-                  <div className="prop-name">종료일</div>
+              <>
+                <div className="deadline-prop">
+                  <div className="prop-name-container">
+                    <StartDate width="1rem" height="1rem" />
+                    <div className="prop-name">시작일</div>
+                  </div>
+                  <input type="date" value={startDate} onChange={changeStartDate} />
                 </div>
-                <input
-                  type="date"
-                  value={deadline}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDeadline(e.target.value)}
-                />
-              </div>
+                <div className="deadline-prop">
+                  <div className="prop-name-container">
+                    <DeadlineDate width="1rem" height="1rem" />
+                    <div className="prop-name">종료일</div>
+                  </div>
+                  <input type="date" value={endDate} onChange={changeEndDate} />
+                </div>
+              </>
             )}
           </DeadlineField>
         </Fields>
         <InputField>
           <label htmlFor="task-label-input">
             레이블
-            <LabelsContainer>
-              <ul id="tags">
-                {tags.map((tag) => (
-                  <LabelItem key={tag} color={hashStringToColor(tag)}>
-                    <span>{tag}</span>
-                    <button id={`delete-${tag}`} type="button" onClick={onClickDeleteTag}>
-                      <IoClose />
-                    </button>
-                  </LabelItem>
-                ))}
-                <input id="task-label-input" type="text" onKeyUp={enterTag} ref={tagInput} />
-              </ul>
-            </LabelsContainer>
+            <LabelsWrapper>
+              <LabelsContainer>
+                <ul id="labels">
+                  {selectedLabels.map((label) => (
+                    <LabelItem key={label} color={hashStringToColor(label)}>
+                      <span>{label}</span>
+                      <button id={`delete-${label}`} type="button" onClick={onClickDeleteLabel}>
+                        <IoClose />
+                      </button>
+                    </LabelItem>
+                  ))}
+                  <input
+                    id="task-label-input"
+                    type="text"
+                    autoComplete="off"
+                    onKeyDown={onKeyDownInlabelInput}
+                    onFocus={() => setShowSearchLabel(true)}
+                    onBlur={() => setShowSearchLabel(false)}
+                    onChange={searchLabelName}
+                    ref={labelInput}
+                  />
+                </ul>
+              </LabelsContainer>
+              {showSearchLabel && (
+                <div id="label-search" ref={searchWindowRef}>
+                  {searchedLabels.length === 0 ? (
+                    <p id="no-coincide-label">일치하는 레이블이 없습니다.</p>
+                  ) : (
+                    searchedLabels.map((label, idx) => (
+                      <SearchedLabel
+                        key={label}
+                        type="button"
+                        $isFocus={idx === searchedLabelIdx}
+                        onMouseDown={onClickSearchedLabel}
+                        onMouseOver={() => setSearchedLabelIdx(idx)}
+                        onMouseOut={() => setSearchedLabelIdx(-1)}
+                      >
+                        {label}
+                      </SearchedLabel>
+                    ))
+                  )}
+                </div>
+              )}
+            </LabelsWrapper>
           </label>
         </InputField>
         <ModalButton type="submit">추가하기</ModalButton>
