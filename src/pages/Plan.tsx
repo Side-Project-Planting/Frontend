@@ -5,7 +5,7 @@ import { CiSettings } from 'react-icons/ci';
 import { SlPlus } from 'react-icons/sl';
 import MemberFilter from '../components/MemberFilter';
 import LabelFilter from '../components/LabelFilter';
-import { getPlanInfo } from '../api';
+import { getPlanInfo } from '../apis';
 import { Tab, TasksContainer } from '../components/Tab';
 
 type TaskType = {
