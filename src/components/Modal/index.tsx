@@ -44,10 +44,10 @@ interface Props {
   requestAPI: () => void;
   onClose: () => void;
   members?: string[][];
-  allTags?: string[];
+  allLabels?: string[];
 }
 
-export default function Modal({ type, description, requestAPI, onClose, members, allTags }: Props) {
+export default function Modal({ type, description, requestAPI, onClose, members, allLabels }: Props) {
   return (
     <ModalPortal>
       <ModalOverlay onClick={onClose}>
@@ -59,7 +59,7 @@ export default function Modal({ type, description, requestAPI, onClose, members,
             {type === 'exitPlan' && description && members && (
               <ExitPlanModal description={description} members={members} requestAPI={requestAPI} onClose={onClose} />
             )}
-            {type === 'addTask' && members && allTags && <AddTaskModal members={members} allTags={allTags} />}
+            {type === 'addTask' && members && allLabels && <AddTaskModal members={members} allLabels={allLabels} />}
           </ModalContainer>
         </ModalWrapper>
       </ModalOverlay>
@@ -70,5 +70,5 @@ export default function Modal({ type, description, requestAPI, onClose, members,
 Modal.defaultProps = {
   description: '',
   members: [],
-  allTags: [],
+  allLabels: [],
 };
