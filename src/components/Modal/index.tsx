@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import ModalPortal from './Portal';
 import ExitPlanModal from './ExitPlan';
@@ -48,6 +48,15 @@ interface Props {
 }
 
 export default function Modal({ type, description, requestAPI, onClose, members, allLabels }: Props) {
+  useEffect(() => {
+    const keyDownEscCloseModal = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', keyDownEscCloseModal);
+    return () => window.removeEventListener('keydown', keyDownEscCloseModal);
+  }, []);
   return (
     <ModalPortal>
       <ModalOverlay onClick={onClose}>
