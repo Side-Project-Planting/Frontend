@@ -1,26 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { IoIosStarOutline } from 'react-icons/io';
 import { CiSettings } from 'react-icons/ci';
 import { SlPlus } from 'react-icons/sl';
-import Tab from '../components/Tab';
 import MemberFilter from '../components/MemberFilter';
 import LabelFilter from '../components/LabelFilter';
+import { getPlanInfo } from '../api';
+import { Tab, TasksContainer } from '../components/Tab';
 
-interface Task {
+type TaskType = {
   title: string;
   labels: string[];
   assignee: string;
   order: number;
-}
-
+};
 type TabType = {
   id: number;
   title?: string;
   order?: number;
-  tasks?: Task[];
+  tasks?: TaskType[];
 };
-
 type MemberType = {
   id: number;
   name: string;
@@ -34,6 +33,7 @@ type PlanType = {
   members: MemberType[];
   tabs: TabType[];
 };
+
 const Wrapper = styled.main`
   width: 100vw;
   min-height: 100vh;
@@ -126,57 +126,88 @@ const AddTapButton = styled.button`
   transform: translateY(-50%);
 `;
 
-const planObject = {
-  title: 'planting',
-  description: '안녕하세요 저희는 일정 공유 관리 서비스를 개발하고 있는 플랜팅입니다.',
-  isPublic: true,
-  members: [
-    { id: 1, name: '신우성', imgUrl: '', isAdmin: true },
-    { id: 2, name: '김태훈', imgUrl: '', isAdmin: false },
-    { id: 3, name: '허준영', imgUrl: '', isAdmin: false },
-    { id: 4, name: '한현', imgUrl: '', isAdmin: false },
-  ],
-  tabs: [
-    {
-      id: 1,
-      title: 'To do',
-      order: 0,
-      tasks: [{ title: '이펙티브 완독', labels: ['개발도서'], assignee: '허준영', order: 0 }],
-    },
-    {
-      id: 2,
-      title: 'In Progress',
-      order: 1,
-      tasks: [
-        { title: '타입스크립트 Chap1', labels: ['개발도서'], assignee: '허준영', order: 0 },
-        { title: '백준 삼성 기출', labels: ['코테'], assignee: '허준영', order: 1 },
-      ],
-    },
-    {
-      id: 3,
-      title: 'Done',
-      order: 2,
-      tasks: [{ title: 'NC SOFT 서류 제출', labels: ['이력서'], assignee: '허준영', order: 0 }],
-    },
-  ],
-};
+const TabWrapper = styled.li`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+
+  input {
+    background: none;
+    border: 1px solid #000000;
+    padding-inline: 0.5rem;
+  }
+
+  .cancelTab {
+    width: 100px;
+    background-color: yellow;
+    position: absolute;
+    top: 4rem;
+    left: 4rem;
+    z-index: 10;
+  }
+`;
+
+const planNameList = [
+  { id: 1, name: 'My Plan' },
+  { id: 2, name: 'Team Plan1' },
+  { id: 3, name: 'Team Plan2' },
+  { id: 4, name: 'Team Plan3' },
+];
+
 function Plan() {
-  const [plan, setPlan] = useState<PlanType>(planObject);
+  const [plan, setPlan] = useState<PlanType>();
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const [newTabTitle, setNewTabTitle] = useState<string>('');
+  const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const planNameList = [
-    { id: 1, name: 'My Plan' },
-    { id: 2, name: 'Team Plan1' },
-    { id: 3, name: 'Team Plan2' },
-    { id: 4, name: 'Team Plan3' },
-  ];
-  console.log(plan);
-  const addTab = () => {
-    const newTab: TabType = {
-      id: planObject.tabs.length + 1,
-    };
-    setPlan({ ...plan, tabs: [...plan.tabs, newTab] });
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getPlanInfo();
+        setPlan(data);
+      } catch (err) {
+        throw new Error('플랜 정보를 가져오는데 실패했습니다.');
+      }
+    })();
+  }, []);
+
+  const handleAddTab = () => {
+    setIsAddingTab(true);
+    setNewTabTitle('');
+
+    // 탭 추가 버튼 눌렀을 때 input에 focus
+    // 연속으로 두 번쨰 누를 때만 focus가 되는 이상한 현상 있음
+    // inputRef가 처음 클릭했을 때 null이다.
+    if (inputRef?.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  const handleInputBlur = () => {
+    if (newTabTitle.trim() === '') {
+      setIsAddingTab(false);
+    } else {
+      const newTab: TabType = {
+        id: plan!.tabs.length + 1,
+        title: newTabTitle,
+      };
+      setPlan({ ...plan!, tabs: [...plan!.tabs, newTab] });
+      setIsAddingTab(false);
+    }
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && newTabTitle.trim() !== '') {
+      const newTab: TabType = {
+        id: plan!.tabs.length + 1,
+        title: newTabTitle,
+      };
+      setPlan({ ...plan!, tabs: [...plan!.tabs, newTab] });
+      setIsAddingTab(false);
+    }
   };
 
   const editTabInfo = () => {
@@ -219,17 +250,22 @@ function Plan() {
           </UtilContainer>
         </TopContainer>
         <TabGroup>
-          {planObject.tabs.map((item) => (
-            <Tab
-              key={item.id}
-              title={item.title}
-              newTabTitle={newTabTitle}
-              onEdit={editTabInfo}
-              setNewTabTitle={setNewTabTitle}
-            />
-          ))}
-          {/* TODO 클릭시 탭 추가 */}
-          <AddTapButton onClick={addTab}>
+          {plan?.tabs?.map((item) => <Tab key={item.id} title={item.title!} onEdit={editTabInfo} />)}
+          {isAddingTab && (
+            <TabWrapper>
+              <input
+                type="text"
+                ref={inputRef}
+                value={newTabTitle}
+                onChange={(e) => setNewTabTitle(e.target.value)}
+                onBlur={handleInputBlur}
+                onKeyDown={handleInputKeyDown}
+              />
+              {/* TODO 탭 추가하다 취소하는 버튼 추가 */}
+              <TasksContainer />
+            </TabWrapper>
+          )}
+          <AddTapButton onClick={handleAddTab}>
             <SlPlus size={35} color="#8993A1" />
           </AddTapButton>
         </TabGroup>
