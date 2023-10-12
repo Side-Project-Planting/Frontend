@@ -23,6 +23,6 @@
   "include": [
     "src",
     ".eslintrc.js",
-    "src/types/index.d.ts"
+    "src/@types/index.d.ts"
   ]
 }
