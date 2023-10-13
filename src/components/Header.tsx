@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+
+import { ImCompass2 } from 'react-icons/im';
+import { MdHome, MdCalendarMonth } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { styled } from 'styled-components';
-import { MdHome, MdCalendarMonth } from 'react-icons/md';
-import { ImCompass2 } from 'react-icons/im';
-import Logo from './Logo';
+
 import Dropdown from './Dropdown';
+import Logo from './Logo';
 
 const HeadeContainer = styled.header`
   width: 100%;

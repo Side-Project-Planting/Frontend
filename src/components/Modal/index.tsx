@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
+
 import styled from 'styled-components';
-import ModalPortal from './Portal';
+
+import AddTaskModal from './AddTask';
 import ExitPlanModal from './ExitPlan';
 import NormalModal from './Normal';
-import AddTaskModal from './AddTask';
+import ModalPortal from './Portal';
 
 const ModalOverlay = styled.div`
   position: absolute;

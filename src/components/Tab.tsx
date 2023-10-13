@@ -1,6 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
+
 import { IoIosMore } from 'react-icons/io';
+import styled from 'styled-components';
 
 type Props = {
   title: string;
