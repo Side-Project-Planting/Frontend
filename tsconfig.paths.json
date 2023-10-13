@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@assets/*": ["./assets/*"],
+
+      "@apis": ["./apis/index.ts"],
+      "@apis/*": ["./apis/*"],
+
+      "@components/*": ["./components/*"],
+      
+      "@hooks": ["./hooks/index.ts"],
+      "@hooks/*": ["./hooks/*"],
+
+      "@pages/*": ["./pages/*"],
+      
+      "@styles/*": ["./styles/*"],
+
+      "@utils": ["./utils/index.ts"],
+      "@utils/*": ["./utils/*"],
+    }
+  }
+}

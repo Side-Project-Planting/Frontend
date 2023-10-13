@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 
 import { MdOutlineClose } from 'react-icons/md';
 import styled from 'styled-components';
 
-import boardIllust from '../assets/images/boardIllust.svg';
-import ToggleSwitch from '../components/ToggleSwitch';
+import boardIllust from '@assets/images/boardIllust.svg';
+import ToggleSwitch from '@components/ToggleSwitch';
 
 const Wrapper = styled.div`
   width: 100vw;

@@ -1,16 +1,17 @@
 import React from 'react';
 
+
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 
-import Header from './components/Header';
-import CreatePlan from './pages/CreatePlan';
-import GoogleOauthCallback from './pages/GoogleOauthCallback';
-import Main from './pages/Main';
-import Plan from './pages/Plan';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import GlobalFonts from './styles/GlobalFont';
-import GlobalStyle from './styles/GlobalStyle';
+import Header from '@components/Header';
+import CreatePlan from '@pages/CreatePlan';
+import GoogleOauthCallback from '@pages/GoogleOauthCallback';
+import Main from '@pages/Main';
+import Plan from '@pages/Plan';
+import SignIn from '@pages/SignIn';
+import SignUp from '@pages/SignUp';
+import GlobalFonts from '@styles/GlobalFont';
+import GlobalStyle from '@styles/GlobalStyle';
 
 function Layout() {
   return (

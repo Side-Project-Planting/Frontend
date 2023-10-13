@@ -1,14 +1,14 @@
+
 import React, { useRef, useState } from 'react';
 
 import { IoClose } from 'react-icons/io5';
 import styled from 'styled-components';
 
-import { ModalButton } from './CommonModalStyles';
-import { ReactComponent as DeadlineDate } from '../../assets/images/deadlineCheck.svg';
-import { ReactComponent as StartDate } from '../../assets/images/startDate.svg';
-import { hashStringToColor } from '../../utils';
-import SelectBox from '../SelectBox';
-
+import { ReactComponent as DeadlineDate } from '@assets/images/deadlineCheck.svg';
+import { ReactComponent as StartDate } from '@assets/images/startDate.svg';
+import { ModalButton } from '@components/Modal/CommonModalStyles';
+import SelectBox from '@components/SelectBox';
+import { hashStringToColor } from '@utils';
 
 const Wrapper = styled.div`
   width: 100%;

@@ -33,25 +33,25 @@
       "import/order": [
         "warn",
         {
-          "groups": ["builtin", "external", "internal", "type"],
+          "groups": ["builtin", "external", "internal", ["sibling", "parent", "index"], "type", "unknown"],
           "newlines-between": "always",
           "pathGroups": [
             {
-              "pattern": "react+(|-native)",
+              "pattern": "react",
               "group": "builtin",
               "position": "before"
             },
             {
-              "pattern": "@**",
-              "group": "external",
-              "position": "after"
+              "pattern": "{@**,@**/*,@**/**/*}",
+              "group": "unknown",
+              "position": "before"
             }
           ],
+          "pathGroupsExcludedImportTypes": ["react", "unknown"],
           "alphabetize": {
             "order": "asc",
             "caseInsensitive": true
-          },
-          "pathGroupsExcludedImportTypes": ["builtin"]
+          }
         }
       ]
     },

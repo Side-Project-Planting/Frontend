@@ -5,10 +5,10 @@ import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
 import styled from 'styled-components';
 
-import { getPlanInfo } from '../apis';
-import LabelFilter from '../components/LabelFilter';
-import MemberFilter from '../components/MemberFilter';
-import { Tab, TasksContainer } from '../components/Tab';
+import { getPlanInfo } from '@apis';
+import LabelFilter from '@components/LabelFilter';
+import MemberFilter from '@components/MemberFilter';
+import { Tab, TasksContainer } from '@components/Tab';
 
 type TaskType = {
   title: string;

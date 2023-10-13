@@ -5,8 +5,8 @@ import { MdHome, MdCalendarMonth } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { styled } from 'styled-components';
 
-import Dropdown from './Dropdown';
-import Logo from './Logo';
+import Dropdown from '@components/Dropdown';
+import Logo from '@components/Logo';
 
 const HeadeContainer = styled.header`
   width: 100%;
