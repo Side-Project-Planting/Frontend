@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 
 import Header from '@components/Header';
