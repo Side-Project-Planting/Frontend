@@ -1,4 +1,4 @@
-import { TaskInfo } from '../types/Plan';
+import { TaskInfo } from '../types';
 
 export const parseTasksByStatus = (tasks: TaskInfo[], statusName: string[]) => {
   const parsedTasks = [];

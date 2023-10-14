@@ -23,6 +23,8 @@
   "include": [
     "src",
     ".eslintrc.js",
-    "src/types/index.d.ts"
-  ]
+    "craco.config.js",
+    "src/@types/index.d.ts"
+  ],
+  "extends": "./tsconfig.paths.json"
 }

@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
+
 import styled from 'styled-components';
-import defaultProfileImg from '../assets/images/defaultProfileImg.svg';
+
+import defaultProfileImg from '@assets/images/boardIllust.svg';
 
 type DropdownOption = {
   id: number;

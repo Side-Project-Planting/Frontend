@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ModalButton, ModalButtonContainer, ModalDescription } from './CommonModalStyles';
 
 interface NormalProps {

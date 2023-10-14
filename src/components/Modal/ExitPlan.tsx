@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+
 import styled from 'styled-components';
-import { ModalButton, ModalButtonContainer, ModalDescription } from './CommonModalStyles';
-import SelectBox from '../SelectBox';
+
+import { ModalButton, ModalButtonContainer, ModalDescription } from '@components/Modal/CommonModalStyles';
+import SelectBox from '@components/SelectBox';
 
 const SelectAdminContainer = styled.div`
   display: flex;

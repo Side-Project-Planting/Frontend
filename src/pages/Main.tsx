@@ -1,7 +1,9 @@
 import React from 'react';
+
 import styled from 'styled-components';
-import BriefPlan from '../components/BriefPlan';
-import { ReactComponent as NoTeamPlan } from '../assets/images/noTeamPlan.svg';
+
+import { ReactComponent as NoTeamPlan } from '@assets/images/noTeamPlan.svg';
+import BriefPlan from '@components/BriefPlan';
 
 const Wrapper = styled.main`
   width: 100dvw;

@@ -1,9 +1,12 @@
 import React from 'react';
+
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { ReactComponent as NoData } from '../assets/images/noData.svg';
-import { TaskInfo } from '../types/Plan';
-import { hashStringToColor, parseTasksByStatus } from '../utils';
+
+import { TaskInfo } from '../types';
+
+import { ReactComponent as NoData } from '@assets/images/noData.svg';
+import { hashStringToColor, parseTasksByStatus } from '@utils';
 
 const CustomLink = styled(Link)`
   height: 100%;
