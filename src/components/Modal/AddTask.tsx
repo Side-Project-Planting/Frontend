@@ -239,6 +239,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
 
   const addLabel = (currentLabel: string) => {
     if (isIncludeIn(selectedLabels, currentLabel)) {
+      // eslint-disable-next-line
       alert('이미 등록된 레이블입니다!');
       return;
     }
@@ -265,6 +266,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
       if (labelInput.current === null) return;
       if (labelInput.current.value.length === 0) {
         if (searchedLabelIdx < 0) {
+          // eslint-disable-next-line
           alert('최소 1글자 이상 입력해주세요!');
           return;
         }
@@ -296,6 +298,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
       dateRange: checkDeadline ? [null, null] : [startDate, endDate],
       selectedLabels,
     };
+    // eslint-disable-next-line
     console.log(requestData);
   };
 
