@@ -203,7 +203,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
   );
   const [endDate, setEndDate] = useState<string>(startDate);
   const [searchedLabels, setSearchedLabels] = useState<string[]>(allLabels);
-  const [selectedLabels, setSelectedLabels] = useState<string[]>(['label1', 'label2']);
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   // TODO: 새로 추가된 라벨들을 서버에 따로 보내줘야하지 않을까 해서 만든 상태
   // const [newLabels, setNewLabels] = useState<string[]>([]);
   const [showSearchLabel, setShowSearchLabel] = useState<boolean>(false);
