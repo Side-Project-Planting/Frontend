@@ -15,31 +15,34 @@ interface Label {
   label: string;
 }
 
-type TaskType = {
+interface TaskType {
   title: string;
   labels: Label[];
   assignee: string;
   order: number;
-};
-type TabType = {
+}
+
+interface TabType {
   id: number;
   title?: string;
   order?: number;
   tasks?: TaskType[];
-};
-type MemberType = {
+}
+
+interface MemberType {
   id: number;
   name: string;
   imgUrl?: string;
   isAdmin: boolean;
-};
-type PlanType = {
+}
+
+interface PlanType {
   title: string;
   description: string;
   isPublic: boolean;
   members: MemberType[];
   tabs: TabType[];
-};
+}
 
 const Wrapper = styled.main`
   width: 100vw;
@@ -173,34 +176,36 @@ function Plan() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
 
-  console.log(plan);
+  const filterPlanByLabels = (data: PlanType, labels: number[]) => {
+    if (!data || !labels || labels.length === 0) {
+      return data;
+    }
+
+    const updatedTabs = data.tabs.map((tab) => ({
+      ...tab,
+      tasks: tab.tasks?.filter((task) =>
+        task.labels.some((label) => {
+          // console.log(selectedLabels, label.value, selectedLabels.includes(label.value));
+          return selectedLabels.includes(label.value);
+        }),
+      ),
+    }));
+
+    return { ...data, tabs: updatedTabs };
+  };
 
   useEffect(() => {
     (async () => {
       try {
-        console.log('또 가져옴');
         const data = await getPlanInfo();
-        setPlan(data);
+
+        // 라벨 필터링된 데이터를 가져옴
+        const filteredPlan = filterPlanByLabels(data, selectedLabels);
+        setPlan(filteredPlan);
       } catch (err) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
     })();
-  }, [selectedLabels]);
-
-  useEffect(() => {
-    if (plan) {
-      const updatedTabs = plan.tabs.map((tab) => ({
-        ...tab,
-        tasks: tab!.tasks!.filter((task) =>
-          task.labels.some((label) => {
-            console.log(selectedLabels, label.value, selectedLabels.includes(label.value));
-            return selectedLabels.includes(label.value);
-          }),
-        ),
-      }));
-      console.log('필터링된 플랜:', { ...plan, tabs: updatedTabs });
-      setPlan({ ...plan, tabs: updatedTabs });
-    }
   }, [selectedLabels]);
 
   const handleAddTab = () => {
@@ -253,21 +258,6 @@ function Plan() {
       }
       return [...prev, clickedLabel];
     });
-
-    // if (plan) {
-    //   const updatedTabs = plan.tabs.map((tab) => ({
-    //     ...tab,
-    //     tasks: tab!.tasks!.filter((task) =>
-    //       task.labels.some((label) => {
-    //         console.log(selectedLabels, label.value);
-    //         console.log(selectedLabels.includes(label.value));
-    //         return selectedLabels.includes(label.value);
-    //       }),
-    //     ),
-    //   }));
-    //   console.log('필터링된 플랜:', { ...plan, tabs: updatedTabs });
-    //   setPlan({ ...plan, tabs: updatedTabs });
-    // }
   };
 
   return (
