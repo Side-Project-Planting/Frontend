@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface LabelFiLterProps {
-  labelList: { value: number; label: string }[];
+  labelList: { id: number; value: string }[];
   selectedLabels: number[];
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -44,16 +44,16 @@ export default function LabelFilter({ labelList, selectedLabels, onChange }: Lab
       <h1>레이블</h1>
       <LabelList>
         {labelList.map((item) => (
-          <li key={item.value}>
-            <label htmlFor={`label-${item.value}`}>
+          <li key={item.id}>
+            <label htmlFor={`label-${item.id}`}>
               <input
                 type="checkbox"
-                id={`label-${item.value}`}
-                value={item.value}
-                checked={selectedLabels.includes(item.value)}
+                id={`label-${item.id}`}
+                value={item.id}
+                checked={selectedLabels.includes(item.id)}
                 onChange={onChange}
               />
-              {item.label}
+              {item.value}
             </label>
           </li>
         ))}

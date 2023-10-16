@@ -12,8 +12,8 @@ import { Tab, TasksContainer } from '@components/Tab';
 import useModal from '@hooks/useModal';
 
 interface Label {
-  value: number;
-  label: string;
+  id: number;
+  value: string;
 }
 
 interface TaskType {
@@ -182,8 +182,8 @@ function Plan() {
       ...tab,
       tasks: tab.tasks?.filter((task) =>
         task.labels.some((label) => {
-          // console.log(selectedLabels, label.value, selectedLabels.includes(label.value));
-          return selectedLabels.includes(label.value);
+          // console.log(selectedLabels, label.id, selectedLabels.includes(label.id));
+          return selectedLabels.includes(label.id);
         }),
       ),
     }));
@@ -248,7 +248,6 @@ function Plan() {
 
   const handleChangeLabel = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const clickedLabel = Number(e.target.value);
-
     setSelectedLabel((prev) => {
       if (prev.includes(clickedLabel)) {
         return prev.filter((item) => item !== clickedLabel);

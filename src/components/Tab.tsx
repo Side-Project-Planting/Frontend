@@ -4,8 +4,8 @@ import { IoIosMore } from 'react-icons/io';
 import styled from 'styled-components';
 
 interface Label {
-  value: number;
-  label: string;
+  id: number;
+  value: string;
 }
 
 type TaskType = {
