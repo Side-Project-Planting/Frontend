@@ -28,8 +28,9 @@ const LabelList = styled.ul`
   gap: 1rem;
   width: 100%;
 
-  label {
+  li {
     display: flex;
+    align-items: center;
 
     input {
       margin: 0 1rem 0 0;
@@ -40,20 +41,21 @@ const LabelList = styled.ul`
 export default function LabelFilter({ labelList, selectedLabels, onChange }: LabelFiLterProps) {
   return (
     <Container>
-      {/* TODO 라벨 필터링 */}
-      <span>레이블</span>
+      <h1>레이블</h1>
       <LabelList>
         {labelList.map((item) => (
-          <label key={item.value} htmlFor={`label-${item.value}`}>
-            <input
-              type="checkbox"
-              id={`label-${item.value}`}
-              value={item.value}
-              checked={selectedLabels.includes(item.value)}
-              onChange={onChange}
-            />
-            {item.label}
-          </label>
+          <li key={item.value}>
+            <label htmlFor={`label-${item.value}`}>
+              <input
+                type="checkbox"
+                id={`label-${item.value}`}
+                value={item.value}
+                checked={selectedLabels.includes(item.value)}
+                onChange={onChange}
+              />
+              {item.label}
+            </label>
+          </li>
         ))}
       </LabelList>
     </Container>

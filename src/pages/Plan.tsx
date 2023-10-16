@@ -173,16 +173,35 @@ function Plan() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
 
+  console.log(plan);
+
   useEffect(() => {
     (async () => {
       try {
+        console.log('또 가져옴');
         const data = await getPlanInfo();
         setPlan(data);
       } catch (err) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
     })();
-  }, []);
+  }, [selectedLabels]);
+
+  useEffect(() => {
+    if (plan) {
+      const updatedTabs = plan.tabs.map((tab) => ({
+        ...tab,
+        tasks: tab!.tasks!.filter((task) =>
+          task.labels.some((label) => {
+            console.log(selectedLabels, label.value, selectedLabels.includes(label.value));
+            return selectedLabels.includes(label.value);
+          }),
+        ),
+      }));
+      console.log('필터링된 플랜:', { ...plan, tabs: updatedTabs });
+      setPlan({ ...plan, tabs: updatedTabs });
+    }
+  }, [selectedLabels]);
 
   const handleAddTab = () => {
     setIsAddingTab(true);
@@ -225,13 +244,30 @@ function Plan() {
     // TODO 탭 정보 수정 및 삭제
   };
 
-  const handleChangeLabel = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeLabel = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const clickedLabel = Number(e.target.value);
-    if (selectedLabels.includes(clickedLabel)) {
-      setSelectedLabel(selectedLabels.filter((item) => item !== clickedLabel));
-      return;
-    }
-    setSelectedLabel([...selectedLabels, clickedLabel]);
+
+    setSelectedLabel((prev) => {
+      if (prev.includes(clickedLabel)) {
+        return prev.filter((item) => item !== clickedLabel);
+      }
+      return [...prev, clickedLabel];
+    });
+
+    // if (plan) {
+    //   const updatedTabs = plan.tabs.map((tab) => ({
+    //     ...tab,
+    //     tasks: tab!.tasks!.filter((task) =>
+    //       task.labels.some((label) => {
+    //         console.log(selectedLabels, label.value);
+    //         console.log(selectedLabels.includes(label.value));
+    //         return selectedLabels.includes(label.value);
+    //       }),
+    //     ),
+    //   }));
+    //   console.log('필터링된 플랜:', { ...plan, tabs: updatedTabs });
+    //   setPlan({ ...plan, tabs: updatedTabs });
+    // }
   };
 
   return (
@@ -269,7 +305,9 @@ function Plan() {
           </UtilContainer>
         </TopContainer>
         <TabGroup>
-          {plan?.tabs?.map((item) => <Tab key={item.id} title={item.title!} onEdit={editTabInfo} />)}
+          {plan?.tabs?.map((item) => (
+            <Tab key={item.id} title={item.title!} onEdit={editTabInfo} tasks={item.tasks!} />
+          ))}
           {isAddingTab && (
             <TabWrapper>
               <input

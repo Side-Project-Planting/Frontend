@@ -3,9 +3,32 @@ import React from 'react';
 import { IoIosMore } from 'react-icons/io';
 import styled from 'styled-components';
 
-type Props = {
+interface Label {
+  value: number;
+  label: string;
+}
+
+type TaskType = {
+  title: string;
+  labels: Label[];
+  assignee: string;
+  order: number;
+};
+
+type TabProps = {
+  title: string;
+  tasks: TaskType[];
+  onEdit: () => void;
+};
+
+type TabHeaderProps = {
   title: string;
   onEdit: () => void;
+};
+
+type TaskContainerProps = {
+  // eslint-disable-next-line react/require-default-props
+  tasks?: TaskType[];
 };
 
 const Wrapper = styled.li`
@@ -52,7 +75,7 @@ const AddButton = styled.button`
   transform: translateX(-50%);
 `;
 
-function TabHeader({ title, onEdit }: Props) {
+function TabHeader({ title, onEdit }: TabHeaderProps) {
   return (
     <Header>
       <span className="planTitle">{title}</span>
@@ -63,10 +86,11 @@ function TabHeader({ title, onEdit }: Props) {
   );
 }
 
-export function TasksContainer() {
+export function TasksContainer({ tasks }: TaskContainerProps) {
   return (
     <Container>
       {/* TODO 할일 칸반 리스트 */}
+      {tasks?.map((item) => <span key={item.order}>{item.title}</span>)}
       {/* TODO 할일 drag&drop */}
       <AddButton type="button" className="add">
         {/* TODO 클릭시 일정 추가(모달) */}
@@ -76,11 +100,11 @@ export function TasksContainer() {
   );
 }
 
-export function Tab({ title, onEdit }: Props) {
+export function Tab({ title, tasks, onEdit }: TabProps) {
   return (
     <Wrapper>
       <TabHeader title={title} onEdit={onEdit} />
-      <TasksContainer />
+      <TasksContainer tasks={tasks} />
     </Wrapper>
   );
 }
