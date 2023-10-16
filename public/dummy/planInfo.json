@@ -82,5 +82,6 @@
              }
           ]
        }
-    ]
+    ],
+    "labels": [{"value":1,"label":"개발도서"}, {"value":2,"label":"코테"},{"value":3,"label":"이력서"}]
  }

@@ -42,6 +42,7 @@ interface PlanType {
   isPublic: boolean;
   members: MemberType[];
   tabs: TabType[];
+  labels: Label[];
 }
 
 const Wrapper = styled.main`
@@ -162,12 +163,6 @@ const planNameList = [
   { id: 4, name: 'Team Plan3' },
 ];
 
-const labelList = [
-  { value: 1, label: '개발도서' },
-  { value: 2, label: '코테' },
-  { value: 3, label: '이력서' },
-];
-
 function Plan() {
   const [plan, setPlan] = useState<PlanType>();
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
@@ -278,7 +273,7 @@ function Plan() {
             </li>
           ))}
         </PlanCategory>
-        <LabelFilter labelList={labelList} selectedLabels={selectedLabels} onChange={handleChangeLabel} />
+        <LabelFilter labelList={plan?.labels || []} selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
         {/* TODO 멤버 필터링 */}
