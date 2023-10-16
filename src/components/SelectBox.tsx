@@ -32,6 +32,7 @@ const SelectOptions = styled.ul`
   padding: 0;
   border-radius: 8px;
   background-color: #fafafa;
+  z-index: 100;
 `;
 
 const Option = styled.li`

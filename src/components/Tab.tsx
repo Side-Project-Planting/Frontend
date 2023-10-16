@@ -6,6 +6,16 @@ import styled from 'styled-components';
 type Props = {
   title: string;
   onEdit: () => void;
+  onClickHandler: () => void;
+};
+
+type TabHeaderProps = {
+  title: string;
+  onEdit: () => void;
+};
+
+type TasksContainerProps = {
+  onClickHandler: () => void;
 };
 
 const Wrapper = styled.li`
@@ -52,7 +62,7 @@ const AddButton = styled.button`
   transform: translateX(-50%);
 `;
 
-function TabHeader({ title, onEdit }: Props) {
+function TabHeader({ title, onEdit }: TabHeaderProps) {
   return (
     <Header>
       <span className="planTitle">{title}</span>
@@ -63,12 +73,12 @@ function TabHeader({ title, onEdit }: Props) {
   );
 }
 
-export function TasksContainer() {
+export function TasksContainer({ onClickHandler }: TasksContainerProps) {
   return (
     <Container>
       {/* TODO 할일 칸반 리스트 */}
       {/* TODO 할일 drag&drop */}
-      <AddButton type="button" className="add">
+      <AddButton type="button" className="add" onClick={onClickHandler}>
         {/* TODO 클릭시 일정 추가(모달) */}
         Add Item
       </AddButton>
@@ -76,11 +86,11 @@ export function TasksContainer() {
   );
 }
 
-export function Tab({ title, onEdit }: Props) {
+export function Tab({ title, onEdit, onClickHandler }: Props) {
   return (
     <Wrapper>
       <TabHeader title={title} onEdit={onEdit} />
-      <TasksContainer />
+      <TasksContainer onClickHandler={onClickHandler} />
     </Wrapper>
   );
 }
