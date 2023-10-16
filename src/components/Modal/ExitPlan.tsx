@@ -29,6 +29,7 @@ export default function ExitPlanModal({ description, members, requestAPI, onClos
     return { value: member[1], label: member[0] };
   });
 
+  // eslint-disable-next-line
   console.log(admin);
 
   return (

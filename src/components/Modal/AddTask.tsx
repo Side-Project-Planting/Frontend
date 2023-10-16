@@ -19,7 +19,8 @@ const FormContainer = styled.form`
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  justify-content: center;
+  gap: 1.5rem;
 `;
 
 const InputField = styled.div`
@@ -65,7 +66,7 @@ const AssigneeField = styled.div`
 const DeadlineField = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.5rem;
 
   .deadline-label {
     display: flex;
@@ -203,7 +204,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
   );
   const [endDate, setEndDate] = useState<string>(startDate);
   const [searchedLabels, setSearchedLabels] = useState<string[]>(allLabels);
-  const [selectedLabels, setSelectedLabels] = useState<string[]>(['label1', 'label2']);
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   // TODO: 새로 추가된 라벨들을 서버에 따로 보내줘야하지 않을까 해서 만든 상태
   // const [newLabels, setNewLabels] = useState<string[]>([]);
   const [showSearchLabel, setShowSearchLabel] = useState<boolean>(false);
@@ -232,16 +233,17 @@ export default function AddTaskModal({ members, allLabels }: Props) {
     else setSearchedLabels(allLabels.filter((label) => label.includes(e.currentTarget.value)));
   };
 
-  const isIncludeInSelectedLabels = (currentLabel: string) => {
-    return selectedLabels.includes(currentLabel);
+  const isIncludeIn = (labelArr: string[], currentLabel: string) => {
+    return labelArr.includes(currentLabel);
   };
 
   const addLabel = (currentLabel: string) => {
-    if (isIncludeInSelectedLabels(currentLabel)) {
+    if (isIncludeIn(selectedLabels, currentLabel)) {
+      // eslint-disable-next-line
       alert('이미 등록된 레이블입니다!');
       return;
     }
-    allLabels.push(currentLabel);
+    if (isIncludeIn(allLabels, currentLabel) === false) allLabels.push(currentLabel);
     setSearchedLabels(allLabels);
     setSelectedLabels([...selectedLabels, currentLabel]);
     labelInput.current!.value = '';
@@ -264,6 +266,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
       if (labelInput.current === null) return;
       if (labelInput.current.value.length === 0) {
         if (searchedLabelIdx < 0) {
+          // eslint-disable-next-line
           alert('최소 1글자 이상 입력해주세요!');
           return;
         }
@@ -295,6 +298,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
       dateRange: checkDeadline ? [null, null] : [startDate, endDate],
       selectedLabels,
     };
+    // eslint-disable-next-line
     console.log(requestData);
   };
 

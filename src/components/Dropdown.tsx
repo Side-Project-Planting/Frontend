@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 
 import styled from 'styled-components';
 
-import defaultProfileImg from '@assets/images/boardIllust.svg';
+import defaultProfileImg from '@assets/images/defaultProfileImg.svg';
 
 type DropdownOption = {
   id: number;
@@ -31,6 +31,7 @@ const DropdownList = styled.ul`
   align-items: center;
   border: 1px solid #efefef;
   border-radius: 8px;
+  background-color: white;
 `;
 
 const DropdownItem = styled.li`

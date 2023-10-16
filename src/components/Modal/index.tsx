@@ -21,7 +21,7 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalWrapper = styled.div<{ type: string }>`
-  padding: 4rem 2.5rem;
+  padding: 3rem 2.5rem;
   width: ${(props) => (props.type === 'addTask' ? '56' : '32')}rem;
   height: ${(props) => (props.type === 'addTask' ? '32' : '18')}rem;
   background: rgba(255, 255, 255, 1);

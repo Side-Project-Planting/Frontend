@@ -19,16 +19,21 @@ type TabProps = {
   title: string;
   tasks: TaskType[];
   onEdit: () => void;
+  onClickHandler: () => void;
 };
 
 type TabHeaderProps = {
   title: string;
   onEdit: () => void;
+  // eslint-disable-next-line react/no-unused-prop-types, react/require-default-props
+  onClickHandler?: () => void;
 };
 
 type TaskContainerProps = {
   // eslint-disable-next-line react/require-default-props
   tasks?: TaskType[];
+  // eslint-disable-next-line react/require-default-props
+  onClickHandler?: () => void;
 };
 
 const Wrapper = styled.li`
@@ -86,13 +91,13 @@ function TabHeader({ title, onEdit }: TabHeaderProps) {
   );
 }
 
-export function TasksContainer({ tasks }: TaskContainerProps) {
+export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
   return (
     <Container>
       {/* TODO 할일 칸반 리스트 */}
       {tasks?.map((item) => <span key={item.order}>{item.title}</span>)}
       {/* TODO 할일 drag&drop */}
-      <AddButton type="button" className="add">
+      <AddButton type="button" className="add" onClick={onClickHandler}>
         {/* TODO 클릭시 일정 추가(모달) */}
         Add Item
       </AddButton>
@@ -100,11 +105,11 @@ export function TasksContainer({ tasks }: TaskContainerProps) {
   );
 }
 
-export function Tab({ title, tasks, onEdit }: TabProps) {
+export function Tab({ title, tasks, onEdit, onClickHandler }: TabProps) {
   return (
     <Wrapper>
       <TabHeader title={title} onEdit={onEdit} />
-      <TasksContainer tasks={tasks} />
+      <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>
   );
 }

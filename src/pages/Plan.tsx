@@ -9,6 +9,7 @@ import { getPlanInfo } from '@apis';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import { Tab, TasksContainer } from '@components/Tab';
+import useModal from '@hooks/useModal';
 
 interface Label {
   value: number;
@@ -169,6 +170,7 @@ function Plan() {
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { Modal, showModal, openModal, closeModal } = useModal();
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
 
   const filterPlanByLabels = (data: PlanType, labels: number[]) => {
@@ -291,7 +293,13 @@ function Plan() {
         </TopContainer>
         <TabGroup>
           {plan?.tabs?.map((item) => (
-            <Tab key={item.id} title={item.title!} onEdit={editTabInfo} tasks={item.tasks!} />
+            <Tab
+              key={item.id}
+              title={item.title!}
+              onEdit={editTabInfo}
+              tasks={item.tasks!}
+              onClickHandler={openModal}
+            />
           ))}
           {isAddingTab && (
             <TabWrapper>
@@ -304,7 +312,7 @@ function Plan() {
                 onKeyDown={handleInputKeyDown}
               />
               {/* TODO 탭 추가하다 취소하는 버튼 추가 */}
-              <TasksContainer />
+              <TasksContainer onClickHandler={openModal} />
             </TabWrapper>
           )}
           <AddTapButton onClick={handleAddTab}>
@@ -312,6 +320,17 @@ function Plan() {
           </AddTapButton>
         </TabGroup>
       </MainContainer>
+      {showModal && (
+        <Modal
+          type="addTask"
+          onClose={closeModal}
+          requestAPI={() => {
+            // TODO: 할 일 추가 API 입력
+          }}
+          members={plan?.members.map((member) => [member.name, member.id.toString()])}
+          allLabels={plan?.labels}
+        />
+      )}
     </Wrapper>
   );
 }
