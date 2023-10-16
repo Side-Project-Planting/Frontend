@@ -31,6 +31,7 @@ const DropdownList = styled.ul`
   align-items: center;
   border: 1px solid #efefef;
   border-radius: 8px;
+  background-color: white;
 `;
 
 const DropdownItem = styled.li`
