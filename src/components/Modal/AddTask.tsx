@@ -19,7 +19,8 @@ const FormContainer = styled.form`
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  justify-content: center;
+  gap: 1.5rem;
 `;
 
 const InputField = styled.div`
@@ -65,7 +66,7 @@ const AssigneeField = styled.div`
 const DeadlineField = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.5rem;
 
   .deadline-label {
     display: flex;
