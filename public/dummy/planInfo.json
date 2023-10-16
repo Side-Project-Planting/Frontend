@@ -37,7 +37,7 @@
              {
                 "title":"이펙티브 완독",
                 "labels":[
-                   "개발도서"
+                   {"value": 1, "label":"개발도서"}
                 ],
                 "assignee":"허준영",
                 "order":0
@@ -52,7 +52,7 @@
              {
                 "title":"타입스크립트 Chap1",
                 "labels":[
-                   "개발도서"
+                  {"value": 1, "label":"개발도서"}
                 ],
                 "assignee":"허준영",
                 "order":0
@@ -60,7 +60,7 @@
              {
                 "title":"백준 삼성 기출",
                 "labels":[
-                   "코테"
+                  {"value": 2, "label":"코테"}
                 ],
                 "assignee":"허준영",
                 "order":1
@@ -75,7 +75,7 @@
              {
                 "title":"NC SOFT 서류 제출",
                 "labels":[
-                   "이력서"
+                  {"value": 3, "label":"이력서"}
                 ],
                 "assignee":"허준영",
                 "order":0

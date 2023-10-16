@@ -10,9 +10,14 @@ import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import { Tab, TasksContainer } from '@components/Tab';
 
+interface Label {
+  value: number;
+  label: string;
+}
+
 type TaskType = {
   title: string;
-  labels: string[];
+  labels: Label[];
   assignee: string;
   order: number;
 };
@@ -154,12 +159,19 @@ const planNameList = [
   { id: 4, name: 'Team Plan3' },
 ];
 
+const labelList = [
+  { value: 1, label: '개발도서' },
+  { value: 2, label: '코테' },
+  { value: 3, label: '이력서' },
+];
+
 function Plan() {
   const [plan, setPlan] = useState<PlanType>();
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -213,6 +225,15 @@ function Plan() {
     // TODO 탭 정보 수정 및 삭제
   };
 
+  const handleChangeLabel = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const clickedLabel = Number(e.target.value);
+    if (selectedLabels.includes(clickedLabel)) {
+      setSelectedLabel(selectedLabels.filter((item) => item !== clickedLabel));
+      return;
+    }
+    setSelectedLabel([...selectedLabels, clickedLabel]);
+  };
+
   return (
     <Wrapper>
       <SideContainer>
@@ -231,8 +252,7 @@ function Plan() {
             </li>
           ))}
         </PlanCategory>
-        <LabelFilter />
-        {/* TODO 라벨 필터링 */}
+        <LabelFilter labelList={labelList} selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
         {/* TODO 멤버 필터링 */}
