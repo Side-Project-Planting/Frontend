@@ -232,16 +232,16 @@ export default function AddTaskModal({ members, allLabels }: Props) {
     else setSearchedLabels(allLabels.filter((label) => label.includes(e.currentTarget.value)));
   };
 
-  const isIncludeInSelectedLabels = (currentLabel: string) => {
-    return selectedLabels.includes(currentLabel);
+  const isIncludeIn = (labelArr: string[], currentLabel: string) => {
+    return labelArr.includes(currentLabel);
   };
 
   const addLabel = (currentLabel: string) => {
-    if (isIncludeInSelectedLabels(currentLabel)) {
+    if (isIncludeIn(selectedLabels, currentLabel)) {
       alert('이미 등록된 레이블입니다!');
       return;
     }
-    allLabels.push(currentLabel);
+    if (isIncludeIn(allLabels, currentLabel) === false) allLabels.push(currentLabel);
     setSearchedLabels(allLabels);
     setSelectedLabels([...selectedLabels, currentLabel]);
     labelInput.current!.value = '';
