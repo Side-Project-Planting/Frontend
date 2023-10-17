@@ -9,6 +9,7 @@ interface Label {
 }
 
 type TaskType = {
+  id: number;
   title: string;
   labels: Label[];
   assignee: string;
