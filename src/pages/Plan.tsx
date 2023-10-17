@@ -18,16 +18,15 @@ interface Label {
 
 interface TaskType {
   title: string;
+  tabId: number;
   labels: Label[];
-  assignee: string;
+  assigneeId: number;
   order: number;
 }
 
 interface TabType {
   id: number;
-  title?: string;
-  order?: number;
-  tasks?: TaskType[];
+  title: string;
 }
 
 interface MemberType {
@@ -42,8 +41,16 @@ interface PlanType {
   description: string;
   isPublic: boolean;
   members: MemberType[];
-  tabs: TabType[];
+  tabOrder: number[];
+  tabs: TabType[] | ArrangedTab[];
   labels: Label[];
+  tasks: TaskType[];
+}
+
+interface ArrangedTab {
+  id: number;
+  title: string;
+  tasks?: TaskType[];
 }
 
 const Wrapper = styled.main`
@@ -174,21 +181,42 @@ function Plan() {
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
 
   const filterPlanByLabels = (data: PlanType, labels: number[]) => {
-    if (!data || !labels || labels.length === 0) {
-      return data;
-    }
+    // if (!data || !labels || labels.length === 0) {
+    //   console.log('뭐야');
+    //   return data;
+    // }
 
-    const updatedTabs = data.tabs.map((tab) => ({
-      ...tab,
-      tasks: tab.tasks?.filter((task) =>
-        task.labels.some((label) => {
-          // console.log(selectedLabels, label.id, selectedLabels.includes(label.id));
-          return selectedLabels.includes(label.id);
-        }),
-      ),
-    }));
+    const tabIndex: Record<number, ArrangedTab> = {};
+    data.tabs.forEach((tab) => {
+      tabIndex[tab.id] = { ...tab, tasks: [] };
+    });
 
-    return { ...data, tabs: updatedTabs };
+    // Group tasks by tabId
+    data.tasks.forEach((task) => {
+      const tab = tabIndex[task.tabId];
+      if (tab) {
+        tab.tasks!.push(task);
+      }
+    });
+
+    const arrangedTabs = data.tabOrder.map((tabId) => {
+      const tab = tabIndex[tabId];
+      return tab;
+    });
+
+    console.log(labels);
+    // const updatedTabs = data.tabs.map((tab) => ({
+    //   ...tab,
+    //   tasks: tab.tasks?.filter((task) =>
+    //     task.labels.some((label) => {
+    //       // console.log(selectedLabels, label.id, selectedLabels.includes(label.id));
+    //       return selectedLabels.includes(label.id);
+    //     }),
+    //   ),
+    // }));
+
+    // return { ...data, tabs: updatedTabs };
+    return { ...data, tabs: arrangedTabs };
   };
 
   useEffect(() => {
@@ -296,7 +324,7 @@ function Plan() {
               key={item.id}
               title={item.title!}
               onEdit={editTabInfo}
-              tasks={item.tasks!}
+              tasks={(item as ArrangedTab).tasks!}
               onClickHandler={openModal}
             />
           ))}
