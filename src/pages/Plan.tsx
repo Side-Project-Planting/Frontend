@@ -264,8 +264,13 @@ function Plan() {
     // TODO newTabTitle===""일떄 enter를 누르면 탭 추가 취소
   };
 
-  const editTabInfo = () => {
-    // TODO 탭 정보 수정 및 삭제
+  const deleteTabById = (tabId: number) => {
+    if (plan) {
+      const updatedTabOrder = plan.tabOrder.filter((item) => item !== tabId);
+      const updatedPlan = { ...plan, tabOrder: updatedTabOrder, tabs: plan.tabs.filter((tab) => tab.id !== tabId) };
+      setPlan(updatedPlan);
+      // TODO: 서버에 tabId로 삭제 요청
+    }
   };
 
   const handleChangeLabel = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -317,7 +322,7 @@ function Plan() {
             <Tab
               key={item.id}
               title={item.title!}
-              onEdit={editTabInfo}
+              onEdit={() => deleteTabById(item.id)}
               tasks={(item as ArrangedTab).tasks!}
               onClickHandler={openModal}
             />
