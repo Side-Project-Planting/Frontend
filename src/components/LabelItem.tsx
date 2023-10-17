@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { hashStringToColor } from '@utils';
 
-const LabelItem = styled.li<{ height: number; color: string }>`
+const LabelContainer = styled.li<{ height: number; color: string }>`
   list-style: none;
   position: relative;
   padding: 0.5rem 1rem;
@@ -34,25 +34,24 @@ const LabelItem = styled.li<{ height: number; color: string }>`
   }
 `;
 
-// TODO: Label이라는 interface가 존재하는데 이름을 다시 정해야 함
-interface LabelInfo {
+interface Label {
   id: number;
   value: string;
 }
 
 interface Props {
   height: number;
-  labelInfo: LabelInfo;
+  labelInfo: Label;
   deleteHandler: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-export default function Label({ height, labelInfo, deleteHandler }: Props) {
+export default function LabelItem({ height, labelInfo, deleteHandler }: Props) {
   return (
-    <LabelItem id={labelInfo.id.toString()} height={height} color={hashStringToColor(labelInfo.id.toString())}>
+    <LabelContainer id={labelInfo.id.toString()} height={height} color={hashStringToColor(labelInfo.id.toString())}>
       <span>{labelInfo.value}</span>
       <button id={`delete-${labelInfo.value}`} type="button" onClick={deleteHandler}>
         <IoClose />
       </button>
-    </LabelItem>
+    </LabelContainer>
   );
 }

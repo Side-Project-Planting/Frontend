@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 
 import styled from 'styled-components';
 
-import Label from '@components/Label';
+import LabelItem from '@components/LabelItem';
 
 const LabelsWrapper = styled.div`
   position: relative;
@@ -148,7 +148,12 @@ export default function LabelInput({ allLabels, alreadySelected, selectedLabelsH
         <LabelsContainer>
           <ul id="labels">
             {selected.map((label, idx) => (
-              <Label key={label} height={2} labelInfo={{ id: idx, value: label }} deleteHandler={onClickDeleteLabel} />
+              <LabelItem
+                key={label}
+                height={2}
+                labelInfo={{ id: idx, value: label }}
+                deleteHandler={onClickDeleteLabel}
+              />
             ))}
             <input
               id="task-label-input"
