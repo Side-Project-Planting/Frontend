@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { IoClose } from 'react-icons/io5';
 import { PiClockFill } from 'react-icons/pi';
 import { RiInfinityLine } from 'react-icons/ri';
 import styled from 'styled-components';
@@ -7,6 +8,7 @@ import styled from 'styled-components';
 import { hashStringToColor } from '@utils';
 
 const ItemWrapper = styled.div`
+  position: relative;
   padding: 1rem;
   width: 18rem;
   min-height: 8rem;
@@ -21,8 +23,22 @@ const ItemWrapper = styled.div`
     word-wrap: break-word;
   }
 
+  button {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: #f44336;
+  }
+
   &:hover {
     background-color: #ececec;
+  }
+
+  &:hover button {
+    display: flex;
   }
 `;
 
@@ -81,6 +97,9 @@ interface Props {
 export default function TaskItem({ task }: Props) {
   return (
     <ItemWrapper>
+      <button type="button">
+        <IoClose size={20} />
+      </button>
       <p id="task-title">{task.title}</p>
       <LabelField>
         {task.labels.map((label) => (
