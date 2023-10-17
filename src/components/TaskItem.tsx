@@ -1,8 +1,7 @@
 import React from 'react';
 
-import { IoClose } from 'react-icons/io5';
+import { IoClose, IoInfinite } from 'react-icons/io5';
 import { PiClockFill } from 'react-icons/pi';
-import { RiInfinityLine } from 'react-icons/ri';
 import styled from 'styled-components';
 
 import { hashStringToColor } from '@utils';
@@ -66,6 +65,7 @@ const DateField = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  justify-content: center;
   font-size: 0.7rem;
   line-height: 110%;
 
@@ -121,7 +121,7 @@ export default function TaskItem({ task }: Props) {
             </>
           ) : (
             <div className="date-infinity">
-              <RiInfinityLine size={24} />
+              <IoInfinite size={24} color="#1C2A4B" />
             </div>
           )}
         </DateField>
