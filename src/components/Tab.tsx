@@ -3,6 +3,8 @@ import React from 'react';
 import { IoIosMore } from 'react-icons/io';
 import styled from 'styled-components';
 
+import TaskItem from './TaskItem';
+
 interface Label {
   id: number;
   value: string;
@@ -14,6 +16,7 @@ type TaskType = {
   labels: Label[];
   assignee: string;
   order: number;
+  dateRange: null | string[];
 };
 
 type TabProps = {
@@ -60,12 +63,17 @@ const Header = styled.div`
 `;
 
 const Container = styled.div`
-  width: 19rem;
+  width: 20rem;
   height: calc(100% - 2rem);
   padding: 1rem;
   border-radius: 1.1rem;
   background-color: #ffffff;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  overflow: auto;
 `;
 
 const AddButton = styled.button`
@@ -96,7 +104,8 @@ export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
   return (
     <Container>
       {/* TODO 할일 칸반 리스트 */}
-      {tasks?.map((item) => <span key={item.order}>{item.title}</span>)}
+      {/* {tasks?.map((item) => <span key={item.order}>{item.title}</span>)} */}
+      {tasks?.map((task) => <TaskItem key={task.id} task={task} />)}
       {/* TODO 할일 drag&drop */}
       <AddButton type="button" className="add" onClick={onClickHandler}>
         {/* TODO 클릭시 일정 추가(모달) */}

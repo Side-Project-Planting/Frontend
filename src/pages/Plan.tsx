@@ -22,6 +22,7 @@ interface TaskType {
   labels: Label[];
   assignee: string;
   order: number;
+  dateRange: null | string[];
 }
 
 interface TabType {
