@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { IoIosMore } from 'react-icons/io';
 import styled from 'styled-components';
+
+import Dropdown from './Dropdown';
 
 interface Label {
   id: number;
@@ -49,13 +50,10 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 
   .planTitle {
     font-size: 1.126rem;
-  }
-
-  .icon {
-    cursor: pointer;
   }
 `;
 
@@ -82,12 +80,12 @@ const AddButton = styled.button`
 `;
 
 function TabHeader({ title, onEdit }: TabHeaderProps) {
+  const tabEditOptions = [{ id: 1, label: '삭제', value: 'delete' }];
+
   return (
     <Header>
       <span className="planTitle">{title}</span>
-      <button type="button" className="icon" onClick={onEdit}>
-        <IoIosMore size="24" />
-      </button>
+      <Dropdown type="tab" options={tabEditOptions} onClick={onEdit} />
     </Header>
   );
 }

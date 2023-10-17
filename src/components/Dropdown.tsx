@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 
+import { IoIosMore } from 'react-icons/io';
 import styled from 'styled-components';
 
 import defaultProfileImg from '@assets/images/defaultProfileImg.svg';
@@ -11,8 +12,19 @@ type DropdownOption = {
 };
 
 type DropdownProp = {
+  type: 'header' | 'tab';
   options: DropdownOption[];
+  onClick: () => void;
 };
+
+const Container = styled.div<{ type: string }>`
+  ${(props) =>
+    props.type === 'tab' &&
+    `
+      position: absolute;
+      right: 0.8rem;
+  `}
+`;
 
 const ProfileImg = styled.img`
   width: 50px;
@@ -22,7 +34,9 @@ const ProfileImg = styled.img`
   cursor: pointer;
 `;
 
-const DropdownList = styled.ul`
+const EditButton = styled.button``;
+
+const DropdownList = styled.ul<{ type: string }>`
   position: absolute;
   top: 80px;
   right: 38px;
@@ -32,6 +46,14 @@ const DropdownList = styled.ul`
   border: 1px solid #efefef;
   border-radius: 8px;
   background-color: white;
+  ${(props) =>
+    props.type === 'tab' &&
+    `
+    width: 5rem;
+    top: 2rem;
+    right: -0.8rem;
+    z-index: 10;
+  `}
 `;
 
 const DropdownItem = styled.li`
@@ -45,7 +67,7 @@ const DropdownItem = styled.li`
   }
 `;
 
-function Dropdown({ options }: DropdownProp) {
+function Dropdown({ type, options, onClick }: DropdownProp) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -59,8 +81,10 @@ function Dropdown({ options }: DropdownProp) {
     }
   };
 
-  const handleOptionClick = () => {
+  const handleOptionClick = (value: string) => {
     setIsOpen(false);
+
+    if (value === 'delete') onClick();
   };
 
   useEffect(() => {
@@ -71,18 +95,23 @@ function Dropdown({ options }: DropdownProp) {
   }, []);
 
   return (
-    <div ref={dropdownRef}>
-      <ProfileImg src={defaultProfileImg} alt="profile-img" onClick={toggleDropdown} />
+    <Container ref={dropdownRef} type={type}>
+      {type === 'header' && <ProfileImg src={defaultProfileImg} alt="profile-img" onClick={toggleDropdown} />}
+      {type === 'tab' && (
+        <EditButton onClick={toggleDropdown}>
+          <IoIosMore size="24" />
+        </EditButton>
+      )}
       {isOpen && (
-        <DropdownList>
+        <DropdownList type={type}>
           {options.map((option: DropdownOption) => (
-            <DropdownItem key={option.id} onClick={handleOptionClick}>
+            <DropdownItem key={option.id} onClick={() => handleOptionClick(option.value)}>
               {option.label}
             </DropdownItem>
           ))}
         </DropdownList>
       )}
-    </div>
+    </Container>
   );
 }
 
