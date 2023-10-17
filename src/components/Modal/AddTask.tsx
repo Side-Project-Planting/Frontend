@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import styled from 'styled-components';
+import { MemberType } from 'types';
 
 import { ReactComponent as DeadlineDate } from '@assets/images/deadlineCheck.svg';
 import { ReactComponent as StartDate } from '@assets/images/startDate.svg';
@@ -98,7 +99,7 @@ const DeadlineField = styled.div`
 `;
 
 interface Props {
-  members: string[][];
+  members: MemberType[];
   allLabels: string[];
 }
 
@@ -115,7 +116,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
 
   const options = members.map((member) => {
-    return { value: member[1], label: member[0] };
+    return { value: member.id.toString(), label: member.name };
   });
 
   const changeStartDate = (e: React.ChangeEvent<HTMLInputElement>) => {

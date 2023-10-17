@@ -334,7 +334,7 @@ function Plan() {
           requestAPI={() => {
             // TODO: 할 일 추가 API 입력
           }}
-          members={plan?.members.map((member) => [member.name, member.id.toString()])}
+          members={plan?.members}
           allLabels={['개발도서', '코테', '이력서']}
         />
       )}

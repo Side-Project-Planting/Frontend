@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import styled from 'styled-components';
+import { MemberType } from 'types';
 
 import { ModalButton, ModalButtonContainer, ModalDescription } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
@@ -17,7 +18,7 @@ const SelectAdminText = styled.p`
 
 interface ExitPlanProps {
   description: string;
-  members: string[][];
+  members: MemberType[];
   requestAPI: () => void;
   onClose: () => void;
 }
@@ -26,7 +27,7 @@ interface ExitPlanProps {
 export default function ExitPlanModal({ description, members, requestAPI, onClose }: ExitPlanProps) {
   const [admin, setAdmin] = useState<string>('');
   const options = members.map((member) => {
-    return { value: member[1], label: member[0] };
+    return { value: member.id.toString(), label: member.name };
   });
 
   // eslint-disable-next-line
