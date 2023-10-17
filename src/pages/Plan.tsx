@@ -11,32 +11,40 @@ import MemberFilter from '@components/MemberFilter';
 import { Tab, TasksContainer } from '@components/Tab';
 import useModal from '@hooks/useModal';
 
-type TaskType = {
+interface Label {
+  id: number;
+  value: string;
+}
+
+interface TaskType {
   title: string;
-  labels: string[];
+  labels: Label[];
   assignee: string;
   order: number;
-};
-type TabType = {
+}
+
+interface TabType {
   id: number;
   title?: string;
   order?: number;
   tasks?: TaskType[];
-};
-type MemberType = {
+}
+
+interface MemberType {
   id: number;
   name: string;
   imgUrl?: string;
   isAdmin: boolean;
-};
-type PlanType = {
+}
+
+interface PlanType {
   title: string;
   description: string;
   isPublic: boolean;
   members: MemberType[];
   tabs: TabType[];
-  labels: string[];
-};
+  labels: Label[];
+}
 
 const Wrapper = styled.main`
   width: 100vw;
@@ -163,17 +171,39 @@ function Plan() {
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { Modal, showModal, openModal, closeModal } = useModal();
+  const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
+
+  const filterPlanByLabels = (data: PlanType, labels: number[]) => {
+    if (!data || !labels || labels.length === 0) {
+      return data;
+    }
+
+    const updatedTabs = data.tabs.map((tab) => ({
+      ...tab,
+      tasks: tab.tasks?.filter((task) =>
+        task.labels.some((label) => {
+          // console.log(selectedLabels, label.id, selectedLabels.includes(label.id));
+          return selectedLabels.includes(label.id);
+        }),
+      ),
+    }));
+
+    return { ...data, tabs: updatedTabs };
+  };
 
   useEffect(() => {
     (async () => {
       try {
         const data = await getPlanInfo();
-        setPlan(data);
+
+        // 라벨 필터링된 데이터를 가져옴
+        const filteredPlan = filterPlanByLabels(data, selectedLabels);
+        setPlan(filteredPlan);
       } catch (err) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
     })();
-  }, []);
+  }, [selectedLabels]);
 
   const handleAddTab = () => {
     setIsAddingTab(true);
@@ -216,6 +246,16 @@ function Plan() {
     // TODO 탭 정보 수정 및 삭제
   };
 
+  const handleChangeLabel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const clickedLabel = Number(e.target.value);
+    setSelectedLabel((prev) => {
+      if (prev.includes(clickedLabel)) {
+        return prev.filter((item) => item !== clickedLabel);
+      }
+      return [...prev, clickedLabel];
+    });
+  };
+
   return (
     <Wrapper>
       <SideContainer>
@@ -234,8 +274,7 @@ function Plan() {
             </li>
           ))}
         </PlanCategory>
-        <LabelFilter />
-        {/* TODO 라벨 필터링 */}
+        <LabelFilter labelList={plan?.labels || []} selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
         {/* TODO 멤버 필터링 */}
@@ -253,7 +292,13 @@ function Plan() {
         </TopContainer>
         <TabGroup>
           {plan?.tabs?.map((item) => (
-            <Tab key={item.id} title={item.title!} onEdit={editTabInfo} onClickHandler={openModal} />
+            <Tab
+              key={item.id}
+              title={item.title!}
+              onEdit={editTabInfo}
+              tasks={item.tasks!}
+              onClickHandler={openModal}
+            />
           ))}
           {isAddingTab && (
             <TabWrapper>
@@ -282,7 +327,7 @@ function Plan() {
             // TODO: 할 일 추가 API 입력
           }}
           members={plan?.members.map((member) => [member.name, member.id.toString()])}
-          allLabels={plan?.labels}
+          allLabels={['개발도서', '코테', '이력서']}
         />
       )}
     </Wrapper>

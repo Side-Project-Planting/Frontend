@@ -2,7 +2,13 @@ import React from 'react';
 
 import styled from 'styled-components';
 
-const Container = styled.ul`
+interface LabelFiLterProps {
+  labelList: { id: number; value: string }[];
+  selectedLabels: number[];
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const Container = styled.div`
   width: 11rem;
   height: 50%;
   border-radius: 1rem;
@@ -11,14 +17,47 @@ const Container = styled.ul`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1.5rem;
   background-color: #ffffff;
+  overflow-y: auto;
 `;
 
-export default function LabelFilter() {
+const LabelList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+
+  li {
+    display: flex;
+    align-items: center;
+
+    input {
+      margin: 0 1rem 0 0;
+    }
+  }
+`;
+
+export default function LabelFilter({ labelList, selectedLabels, onChange }: LabelFiLterProps) {
   return (
     <Container>
-      {/* TODO 라벨 필터링 */}
-      <span>레이블</span>
+      <h1>레이블</h1>
+      <LabelList>
+        {labelList.map((item) => (
+          <li key={item.id}>
+            <label htmlFor={`label-${item.id}`}>
+              <input
+                type="checkbox"
+                id={`label-${item.id}`}
+                value={item.id}
+                checked={selectedLabels.includes(item.id)}
+                onChange={onChange}
+              />
+              {item.value}
+            </label>
+          </li>
+        ))}
+      </LabelList>
     </Container>
   );
 }
