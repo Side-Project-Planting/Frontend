@@ -299,7 +299,9 @@ function Plan() {
               title={item.title!}
               onEdit={editTabInfo}
               tasks={item.tasks!}
-              onClickHandler={openModal}
+              onClickHandler={() => {
+                openModal('addTask');
+              }}
             />
           ))}
           {isAddingTab && (
@@ -313,7 +315,11 @@ function Plan() {
                 onKeyDown={handleInputKeyDown}
               />
               {/* TODO 탭 추가하다 취소하는 버튼 추가 */}
-              <TasksContainer onClickHandler={openModal} />
+              <TasksContainer
+                onClickHandler={() => {
+                  openModal('addTask');
+                }}
+              />
             </TabWrapper>
           )}
           <AddTapButton onClick={handleAddTab}>
@@ -321,9 +327,9 @@ function Plan() {
           </AddTapButton>
         </TabGroup>
       </MainContainer>
-      {showModal && (
+      {showModal === 'addTask' && (
         <Modal
-          type="addTask"
+          type={showModal}
           onClose={closeModal}
           requestAPI={() => {
             // TODO: 할 일 추가 API 입력
