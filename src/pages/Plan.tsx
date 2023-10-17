@@ -180,19 +180,25 @@ function Plan() {
   const { Modal, showModal, openModal, closeModal } = useModal();
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
 
-  const filterPlanByLabels = (data: PlanType, labels: number[]) => {
-    // if (!data || !labels || labels.length === 0) {
-    //   console.log('뭐야');
-    //   return data;
-    // }
+  const sortTabsAndFilterPlanByLabels = (data: PlanType, labels: number[]) => {
+    if (!data) {
+      return data;
+    }
 
+    let filteredByLabelTasks = data.tasks;
+
+    // 라벨 배렬의 길이가 0보다 클때만 라벨 필터링
+    if (labels.length > 0) {
+      filteredByLabelTasks = data.tasks.filter((task) => task.labels.some((label) => labels.includes(label.id)));
+    }
+
+    // {3: id=3인 탭, 1: id=1인 탭, 2:id=2인 탭}
     const tabIndex: Record<number, ArrangedTab> = {};
     data.tabs.forEach((tab) => {
       tabIndex[tab.id] = { ...tab, tasks: [] };
     });
 
-    // Group tasks by tabId
-    data.tasks.forEach((task) => {
+    filteredByLabelTasks.forEach((task) => {
       const tab = tabIndex[task.tabId];
       if (tab) {
         tab.tasks!.push(task);
@@ -204,18 +210,6 @@ function Plan() {
       return tab;
     });
 
-    console.log(labels);
-    // const updatedTabs = data.tabs.map((tab) => ({
-    //   ...tab,
-    //   tasks: tab.tasks?.filter((task) =>
-    //     task.labels.some((label) => {
-    //       // console.log(selectedLabels, label.id, selectedLabels.includes(label.id));
-    //       return selectedLabels.includes(label.id);
-    //     }),
-    //   ),
-    // }));
-
-    // return { ...data, tabs: updatedTabs };
     return { ...data, tabs: arrangedTabs };
   };
 
@@ -224,9 +218,9 @@ function Plan() {
       try {
         const data = await getPlanInfo();
 
-        // 라벨 필터링된 데이터를 가져옴
-        const filteredPlan = filterPlanByLabels(data, selectedLabels);
-        setPlan(filteredPlan);
+        // 탭 정렬 및 라벨 필터링된 데이터를 가져옴
+        const sortedTabsAndfilteredPlan = sortTabsAndFilterPlanByLabels(data, selectedLabels);
+        setPlan(sortedTabsAndfilteredPlan);
       } catch (err) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
