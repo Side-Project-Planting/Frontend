@@ -139,7 +139,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
     const requestData = {
       taskName,
       assignee,
-      dateRange: checkDeadline ? [null, null] : [startDate, endDate],
+      dateRange: checkDeadline ? [startDate, endDate] : [null, null],
       selectedLabels,
     };
     // eslint-disable-next-line
