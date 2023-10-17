@@ -1,13 +1,12 @@
 import React, { useRef, useState } from 'react';
 
-import { IoClose } from 'react-icons/io5';
 import styled from 'styled-components';
 
 import { ReactComponent as DeadlineDate } from '@assets/images/deadlineCheck.svg';
 import { ReactComponent as StartDate } from '@assets/images/startDate.svg';
+import Label from '@components/Label';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
-import { hashStringToColor } from '@utils';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -146,35 +145,6 @@ const LabelsContainer = styled.div`
   #task-label-input {
     width: 5rem;
     height: 2rem;
-  }
-`;
-
-const LabelItem = styled.li<{ color: string }>`
-  list-style: none;
-  position: relative;
-  padding: 0.5rem 1rem;
-  height: 80%;
-  border-radius: 10px;
-  color: white;
-  text-align: center;
-  line-height: 100%;
-  background-color: ${(prop) => prop.color};
-
-  button {
-    display: none;
-    width: 1rem;
-    height: 1rem;
-    position: absolute;
-    bottom: 1rem;
-    right: -0.3rem;
-    color: #f44336;
-    background-color: white;
-    border: 1px solid lightgray;
-    border-radius: 50%;
-    line-height: 110%;
-  }
-  &:hover button {
-    display: flex;
   }
 `;
 
@@ -354,13 +324,13 @@ export default function AddTaskModal({ members, allLabels }: Props) {
             <LabelsWrapper>
               <LabelsContainer>
                 <ul id="labels">
-                  {selectedLabels.map((label) => (
-                    <LabelItem key={label} color={hashStringToColor(label)}>
-                      <span>{label}</span>
-                      <button id={`delete-${label}`} type="button" onClick={onClickDeleteLabel}>
-                        <IoClose />
-                      </button>
-                    </LabelItem>
+                  {selectedLabels.map((label, idx) => (
+                    <Label
+                      key={label}
+                      height={2}
+                      labelInfo={{ id: idx, value: label }}
+                      deleteHandler={onClickDeleteLabel}
+                    />
                   ))}
                   <input
                     id="task-label-input"
