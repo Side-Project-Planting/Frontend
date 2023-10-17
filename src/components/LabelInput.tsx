@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 
 import styled from 'styled-components';
 
@@ -71,6 +71,8 @@ interface Props {
 export default function LabelInput({ allLabels, alreadySelected, selectedLabelsHandler }: Props) {
   const labelInput = useRef<HTMLInputElement>(null);
   const searchWindowRef = useRef<HTMLDivElement>(null);
+  const currentSearchedRef = useRef<HTMLButtonElement>(null);
+  // const scrollRef = useRef<HTMLButtonElement[]>([]);
   const [searched, setSearched] = useState<string[]>(allLabels);
   const [selected, setSelected] = useState<string[]>(alreadySelected);
   // TODO: 새로 추가된 라벨들을 서버에 따로 보내줘야하지 않을까 해서 만든 상태
@@ -142,6 +144,16 @@ export default function LabelInput({ allLabels, alreadySelected, selectedLabelsH
     setSelected(updateLabels);
   };
 
+  useEffect(() => {
+    const moveToSearched = () => {
+      currentSearchedRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    };
+    moveToSearched();
+  }, [searchedIdx]);
+
   return (
     <label htmlFor="task-label-input">
       레이블
@@ -178,6 +190,7 @@ export default function LabelInput({ allLabels, alreadySelected, selectedLabelsH
                   key={label}
                   type="button"
                   $isFocus={idx === searchedIdx}
+                  ref={idx === searchedIdx ? currentSearchedRef : null}
                   onMouseDown={onClickSearchedLabel}
                   onMouseOver={() => setSearchedIdx(idx)}
                   onMouseOut={() => setSearchedIdx(-1)}
