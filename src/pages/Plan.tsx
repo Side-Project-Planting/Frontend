@@ -265,7 +265,7 @@ function Plan() {
     // TODO newTabTitle===""일떄 enter를 누르면 탭 추가 취소
   };
 
-  const deleteTabById = (tabId: number) => {
+  const handleDeleteTab = (tabId: number) => {
     if (plan) {
       const updatedTabOrder = plan.tabOrder.filter((item) => item !== tabId);
       const updatedPlan = { ...plan, tabOrder: updatedTabOrder, tabs: plan.tabs.filter((tab) => tab.id !== tabId) };
@@ -323,7 +323,7 @@ function Plan() {
             <Tab
               key={item.id}
               title={item.title!}
-              onEdit={() => deleteTabById(item.id)}
+              onEdit={() => handleDeleteTab(item.id)}
               tasks={(item as ArrangedTab).tasks!}
               onClickHandler={openModal}
             />
@@ -342,8 +342,8 @@ function Plan() {
               <TasksContainer onClickHandler={openModal} />
             </TabWrapper>
           )}
-          <AddTapButton onClick={handleAddStatus}>
-            <SlPlus size={35} color="#8993A1" />
+          <AddTapButton>
+            <SlPlus size={35} color="#8993A1" onClick={handleAddStatus} />
           </AddTapButton>
         </TabGroup>
       </MainContainer>

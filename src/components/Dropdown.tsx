@@ -14,15 +14,15 @@ type DropdownOption = {
 type DropdownProp = {
   type: 'header' | 'tab';
   options: DropdownOption[];
-  onClick: () => void;
+  onClick: (value: string) => void;
 };
 
 const Container = styled.div<{ type: string }>`
   ${(props) =>
     props.type === 'tab' &&
     `
-      position: absolute;
-      right: 0.8rem;
+    position: absolute;
+    right: 0.8rem;
   `}
 `;
 
@@ -83,8 +83,8 @@ function Dropdown({ type, options, onClick }: DropdownProp) {
 
   const handleOptionClick = (value: string) => {
     setIsOpen(false);
-
-    if (value === 'delete') onClick();
+    // TODO : onClick함수가 value에 따라 다른 일을 하도록 수정
+    onClick(value);
   };
 
   useEffect(() => {
