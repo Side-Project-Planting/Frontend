@@ -41,7 +41,8 @@
                    {"id": 1, "value":"개발도서"}
                 ],
                 "assignee":"허준영",
-                "order":0
+                "order":0,
+                "dateRange": ["2023-10-20", "2023-10-27"]
              }
           ]
        },
@@ -57,7 +58,8 @@
                   {"id": 1, "value":"개발도서"}
                 ],
                 "assignee":"허준영",
-                "order":0
+                "order":0,
+                "dateRange": ["2023-10-12", "2023-10-20"]
              },
              {
                "id": 3,
@@ -66,7 +68,8 @@
                   {"id": 2, "value":"코테"}
                 ],
                 "assignee":"허준영",
-                "order":1
+                "order":1,
+                "dateRange": null
              }
           ]
        },
@@ -82,7 +85,8 @@
                   {"id": 3, "value":"이력서"}
                 ],
                 "assignee":"허준영",
-                "order":0
+                "order":0,
+                "dateRange": ["2023-10-10", "2023-10-12"]
              }
           ]
        }
