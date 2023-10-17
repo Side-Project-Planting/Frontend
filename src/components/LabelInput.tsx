@@ -115,6 +115,7 @@ export default function LabelInput({ allLabels, alreadySelected, selectedLabelsH
       setShowSearchLabel(false);
     }
     if (e.key === 'Enter') {
+      e.preventDefault();
       if (labelInput.current === null) return;
       if (labelInput.current.value.length === 0) {
         if (searchedIdx < 0) {
