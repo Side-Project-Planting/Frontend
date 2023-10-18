@@ -27,6 +27,7 @@ interface TaskType {
 interface TabType {
   id: number;
   title: string;
+  tasks?: TaskType[];
 }
 
 interface MemberType {
@@ -42,15 +43,9 @@ interface PlanType {
   isPublic: boolean;
   members: MemberType[];
   tabOrder: number[];
-  tabs: TabType[] | ArrangedTab[];
+  tabs: TabType[];
   labels: Label[];
   tasks: TaskType[];
-}
-
-interface ArrangedTab {
-  id: number;
-  title: string;
-  tasks?: TaskType[];
 }
 
 const Wrapper = styled.main`
@@ -192,7 +187,7 @@ function Plan() {
         : data.tasks;
 
     // {3: id=3인 탭, 1: id=1인 탭, 2:id=2인 탭}
-    const tabIndex: Record<number, ArrangedTab> = {};
+    const tabIndex: Record<number, TabType> = {};
     data.tabs.forEach((tab) => {
       tabIndex[tab.id] = { ...tab, tasks: [] };
     });
@@ -324,7 +319,7 @@ function Plan() {
               key={item.id}
               title={item.title!}
               onEdit={() => handleDeleteTab(item.id)}
-              tasks={(item as ArrangedTab).tasks!}
+              tasks={item.tasks!}
               onClickHandler={openModal}
             />
           ))}
