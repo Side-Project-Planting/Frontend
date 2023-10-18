@@ -34,7 +34,11 @@ const ProfileImg = styled.img`
   cursor: pointer;
 `;
 
-const EditButton = styled.button``;
+const EditButton = styled.button`
+  position: absolute;
+  top: -0.8rem;
+  right: 0;
+`;
 
 const DropdownList = styled.ul<{ type: string }>`
   position: absolute;
@@ -50,7 +54,7 @@ const DropdownList = styled.ul<{ type: string }>`
     props.type === 'tab' &&
     `
     width: 5rem;
-    top: 2rem;
+    top: 1.4rem;
     right: -0.8rem;
     z-index: 10;
   `}
