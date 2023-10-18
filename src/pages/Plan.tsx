@@ -278,7 +278,7 @@ function Plan() {
 
   const handleSaveTabTitle = (title: string) => {
     // TODO : 서버로 planId, tabId, title로 title 수정 요청 날리기
-    console.log(title);
+    return title;
   };
 
   return (
