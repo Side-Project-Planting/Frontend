@@ -20,17 +20,17 @@ type TaskType = {
 type TabProps = {
   title: string;
   tasks: TaskType[];
-  onEdit: () => void;
+  onDeleteTab: () => void;
+  onSaveTitle: (title: string) => void;
   onClickHandler: () => void;
-  onChangeTitle: (title: string) => void;
 };
 
 type TabHeaderProps = {
   initialTitle: string;
-  onEdit: () => void;
+  onDeleteTab: () => void;
   // eslint-disable-next-line react/no-unused-prop-types, react/require-default-props
   onClickHandler?: () => void;
-  onSave: (title: string) => void;
+  onSaveTitle: (title: string) => void;
 };
 
 type TaskContainerProps = {
@@ -89,7 +89,7 @@ const EditableTitle = styled.input`
   width: 100%;
 `;
 
-function TabHeader({ initialTitle, onEdit, onSave }: TabHeaderProps) {
+function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: TabHeaderProps) {
   const tabEditOptions = [{ id: 1, label: '삭제', value: 'delete' }];
   const [title, setTitle] = useState(initialTitle);
   const [isEditing, setIsEditing] = useState(false);
@@ -104,7 +104,10 @@ function TabHeader({ initialTitle, onEdit, onSave }: TabHeaderProps) {
 
   const handleSave = () => {
     setIsEditing(false);
-    onSave(title);
+    if (title.trim() === '') {
+      setTitle(initialTitle);
+    }
+    onSaveTitle(title);
   };
 
   return (
@@ -127,7 +130,7 @@ function TabHeader({ initialTitle, onEdit, onSave }: TabHeaderProps) {
           {title}
         </span>
       )}
-      <Dropdown type="tab" options={tabEditOptions} onClick={onEdit} />
+      <Dropdown type="tab" options={tabEditOptions} onClick={onDeleteTab} />
     </Header>
   );
 }
@@ -146,10 +149,10 @@ export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
   );
 }
 
-export function Tab({ title, tasks, onEdit, onClickHandler, onChangeTitle }: TabProps) {
+export function Tab({ title, tasks, onDeleteTab, onClickHandler, onSaveTitle }: TabProps) {
   return (
     <Wrapper>
-      <TabHeader initialTitle={title} onEdit={onEdit} onSave={onChangeTitle} />
+      <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
       <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>
   );

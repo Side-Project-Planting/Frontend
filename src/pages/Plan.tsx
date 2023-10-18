@@ -171,7 +171,7 @@ function Plan() {
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const { Modal, showModal, openModal, closeModal } = useModal();
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
 
@@ -221,14 +221,11 @@ function Plan() {
     fetchData();
   }, [selectedLabels]);
 
-  const handleAddStatus = () => {
+  const handleStartAddingTab = () => {
     setIsAddingTab(true);
     setNewTabTitle('');
 
-    // 탭 추가 버튼 눌렀을 때 input에 focus
-    // 연속으로 두 번쨰 누를 때만 focus가 되는 이상한 현상 있음
-    // inputRef가 처음 클릭했을 때 null이다.
-    if (inputRef?.current) {
+    if (inputRef.current) {
       inputRef.current.focus();
     }
   };
@@ -279,7 +276,8 @@ function Plan() {
     });
   };
 
-  const handleChangeTabTitle = (title: string) => {
+  const handleSaveTabTitle = (title: string) => {
+    // TODO : 서버로 planId, tabId, title로 title 수정 요청 날리기
     console.log(title);
   };
 
@@ -322,10 +320,10 @@ function Plan() {
             <Tab
               key={item.id}
               title={item.title!}
-              onEdit={() => handleDeleteTab(item.id)}
+              onDeleteTab={() => handleDeleteTab(item.id)}
               tasks={item.tasks!}
               onClickHandler={openModal}
-              onChangeTitle={handleChangeTabTitle}
+              onSaveTitle={handleSaveTabTitle}
             />
           ))}
           {isAddingTab && (
@@ -343,7 +341,7 @@ function Plan() {
             </TabWrapper>
           )}
           <AddTapButton>
-            <SlPlus size={35} color="#8993A1" onClick={handleAddStatus} />
+            <SlPlus size={35} color="#8993A1" onClick={handleStartAddingTab} />
           </AddTapButton>
         </TabGroup>
       </MainContainer>
