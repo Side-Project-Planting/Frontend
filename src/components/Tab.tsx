@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 
-import { IoIosMore } from 'react-icons/io';
 import styled from 'styled-components';
 
 import TaskItem from './TaskItem';
+import Dropdown from './Dropdown';
 
 interface Label {
   id: number;
@@ -13,8 +13,9 @@ interface Label {
 type TaskType = {
   id: number;
   title: string;
+  tabId: number;
   labels: Label[];
-  assignee: string;
+  assigneeId: number;
   order: number;
   dateRange: null | string[];
 };
@@ -22,15 +23,17 @@ type TaskType = {
 type TabProps = {
   title: string;
   tasks: TaskType[];
-  onEdit: () => void;
+  onDeleteTab: () => void;
+  onSaveTitle: (title: string) => void;
   onClickHandler: () => void;
 };
 
 type TabHeaderProps = {
-  title: string;
-  onEdit: () => void;
+  initialTitle: string;
+  onDeleteTab: () => void;
   // eslint-disable-next-line react/no-unused-prop-types, react/require-default-props
   onClickHandler?: () => void;
+  onSaveTitle: (title: string) => void;
 };
 
 type TaskContainerProps = {
@@ -44,6 +47,7 @@ const Wrapper = styled.li`
   height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   justify-content: space-between;
 `;
 
@@ -52,14 +56,24 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 
   .planTitle {
-    font-size: 1.126rem;
+    height: 2rem;
+    padding-block: 0.2rem;
+    width: calc(100% - 24px);
   }
+`;
 
-  .icon {
-    cursor: pointer;
-  }
+const EditableTitle = styled.input`
+  height: 2rem;
+  padding-inline: 0.5rem;
+  border: 1.5px solid #64d4ab;
+  border-radius: 0.5rem;
+  background: none;
+  font-size: 1rem;
+  outline: none;
+  width: 100%;
 `;
 
 const Container = styled.div`
@@ -89,13 +103,48 @@ const AddButton = styled.button`
   transform: translateX(-50%);
 `;
 
-function TabHeader({ title, onEdit }: TabHeaderProps) {
+function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: TabHeaderProps) {
+  const tabEditOptions = [{ id: 1, label: '삭제', value: 'delete' }];
+  const [title, setTitle] = useState(initialTitle);
+  const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleStartEditing = () => {
+    setIsEditing(true);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    if (title.trim() === '') {
+      setTitle(initialTitle);
+    }
+    onSaveTitle(title);
+  };
+
   return (
     <Header>
-      <span className="planTitle">{title}</span>
-      <button type="button" className="icon" onClick={onEdit}>
-        <IoIosMore size="24" />
-      </button>
+      {isEditing ? (
+        <EditableTitle
+          type="text"
+          ref={inputRef}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onBlur={handleSave}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSave();
+            }
+          }}
+        />
+      ) : (
+        <div className="planTitle" onClick={handleStartEditing} aria-hidden>
+          {title}
+        </div>
+      )}
+      <Dropdown type="tab" options={tabEditOptions} onClick={onDeleteTab} />
     </Header>
   );
 }
@@ -115,10 +164,10 @@ export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
   );
 }
 
-export function Tab({ title, tasks, onEdit, onClickHandler }: TabProps) {
+export function Tab({ title, tasks, onDeleteTab, onClickHandler, onSaveTitle }: TabProps) {
   return (
     <Wrapper>
-      <TabHeader title={title} onEdit={onEdit} />
+      <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
       <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>
   );

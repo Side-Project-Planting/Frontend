@@ -19,16 +19,16 @@ interface Label {
 interface TaskType {
   id: number;
   title: string;
+  tabId: number;
   labels: Label[];
-  assignee: string;
+  assigneeId: number;
   order: number;
   dateRange: null | string[];
 }
 
 interface TabType {
   id: number;
-  title?: string;
-  order?: number;
+  title: string;
   tasks?: TaskType[];
 }
 
@@ -44,8 +44,10 @@ interface PlanType {
   description: string;
   isPublic: boolean;
   members: MemberType[];
+  tabOrder: number[];
   tabs: TabType[];
   labels: Label[];
+  tasks: TaskType[];
 }
 
 const Wrapper = styled.main`
@@ -167,85 +169,103 @@ const planNameList = [
 ];
 
 function Plan() {
-  const [plan, setPlan] = useState<PlanType>();
+  const [plan, setPlan] = useState<PlanType | null>(null);
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const { Modal, showModal, openModal, closeModal } = useModal();
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
 
-  const filterPlanByLabels = (data: PlanType, labels: number[]) => {
-    if (!data || !labels || labels.length === 0) {
+  const sortTabsAndFilterPlanByLabels = (data: PlanType, labels: number[]) => {
+    if (!data) {
       return data;
     }
 
-    const updatedTabs = data.tabs.map((tab) => ({
-      ...tab,
-      tasks: tab.tasks?.filter((task) =>
-        task.labels.some((label) => {
-          // console.log(selectedLabels, label.id, selectedLabels.includes(label.id));
-          return selectedLabels.includes(label.id);
-        }),
-      ),
-    }));
+    // 라벨 배렬의 길이가 0보다 클때만 라벨 필터링
+    const filteredByLabelTasks =
+      labels.length > 0
+        ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label.id)))
+        : data.tasks;
 
-    return { ...data, tabs: updatedTabs };
+    // {3: id=3인 탭, 1: id=1인 탭, 2:id=2인 탭}
+    const tabIndex: Record<number, TabType> = {};
+    data.tabs.forEach((tab) => {
+      tabIndex[tab.id] = { ...tab, tasks: [] };
+    });
+
+    filteredByLabelTasks.forEach((task) => {
+      const tab = tabIndex[task.tabId];
+      if (tab) {
+        tab.tasks!.push(task);
+      }
+    });
+
+    const arrangedTabs = data.tabOrder.map((tabId) => {
+      const tab = tabIndex[tabId];
+      return tab;
+    });
+
+    return { ...data, tabs: arrangedTabs };
   };
 
   useEffect(() => {
-    (async () => {
+    const fetchData = async () => {
       try {
         const data = await getPlanInfo();
-
-        // 라벨 필터링된 데이터를 가져옴
-        const filteredPlan = filterPlanByLabels(data, selectedLabels);
-        setPlan(filteredPlan);
-      } catch (err) {
+        const sortedTabsAndFilteredPlan = sortTabsAndFilterPlanByLabels(data, selectedLabels);
+        setPlan(sortedTabsAndFilteredPlan);
+      } catch (error) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
-    })();
+    };
+
+    fetchData();
   }, [selectedLabels]);
 
-  const handleAddTab = () => {
+  const handleStartAddingTab = () => {
     setIsAddingTab(true);
     setNewTabTitle('');
 
-    // 탭 추가 버튼 눌렀을 때 input에 focus
-    // 연속으로 두 번쨰 누를 때만 focus가 되는 이상한 현상 있음
-    // inputRef가 처음 클릭했을 때 null이다.
-    if (inputRef?.current) {
+    if (inputRef.current) {
       inputRef.current.focus();
     }
   };
 
-  const handleInputBlur = () => {
+  const handleAddTab = () => {
     if (newTabTitle.trim() === '') {
       setIsAddingTab(false);
     } else {
       const newTab: TabType = {
-        id: plan!.tabs.length + 1,
+        id: (plan?.tabs.length || 0) + 1,
         title: newTabTitle,
       };
-      setPlan({ ...plan!, tabs: [...plan!.tabs, newTab] });
+
+      setPlan((prev) => {
+        if (!prev) {
+          return prev;
+        }
+        return { ...plan!, tabs: [...plan!.tabs, newTab] };
+      });
+
       setIsAddingTab(false);
     }
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newTabTitle.trim() !== '') {
-      const newTab: TabType = {
-        id: plan!.tabs.length + 1,
-        title: newTabTitle,
-      };
-      setPlan({ ...plan!, tabs: [...plan!.tabs, newTab] });
-      setIsAddingTab(false);
+      handleAddTab();
     }
     // TODO newTabTitle===""일떄 enter를 누르면 탭 추가 취소
   };
 
-  const editTabInfo = () => {
-    // TODO 탭 정보 수정 및 삭제
+  const handleDeleteTab = (tabId: number) => {
+    if (plan) {
+      const updatedTabOrder = plan.tabOrder.filter((item) => item !== tabId);
+      const updatedPlan = { ...plan, tabOrder: updatedTabOrder, tabs: plan.tabs.filter((tab) => tab.id !== tabId) };
+      setPlan(updatedPlan);
+      // TODO: 서버에 tabId로 삭제 요청
+    }
   };
 
   const handleChangeLabel = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -256,6 +276,11 @@ function Plan() {
       }
       return [...prev, clickedLabel];
     });
+  };
+
+  const handleSaveTabTitle = (title: string) => {
+    // TODO : 서버로 planId, tabId, title로 title 수정 요청 날리기
+    return title;
   };
 
   return (
@@ -297,11 +322,12 @@ function Plan() {
             <Tab
               key={item.id}
               title={item.title!}
-              onEdit={editTabInfo}
+              onDeleteTab={() => handleDeleteTab(item.id)}
               tasks={item.tasks!}
               onClickHandler={() => {
                 openModal('addTask');
               }}
+              onSaveTitle={handleSaveTabTitle}
             />
           ))}
           {isAddingTab && (
@@ -311,7 +337,7 @@ function Plan() {
                 ref={inputRef}
                 value={newTabTitle}
                 onChange={(e) => setNewTabTitle(e.target.value)}
-                onBlur={handleInputBlur}
+                onBlur={handleAddTab}
                 onKeyDown={handleInputKeyDown}
               />
               {/* TODO 탭 추가하다 취소하는 버튼 추가 */}
@@ -322,8 +348,8 @@ function Plan() {
               />
             </TabWrapper>
           )}
-          <AddTapButton onClick={handleAddTab}>
-            <SlPlus size={35} color="#8993A1" />
+          <AddTapButton>
+            <SlPlus size={35} color="#8993A1" onClick={handleStartAddingTab} />
           </AddTapButton>
         </TabGroup>
       </MainContainer>
