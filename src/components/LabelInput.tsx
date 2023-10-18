@@ -72,11 +72,8 @@ export default function LabelInput({ allLabels, alreadySelected, selectedLabelsH
   const labelInput = useRef<HTMLInputElement>(null);
   const searchWindowRef = useRef<HTMLDivElement>(null);
   const currentSearchedRef = useRef<HTMLButtonElement>(null);
-  // const scrollRef = useRef<HTMLButtonElement[]>([]);
   const [searched, setSearched] = useState<string[]>(allLabels);
   const [selected, setSelected] = useState<string[]>(alreadySelected);
-  // TODO: 새로 추가된 라벨들을 서버에 따로 보내줘야하지 않을까 해서 만든 상태
-  // const [newLabels, setNewLabels] = useState<string[]>([]);
   const [searchedIdx, setSearchedIdx] = useState<number>(-1);
   const [showSearchLabel, setShowSearchLabel] = useState<boolean>(false);
 
