@@ -83,6 +83,8 @@ function Header() {
     return false;
   };
 
+  const handleDropdownClick = () => {};
+
   return (
     <HeadeContainer>
       <Logo />
@@ -97,7 +99,7 @@ function Header() {
         ))}
       </Nav>
 
-      <Dropdown options={dropdownOptions} />
+      <Dropdown type="header" options={dropdownOptions} onClick={handleDropdownClick} />
     </HeadeContainer>
   );
 }
