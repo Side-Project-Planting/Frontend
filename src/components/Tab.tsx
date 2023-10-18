@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 
 import styled from 'styled-components';
 
@@ -22,13 +22,15 @@ type TabProps = {
   tasks: TaskType[];
   onEdit: () => void;
   onClickHandler: () => void;
+  onChangeTitle: (title: string) => void;
 };
 
 type TabHeaderProps = {
-  title: string;
+  initialTitle: string;
   onEdit: () => void;
   // eslint-disable-next-line react/no-unused-prop-types, react/require-default-props
   onClickHandler?: () => void;
+  onSave: (title: string) => void;
 };
 
 type TaskContainerProps = {
@@ -79,12 +81,52 @@ const AddButton = styled.button`
   transform: translateX(-50%);
 `;
 
-function TabHeader({ title, onEdit }: TabHeaderProps) {
+const EditableTitle = styled.input`
+  border: none;
+  background: none;
+  font-size: 16px;
+  outline: none;
+  width: 100%;
+`;
+
+function TabHeader({ initialTitle, onEdit, onSave }: TabHeaderProps) {
   const tabEditOptions = [{ id: 1, label: '삭제', value: 'delete' }];
+  const [title, setTitle] = useState(initialTitle);
+  const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleStartEditing = () => {
+    setIsEditing(true);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    onSave(title);
+  };
 
   return (
     <Header>
-      <span className="planTitle">{title}</span>
+      {isEditing ? (
+        <EditableTitle
+          type="text"
+          ref={inputRef}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onBlur={handleSave}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSave();
+            }
+          }}
+        />
+      ) : (
+        <span className="planTitle" onClick={handleStartEditing} aria-hidden>
+          {title}
+        </span>
+      )}
       <Dropdown type="tab" options={tabEditOptions} onClick={onEdit} />
     </Header>
   );
@@ -104,10 +146,10 @@ export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
   );
 }
 
-export function Tab({ title, tasks, onEdit, onClickHandler }: TabProps) {
+export function Tab({ title, tasks, onEdit, onClickHandler, onChangeTitle }: TabProps) {
   return (
     <Wrapper>
-      <TabHeader title={title} onEdit={onEdit} />
+      <TabHeader initialTitle={title} onEdit={onEdit} onSave={onChangeTitle} />
       <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>
   );

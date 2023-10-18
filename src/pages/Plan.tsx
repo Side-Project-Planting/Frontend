@@ -279,6 +279,10 @@ function Plan() {
     });
   };
 
+  const handleChangeTabTitle = (title: string) => {
+    console.log(title);
+  };
+
   return (
     <Wrapper>
       <SideContainer>
@@ -321,6 +325,7 @@ function Plan() {
               onEdit={() => handleDeleteTab(item.id)}
               tasks={item.tasks!}
               onClickHandler={openModal}
+              onChangeTitle={handleChangeTabTitle}
             />
           ))}
           {isAddingTab && (
