@@ -27,6 +27,7 @@ interface TaskType {
 interface TabType {
   id: number;
   title: string;
+  tasks?: TaskType[];
 }
 
 interface MemberType {
@@ -42,15 +43,9 @@ interface PlanType {
   isPublic: boolean;
   members: MemberType[];
   tabOrder: number[];
-  tabs: TabType[] | ArrangedTab[];
+  tabs: TabType[];
   labels: Label[];
   tasks: TaskType[];
-}
-
-interface ArrangedTab {
-  id: number;
-  title: string;
-  tasks?: TaskType[];
 }
 
 const Wrapper = styled.main`
@@ -176,7 +171,7 @@ function Plan() {
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const { Modal, showModal, openModal, closeModal } = useModal();
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
 
@@ -192,7 +187,7 @@ function Plan() {
         : data.tasks;
 
     // {3: id=3인 탭, 1: id=1인 탭, 2:id=2인 탭}
-    const tabIndex: Record<number, ArrangedTab> = {};
+    const tabIndex: Record<number, TabType> = {};
     data.tabs.forEach((tab) => {
       tabIndex[tab.id] = { ...tab, tasks: [] };
     });
@@ -226,14 +221,11 @@ function Plan() {
     fetchData();
   }, [selectedLabels]);
 
-  const handleAddStatus = () => {
+  const handleStartAddingTab = () => {
     setIsAddingTab(true);
     setNewTabTitle('');
 
-    // 탭 추가 버튼 눌렀을 때 input에 focus
-    // 연속으로 두 번쨰 누를 때만 focus가 되는 이상한 현상 있음
-    // inputRef가 처음 클릭했을 때 null이다.
-    if (inputRef?.current) {
+    if (inputRef.current) {
       inputRef.current.focus();
     }
   };
@@ -284,6 +276,11 @@ function Plan() {
     });
   };
 
+  const handleSaveTabTitle = (title: string) => {
+    // TODO : 서버로 planId, tabId, title로 title 수정 요청 날리기
+    return title;
+  };
+
   return (
     <Wrapper>
       <SideContainer>
@@ -323,9 +320,10 @@ function Plan() {
             <Tab
               key={item.id}
               title={item.title!}
-              onEdit={() => handleDeleteTab(item.id)}
-              tasks={(item as ArrangedTab).tasks!}
+              onDeleteTab={() => handleDeleteTab(item.id)}
+              tasks={item.tasks!}
               onClickHandler={openModal}
+              onSaveTitle={handleSaveTabTitle}
             />
           ))}
           {isAddingTab && (
@@ -343,7 +341,7 @@ function Plan() {
             </TabWrapper>
           )}
           <AddTapButton>
-            <SlPlus size={35} color="#8993A1" onClick={handleAddStatus} />
+            <SlPlus size={35} color="#8993A1" onClick={handleStartAddingTab} />
           </AddTapButton>
         </TabGroup>
       </MainContainer>
