@@ -15,6 +15,7 @@ type TaskType = {
   title: string;
   tabId: number;
   labels: Label[];
+  assignee: string;
   assigneeId: number;
   order: number;
   dateRange: null | string[];
