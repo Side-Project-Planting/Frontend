@@ -44,6 +44,7 @@ const Wrapper = styled.li`
   height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   justify-content: space-between;
 `;
 
@@ -55,8 +56,21 @@ const Header = styled.div`
   position: relative;
 
   .planTitle {
-    font-size: 1.126rem;
+    height: 2rem;
+    padding-block: 0.2rem;
+    width: calc(100% - 24px);
   }
+`;
+
+const EditableTitle = styled.input`
+  height: 2rem;
+  padding-inline: 0.5rem;
+  border: 1.5px solid #64d4ab;
+  border-radius: 0.5rem;
+  background: none;
+  font-size: 1rem;
+  outline: none;
+  width: 100%;
 `;
 
 const Container = styled.div`
@@ -79,14 +93,6 @@ const AddButton = styled.button`
   bottom: 1rem;
   left: 50%;
   transform: translateX(-50%);
-`;
-
-const EditableTitle = styled.input`
-  border: none;
-  background: none;
-  font-size: 16px;
-  outline: none;
-  width: 100%;
 `;
 
 function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: TabHeaderProps) {
@@ -126,9 +132,9 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: TabHeaderProps) {
           }}
         />
       ) : (
-        <span className="planTitle" onClick={handleStartEditing} aria-hidden>
+        <div className="planTitle" onClick={handleStartEditing} aria-hidden>
           {title}
-        </span>
+        </div>
       )}
       <Dropdown type="tab" options={tabEditOptions} onClick={onDeleteTab} />
     </Header>
