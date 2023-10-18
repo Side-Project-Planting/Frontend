@@ -92,7 +92,10 @@ export default function LabelInput({ allLabels, alreadySelected, selectedLabelsH
       alert('이미 등록된 레이블입니다!');
       return;
     }
-    if (isIncludeIn(allLabels, currentLabel) === false) allLabels.push(currentLabel);
+    if (isIncludeIn(allLabels, currentLabel) === false) {
+      // TODO: label을 plan에 등록하는 API 요청
+      allLabels.push(currentLabel);
+    }
 
     setSearched(allLabels);
     setSelected([...selected, currentLabel]);
