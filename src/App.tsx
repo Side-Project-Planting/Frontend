@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
 
 import Header from '@components/Header';
 import CreatePlan from '@pages/CreatePlan';
@@ -60,7 +61,9 @@ function App() {
     <>
       <GlobalStyle />
       <GlobalFonts />
-      <RouterProvider router={router} />
+      <RecoilRoot>
+        <RouterProvider router={router} />
+      </RecoilRoot>
     </>
   );
 }
