@@ -1,7 +1,15 @@
 import { selectorFamily } from 'recoil';
-import { ILabel } from 'types';
+import { ILabel, IMember } from 'types';
 
-import { labelsState } from '@recoil/atoms';
+import { labelsState, membersState } from '@recoil/atoms';
+
+export const memberSelector = selectorFamily<IMember, number>({
+  key: 'filteredMember',
+  get:
+    (memberId: number) =>
+    ({ get }) =>
+      get(membersState).find((member) => member.id === memberId)!,
+});
 
 export const filteredLabelsSelector = selectorFamily<ILabel[], number[]>({
   key: 'filteredLabels',
