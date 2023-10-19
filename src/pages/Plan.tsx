@@ -223,7 +223,19 @@ function Plan() {
     return <div>Loading...</div>;
   }
 
-  const sortedTabs = plan.tabOrder.map((tabId) => plan.tabs.find((tab) => tab.id === tabId)!);
+  const tabLookup: Record<number, TabType> = {};
+  plan.tabs.forEach((tab) => {
+    tabLookup[tab.id] = tab;
+  });
+  const sortedTabs = plan.tabOrder.map((tabId) => tabLookup[tabId]);
+
+  const tasksByTab: Record<number, ITask[]> = {};
+  plan.tasks.forEach((task) => {
+    if (!tasksByTab[task.tabId]) {
+      tasksByTab[task.tabId] = [];
+    }
+    tasksByTab[task.tabId].push(task);
+  });
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -325,7 +337,7 @@ function Plan() {
               key={item.id}
               title={item.title}
               onDeleteTab={() => handleDeleteTab(item.id)}
-              tasks={plan.tasks.filter((task) => task.tabId === item.id)}
+              tasks={tasksByTab[item.id]}
               onClickHandler={() => {
                 openModal('addTask');
               }}
