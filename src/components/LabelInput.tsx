@@ -94,8 +94,8 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
   const getNewLabelId = useCallback(getTempId(), []);
   /** ********************************************* */
 
-  const findLabel = (labelId: number) => {
-    return labelsClone.find((label) => label.id === labelId);
+  const findLabelByValue = (labelValue: string) => {
+    return labelsClone.find((label) => label.value === labelValue);
   };
 
   const createNewLabel = (labelValue: string) => {
@@ -109,6 +109,7 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
   };
 
   const searchLabelName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchedIdx(-1);
     if (e.currentTarget.value.length === 0) setSearched(labelsClone);
     else setSearched(labelsClone.filter((label) => label.value.includes(e.currentTarget.value)));
   };
@@ -117,10 +118,27 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
     return !(labelArr.find((label) => label.id === currentLabelId) === undefined);
   };
 
-  const selectLabel = (currentLabel: ILabel) => {
-    if (isIncludeIn(selected, currentLabel.id)) {
+  const checkDuplicatedLabel = (labelArr: ILabel[], currentLabelId: number) => {
+    if (isIncludeIn(labelArr, currentLabelId)) {
       // eslint-disable-next-line
       alert('이미 등록된 레이블입니다!');
+      setSearchedIdx(-1);
+      return false;
+    }
+    return true;
+  };
+
+  const checkNoValue = (value: string) => {
+    if (value.length === 0) {
+      // eslint-disable-next-line
+      alert('최소 1글자 이상 입력해주세요!');
+      return false;
+    }
+    return true;
+  };
+
+  const selectLabel = (currentLabel: ILabel) => {
+    if (currentLabel === undefined || checkDuplicatedLabel(selected, currentLabel.id) === false) {
       return;
     }
 
@@ -130,12 +148,13 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
   };
 
   const onKeyDownInlabelInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing === true) return;
     if (searched.length > 0) {
       if (e.key === 'ArrowDown') {
-        setSearchedIdx((prev) => (prev + 1 >= searched.length ? 0 : prev + 1));
+        setSearchedIdx((prev) => (prev + 1 >= searched.length ? -1 : prev + 1));
       }
       if (e.key === 'ArrowUp') {
-        setSearchedIdx((prev) => (prev - 1 < 0 ? searched.length - 1 : prev - 1));
+        setSearchedIdx((prev) => (prev - 1 < -1 ? searched.length - 1 : prev - 1));
       }
     }
     if (e.key === 'Escape') {
@@ -145,18 +164,20 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
     if (e.key === 'Enter') {
       e.preventDefault();
       if (labelInput.current === null) return;
-      if (labelInput.current.value.length === 0) {
-        if (searchedIdx < 0) {
-          // eslint-disable-next-line
-          alert('최소 1글자 이상 입력해주세요!');
-          return;
-        }
+      if (searchedIdx < 0 && checkNoValue(labelInput.current.value) === false) return;
+      if (searchedIdx >= 0 && labelInput.current.value.length === 0) {
         selectLabel(searched[searchedIdx]);
         return;
       }
-      let currentLabel = findLabel(+labelInput.current.id);
-      currentLabel = currentLabel || createNewLabel(labelInput.current.value);
-      selectLabel(currentLabel);
+
+      const inputValue = labelInput.current.value;
+      if (searchedIdx < 0) {
+        let currentLabel = findLabelByValue(inputValue);
+        currentLabel = currentLabel || createNewLabel(inputValue);
+        selectLabel(currentLabel);
+      } else {
+        selectLabel(searched[searchedIdx]);
+      }
     }
   };
 
@@ -170,6 +191,7 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
     const target = e.currentTarget.id.split('-')[1];
     const updateLabels = selected.filter((label) => label.value !== target);
     setSelected(updateLabels);
+    selectedLabelsHandler(updateLabels);
   };
 
   useEffect(() => {
