@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { ITask } from 'types';
 
-import { filteredLabelsSelector } from '@recoil/selectors';
+import { filteredLabelsSelector, memberSelector } from '@recoil/selectors';
 import { hashStringToColor } from '@utils';
 
 const ItemWrapper = styled.div`
@@ -85,6 +85,7 @@ interface Props {
 
 export default function TaskItem({ task }: Props) {
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
+  const assignee = useRecoilValue(memberSelector(task.assigneeId));
 
   return (
     <ItemWrapper>
@@ -116,7 +117,7 @@ export default function TaskItem({ task }: Props) {
             </div>
           )}
         </DateField>
-        <div>{task.assignee}</div>
+        <div>{assignee.name}</div>
       </InfoField>
     </ItemWrapper>
   );
