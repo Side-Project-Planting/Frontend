@@ -12,7 +12,7 @@ export const memberSelector = selectorFamily<IMember, number>({
 });
 
 export const labelSelector = selectorFamily<ILabel, number>({
-  key: 'filteredMember',
+  key: 'filteredLabel',
   get:
     (labelId: number) =>
     ({ get }) =>
