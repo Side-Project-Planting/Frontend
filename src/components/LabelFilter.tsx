@@ -1,9 +1,11 @@
 import React from 'react';
 
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { labelsState } from '@recoil/atoms';
+
 interface LabelFiLterProps {
-  labelList: { id: number; value: string }[];
   selectedLabels: number[];
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -38,7 +40,8 @@ const LabelList = styled.ul`
   }
 `;
 
-export default function LabelFilter({ labelList, selectedLabels, onChange }: LabelFiLterProps) {
+export default function LabelFilter({ selectedLabels, onChange }: LabelFiLterProps) {
+  const labelList = useRecoilValue(labelsState);
   return (
     <Container>
       <h1>레이블</h1>

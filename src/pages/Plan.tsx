@@ -296,7 +296,7 @@ function Plan() {
             </li>
           ))}
         </PlanCategory>
-        <LabelFilter labelList={plan?.labels || []} selectedLabels={selectedLabels} onChange={handleChangeLabel} />
+        <LabelFilter selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
         {/* TODO 멤버 필터링 */}
