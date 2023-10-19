@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import styled from 'styled-components';
-import { MemberType } from 'types';
+import { IMember } from 'types';
 
 import { ReactComponent as DeadlineDate } from '@assets/images/deadlineCheck.svg';
 import { ReactComponent as StartDate } from '@assets/images/startDate.svg';
@@ -99,7 +99,7 @@ const DeadlineField = styled.div`
 `;
 
 interface Props {
-  members: MemberType[];
+  members: IMember[];
   allLabels: string[];
 }
 

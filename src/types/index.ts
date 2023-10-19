@@ -1,4 +1,4 @@
-export interface TaskInfo {
+export interface ITaskInfo {
   name: string;
   id: string;
   status: number;
@@ -6,21 +6,21 @@ export interface TaskInfo {
   deadline: string;
 }
 
-export interface Label {
+export interface ILabel {
   id: number;
   value: string;
 }
 
-export interface TaskType {
+export interface ITask {
   id: number;
   title: string;
-  labels: Label[];
+  labels: ILabel[];
   assignee: string;
   order: number;
   dateRange: null | string[];
 }
 
-export interface MemberType {
+export interface IMember {
   id: number;
   name: string;
   imgUrl?: string;

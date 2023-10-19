@@ -1,6 +1,6 @@
-import { TaskInfo } from 'types';
+import { ITaskInfo } from 'types';
 
-export const parseTasksByStatus = (tasks: TaskInfo[], statusName: string[]) => {
+export const parseTasksByStatus = (tasks: ITaskInfo[], statusName: string[]) => {
   const parsedTasks = [];
 
   tasks.sort((a, b) => {

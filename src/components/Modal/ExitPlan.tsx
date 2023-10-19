@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import styled from 'styled-components';
-import { MemberType } from 'types';
+import { IMember } from 'types';
 
 import { ModalButton, ModalButtonContainer, ModalDescription } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
@@ -18,7 +18,7 @@ const SelectAdminText = styled.p`
 
 interface ExitPlanProps {
   description: string;
-  members: MemberType[];
+  members: IMember[];
   requestAPI: () => void;
   onClose: () => void;
 }
