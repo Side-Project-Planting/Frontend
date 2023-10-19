@@ -173,7 +173,7 @@ function Plan() {
   const setLabels = useSetRecoilState(labelsState);
   const [draggedTabId, setDraggedTabId] = useState<number | null>(null);
 
-  const FilterPlanTasks = (data: PlanType, labels: number[]) => {
+  const filterPlanTasks = (data: PlanType, labels: number[]) => {
     if (!data) {
       return data;
     }
@@ -191,10 +191,10 @@ function Plan() {
     const fetchData = async () => {
       try {
         const data = await getPlanInfo();
-        const FilteredPlan = FilterPlanTasks(data, selectedLabels);
-        setMembers(FilteredPlan.members);
-        setLabels(FilteredPlan.labels);
-        setPlan(FilteredPlan);
+        const filteredPlan = filterPlanTasks(data, selectedLabels);
+        setMembers(filteredPlan.members);
+        setLabels(filteredPlan.labels);
+        setPlan(filteredPlan);
       } catch (error) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
