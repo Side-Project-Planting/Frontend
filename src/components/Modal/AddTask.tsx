@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import styled from 'styled-components';
-import { IMember } from 'types';
+import { ILabel, IMember } from 'types';
 
 import { ReactComponent as DeadlineDate } from '@assets/images/deadlineCheck.svg';
 import { ReactComponent as StartDate } from '@assets/images/startDate.svg';
@@ -100,10 +100,9 @@ const DeadlineField = styled.div`
 
 interface Props {
   members: IMember[];
-  allLabels: string[];
 }
 
-export default function AddTaskModal({ members, allLabels }: Props) {
+export default function AddTaskModal({ members }: Props) {
   const today = new Date();
 
   const [taskName, setTaskName] = useState<string>('');
@@ -113,7 +112,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
     [today.getFullYear(), today.getMonth() + 1, today.getDate()].join('-'),
   );
   const [endDate, setEndDate] = useState<string>(startDate);
-  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<ILabel[]>([]);
 
   const options = members.map((member) => {
     return { value: member.id.toString(), label: member.name };
@@ -193,7 +192,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
           </DeadlineField>
         </Fields>
         <InputField>
-          <LabelInput allLabels={allLabels} alreadySelected={[]} selectedLabelsHandler={setSelectedLabels} />
+          <LabelInput alreadySelected={[]} selectedLabelsHandler={setSelectedLabels} />
         </InputField>
         <ModalButton type="submit">추가하기</ModalButton>
       </FormContainer>

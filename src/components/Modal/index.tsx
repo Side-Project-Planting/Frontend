@@ -53,10 +53,9 @@ interface Props {
   requestAPI: () => void;
   onClose: () => void;
   members?: MemberType[];
-  allLabels?: string[];
 }
 
-export default function Modal({ type, description, requestAPI, onClose, members, allLabels }: Props) {
+export default function Modal({ type, description, requestAPI, onClose, members }: Props) {
   useEffect(() => {
     const keyDownEscCloseModal = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -78,7 +77,7 @@ export default function Modal({ type, description, requestAPI, onClose, members,
             {type === 'exitPlan' && description && members && (
               <ExitPlanModal description={description} members={members} requestAPI={requestAPI} onClose={onClose} />
             )}
-            {type === 'addTask' && members && allLabels && <AddTaskModal members={members} allLabels={allLabels} />}
+            {type === 'addTask' && members && <AddTaskModal members={members} />}
           </ModalContainer>
         </ModalWrapper>
       </ModalOverlay>
@@ -89,5 +88,4 @@ export default function Modal({ type, description, requestAPI, onClose, members,
 Modal.defaultProps = {
   description: '',
   members: [],
-  allLabels: [],
 };

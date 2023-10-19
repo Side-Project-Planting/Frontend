@@ -1,8 +1,11 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
+import { ILabel } from 'types';
 
 import LabelItem from '@components/LabelItem';
+import { labelsState } from '@recoil/atoms';
 
 const LabelsWrapper = styled.div`
   position: relative;
@@ -55,7 +58,9 @@ const LabelsContainer = styled.div`
   }
 `;
 
-const SearchedLabel = styled.button<{ $isFocus: boolean }>`
+const SearchedLabel = styled.button.attrs<{ id: number; $isFocus: boolean }>((props) => ({
+  id: props.id,
+}))`
   padding: 0.5rem 1rem;
   border: 0;
   background-color: ${(prop) => (prop.$isFocus ? 'rgb(127, 127, 127, 0.3)' : 'transparent')};
@@ -63,41 +68,62 @@ const SearchedLabel = styled.button<{ $isFocus: boolean }>`
 `;
 
 interface Props {
-  allLabels: string[];
-  alreadySelected: string[];
-  selectedLabelsHandler: Dispatch<SetStateAction<string[]>>;
+  alreadySelected: ILabel[];
+  selectedLabelsHandler: Dispatch<SetStateAction<ILabel[]>>;
 }
 
-export default function LabelInput({ allLabels, alreadySelected, selectedLabelsHandler }: Props) {
+export default function LabelInput({ alreadySelected, selectedLabelsHandler }: Props) {
+  const [labels, setLabels] = useRecoilState(labelsState);
+  let labelsClone = labels;
   const labelInput = useRef<HTMLInputElement>(null);
   const searchWindowRef = useRef<HTMLDivElement>(null);
   const currentSearchedRef = useRef<HTMLButtonElement>(null);
-  const [searched, setSearched] = useState<string[]>(allLabels);
-  const [selected, setSelected] = useState<string[]>(alreadySelected);
+  const [searched, setSearched] = useState<ILabel[]>(labelsClone);
+  const [selected, setSelected] = useState<ILabel[]>(alreadySelected);
   const [searchedIdx, setSearchedIdx] = useState<number>(-1);
   const [showSearchLabel, setShowSearchLabel] = useState<boolean>(false);
 
+  /* TODO: Test용 함수이므로 API 연결시 제거 필요 */
+  const getTempId = () => {
+    let count = 5;
+    return () => {
+      count += 1;
+      return count;
+    };
+  };
+  const getNewLabelId = useCallback(getTempId(), []);
+  /** ********************************************* */
+
+  const findLabel = (labelId: number) => {
+    return labelsClone.find((label) => label.id === labelId);
+  };
+
+  const createNewLabel = (labelValue: string) => {
+    // TODO: 새로운 라벨 생성 요청
+    const newId = getNewLabelId();
+    const newLabel: ILabel = { id: newId, value: labelValue };
+    setLabels([...labelsClone, newLabel]);
+    labelsClone = [...labelsClone, newLabel];
+    setSearched(labelsClone);
+    return newLabel;
+  };
+
   const searchLabelName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.value.length === 0) setSearched(allLabels);
-    else setSearched(allLabels.filter((label) => label.includes(e.currentTarget.value)));
+    if (e.currentTarget.value.length === 0) setSearched(labelsClone);
+    else setSearched(labelsClone.filter((label) => label.value.includes(e.currentTarget.value)));
   };
 
-  const isIncludeIn = (labelArr: string[], currentLabel: string) => {
-    return labelArr.includes(currentLabel);
+  const isIncludeIn = (labelArr: ILabel[], currentLabelId: number) => {
+    return !(labelArr.find((label) => label.id === currentLabelId) === undefined);
   };
 
-  const addLabel = (currentLabel: string) => {
-    if (isIncludeIn(selected, currentLabel)) {
+  const addLabel = (currentLabel: ILabel) => {
+    if (isIncludeIn(selected, currentLabel.id)) {
       // eslint-disable-next-line
       alert('이미 등록된 레이블입니다!');
       return;
     }
-    if (isIncludeIn(allLabels, currentLabel) === false) {
-      // TODO: label을 plan에 등록하는 API 요청
-      allLabels.push(currentLabel);
-    }
 
-    setSearched(allLabels);
     setSelected([...selected, currentLabel]);
     selectedLabelsHandler([...selected, currentLabel]);
     labelInput.current!.value = '';
@@ -128,7 +154,9 @@ export default function LabelInput({ allLabels, alreadySelected, selectedLabelsH
         addLabel(searched[searchedIdx]);
         return;
       }
-      addLabel(labelInput.current.value);
+      let currentLabel = findLabel(+labelInput.current.id);
+      currentLabel = currentLabel || createNewLabel(labelInput.current.value);
+      addLabel(currentLabel);
     }
   };
 
@@ -140,7 +168,7 @@ export default function LabelInput({ allLabels, alreadySelected, selectedLabelsH
 
   const onClickDeleteLabel = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.currentTarget.id.split('-')[1];
-    const updateLabels = selected.filter((label) => label !== target);
+    const updateLabels = selected.filter((label) => label.value !== target);
     setSelected(updateLabels);
   };
 
@@ -160,13 +188,8 @@ export default function LabelInput({ allLabels, alreadySelected, selectedLabelsH
       <LabelsWrapper>
         <LabelsContainer>
           <ul id="labels">
-            {selected.map((label, idx) => (
-              <LabelItem
-                key={label}
-                height={2}
-                labelInfo={{ id: idx, value: label }}
-                deleteHandler={onClickDeleteLabel}
-              />
+            {selected.map((label) => (
+              <LabelItem key={label.id} height={2} labelInfo={label} deleteHandler={onClickDeleteLabel} />
             ))}
             <input
               id="task-label-input"
@@ -182,23 +205,42 @@ export default function LabelInput({ allLabels, alreadySelected, selectedLabelsH
         </LabelsContainer>
         {showSearchLabel && (
           <div id="label-search" ref={searchWindowRef}>
-            {searched.length === 0 ? (
-              <p id="no-coincide-label">일치하는 레이블이 없습니다.</p>
-            ) : (
-              searched.map((label, idx) => (
-                <SearchedLabel
-                  key={label}
-                  type="button"
-                  $isFocus={idx === searchedIdx}
-                  ref={idx === searchedIdx ? currentSearchedRef : null}
-                  onMouseDown={onClickSearchedLabel}
-                  onMouseOver={() => setSearchedIdx(idx)}
-                  onMouseOut={() => setSearchedIdx(-1)}
-                >
-                  {label}
-                </SearchedLabel>
-              ))
-            )}
+            {
+              /* eslint-disable-next-line */
+              labelInput.current?.value.length === 0 ? (
+                labelsClone.map((label, idx) => (
+                  <SearchedLabel
+                    key={label.id}
+                    id={label.id}
+                    type="button"
+                    $isFocus={idx === searchedIdx}
+                    ref={idx === searchedIdx ? currentSearchedRef : null}
+                    onMouseDown={onClickSearchedLabel}
+                    onMouseOver={() => setSearchedIdx(idx)}
+                    onMouseOut={() => setSearchedIdx(-1)}
+                  >
+                    {label.value}
+                  </SearchedLabel>
+                ))
+              ) : searched.length === 0 ? (
+                <p id="no-coincide-label">일치하는 레이블이 없습니다.</p>
+              ) : (
+                searched.map((label, idx) => (
+                  <SearchedLabel
+                    key={label.id}
+                    id={label.id}
+                    type="button"
+                    $isFocus={idx === searchedIdx}
+                    ref={idx === searchedIdx ? currentSearchedRef : null}
+                    onMouseDown={onClickSearchedLabel}
+                    onMouseOver={() => setSearchedIdx(idx)}
+                    onMouseOut={() => setSearchedIdx(-1)}
+                  >
+                    {label.value}
+                  </SearchedLabel>
+                ))
+              )
+            }
           </div>
         )}
       </LabelsWrapper>
