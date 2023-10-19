@@ -1,29 +1,14 @@
 import React, { useState, useRef } from 'react';
 
 import styled from 'styled-components';
+import { ITask } from 'types';
 
-import Dropdown from './Dropdown';
-import TaskItem from './TaskItem';
-
-interface Label {
-  id: number;
-  value: string;
-}
-
-type TaskType = {
-  id: number;
-  title: string;
-  tabId: number;
-  labels: Label[];
-  assignee: string;
-  assigneeId: number;
-  order: number;
-  dateRange: null | string[];
-};
+import Dropdown from '@components/Dropdown';
+import TaskItem from '@components/TaskItem';
 
 type TabProps = {
   title: string;
-  tasks: TaskType[];
+  tasks: ITask[];
   onDeleteTab: () => void;
   onSaveTitle: (title: string) => void;
   onClickHandler: () => void;
@@ -39,7 +24,7 @@ type TabHeaderProps = {
 
 type TaskContainerProps = {
   // eslint-disable-next-line react/require-default-props
-  tasks?: TaskType[];
+  tasks?: ITask[];
   // eslint-disable-next-line react/require-default-props
   onClickHandler?: () => void;
 };
@@ -153,8 +138,6 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: TabHeaderProps) {
 export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
   return (
     <Container>
-      {/* TODO 할일 칸반 리스트 */}
-      {/* {tasks?.map((item) => <span key={item.order}>{item.title}</span>)} */}
       {tasks?.map((task) => <TaskItem key={task.id} task={task} />)}
       {/* TODO 할일 drag&drop */}
       <AddButton type="button" className="add" onClick={onClickHandler}>

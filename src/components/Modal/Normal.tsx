@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ModalButton, ModalButtonContainer, ModalDescription } from './CommonModalStyles';
+import { ModalButton, ModalButtonContainer, ModalDescription } from '@components/Modal/CommonModalStyles';
 
 interface NormalProps {
   description: string;

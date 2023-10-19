@@ -3,34 +3,26 @@ import React, { useEffect, useState, useRef } from 'react';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
+import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
+import { ITask } from 'types';
 
 import { getPlanInfo } from '@apis';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import { Tab, TasksContainer } from '@components/Tab';
 import useModal from '@hooks/useModal';
+import { labelsState, membersState } from '@recoil/atoms';
 
 interface Label {
   id: number;
   value: string;
 }
 
-interface TaskType {
-  id: number;
-  title: string;
-  tabId: number;
-  labels: Label[];
-  assignee: string;
-  assigneeId: number;
-  order: number;
-  dateRange: null | string[];
-}
-
 interface TabType {
   id: number;
   title: string;
-  tasks?: TaskType[];
+  tasks?: ITask[];
 }
 
 interface MemberType {
@@ -48,7 +40,7 @@ interface PlanType {
   tabOrder: number[];
   tabs: TabType[];
   labels: Label[];
-  tasks: TaskType[];
+  tasks: ITask[];
 }
 
 const Wrapper = styled.main`
@@ -177,6 +169,8 @@ function Plan() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { Modal, showModal, openModal, closeModal } = useModal();
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
+  const setMembers = useSetRecoilState(membersState);
+  const setLabels = useSetRecoilState(labelsState);
 
   const sortTabsAndFilterPlanByLabels = (data: PlanType, labels: number[]) => {
     if (!data) {
@@ -185,9 +179,7 @@ function Plan() {
 
     // 라벨 배렬의 길이가 0보다 클때만 라벨 필터링
     const filteredByLabelTasks =
-      labels.length > 0
-        ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label.id)))
-        : data.tasks;
+      labels.length > 0 ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label))) : data.tasks;
 
     // {3: id=3인 탭, 1: id=1인 탭, 2:id=2인 탭}
     const tabIndex: Record<number, TabType> = {};
@@ -215,6 +207,8 @@ function Plan() {
       try {
         const data = await getPlanInfo();
         const sortedTabsAndFilteredPlan = sortTabsAndFilterPlanByLabels(data, selectedLabels);
+        setMembers(sortedTabsAndFilteredPlan.members);
+        setLabels(sortedTabsAndFilteredPlan.labels);
         setPlan(sortedTabsAndFilteredPlan);
       } catch (error) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
@@ -302,7 +296,7 @@ function Plan() {
             </li>
           ))}
         </PlanCategory>
-        <LabelFilter labelList={plan?.labels || []} selectedLabels={selectedLabels} onChange={handleChangeLabel} />
+        <LabelFilter selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
         {/* TODO 멤버 필터링 */}
@@ -361,8 +355,6 @@ function Plan() {
           requestAPI={() => {
             // TODO: 할 일 추가 API 입력
           }}
-          members={plan?.members}
-          allLabels={['개발도서', '코테', '이력서']}
         />
       )}
     </Wrapper>

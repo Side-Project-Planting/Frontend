@@ -1,84 +1,85 @@
 {
-    "title": "planting",
-    "description": "안녕하세요 저희는 일정 공유 관리 서비스를 개발하고 있는 플랜팅입니다.",
-    "isPublic": true,
-    "members":[
-       {
-          "id":1,
-          "name":"신우성",
-          "imgUrl":"",
-          "isAdmin":true
-       },
-       {
-          "id":2,
-          "name":"김태훈",
-          "imgUrl":"",
-          "isAdmin":false
-       },
-       {
-          "id":3,
-          "name":"허준영",
-          "imgUrl":"",
-          "isAdmin":false
-       },
-       {
-          "id":4,
-          "name":"한현",
-          "imgUrl":"",
-          "isAdmin":false
-       }
-    ],
-	"tabOrder":[2,1,3], 
-    "tabs":[
-        {
-            "id":3,
-            "title":"Done"
-         },
-       {
-          "id":1,
-          "title":"To do"
-       },
-       {
-          "id":2,
-          "title":"In Progress"
-       }
-    ],
-    "labels": [{"id":1, "value":"개발도서"},{"id":2, "value":"코테"},{"id":3, "value":"이력서"}],
+   "title": "planting",
+   "description": "안녕하세요 저희는 일정 공유 관리 서비스를 개발하고 있는 플랜팅입니다.",
+   "isPublic": true,
+   "members":[
+      {
+         "id":1,
+         "name":"신우성",
+         "imgUrl":"",
+         "isAdmin":true
+      },
+      {
+         "id":2,
+         "name":"김태훈",
+         "imgUrl":"",
+         "isAdmin":false
+      },
+      {
+         "id":3,
+         "name":"허준영",
+         "imgUrl":"",
+         "isAdmin":false
+      },
+      {
+         "id":4,
+         "name":"한현",
+         "imgUrl":"",
+         "isAdmin":false
+      }
+   ],
+	"tabOrder":[2,1,3],
+   "tabs":[
+      {
+         "id":3,
+         "title":"Done"
+      },
+      {
+         "id":1,
+         "title":"To do"
+      },
+      {
+         "id":2,
+         "title":"In Progress"
+      }
+   ],
+   "labels": [
+      {"id":1, "value":"개발도서"},
+      {"id":2, "value":"코테"},
+      {"id":3, "value":"이력서"}
+   ],
 	"tasks" : [
          {
+            "id": 1,
             "title":"NC SOFT 서류 제출",
             "tabId": 3,
-            "labels":[
-              {"id": 3, "value":"이력서"}
-            ],
-            "assigneeId":3,
-            "order":0 
+            "labels": [3],
+            "assigneeId": 3,
+            "order": 0
          },
          {
+            "id": 2,
             "title":"이펙티브 완독",
             "tabId": 1,
-            "labels":[
-               {"id": 1, "value":"개발도서"}
-            ],
-            "assigneeId":3,
-            "order":0
-         },              {
-            "title":"타입스크립트 Chap1",
-            "tabId": 2,
-            "labels":[
-              {"id": 1, "value":"개발도서"}
-            ],
-            "assigneeId":4,
-            "order":0
+            "labels": [1],
+            "assigneeId": 3,
+            "order": 0
          },
          {
+            "id": 3,
+            "title":"타입스크립트 Chap1",
+            "tabId": 2,
+            "labels": [1],
+            "assigneeId":4,
+            "order": 0
+         },
+         {
+            "id": 4,
             "title":"백준 삼성 기출",
             "tabId": 2,
-            "labels":[
-              {"id": 2, "value":"코테"}
-            ],
-            "assigneeId":1,
-            "order":1
+            "labels": [2],
+            "assigneeId": 1,
+            "order": 1
          }
-    ]
- }
+   ]
+}

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { IoClose } from 'react-icons/io5';
 import styled from 'styled-components';
+import { ILabel } from 'types';
 
 import { hashStringToColor } from '@utils';
 
@@ -34,14 +35,9 @@ const LabelContainer = styled.li<{ height: number; color: string }>`
   }
 `;
 
-interface Label {
-  id: number;
-  value: string;
-}
-
 interface Props {
   height: number;
-  labelInfo: Label;
+  labelInfo: ILabel;
   deleteHandler: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 

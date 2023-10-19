@@ -8,12 +8,14 @@
       "@apis/*": ["./apis/*"],
 
       "@components/*": ["./components/*"],
-      
+
       "@hooks": ["./hooks/index.ts"],
       "@hooks/*": ["./hooks/*"],
 
       "@pages/*": ["./pages/*"],
-      
+
+      "@recoil/*": ["./recoil/*"],
+
       "@styles/*": ["./styles/*"],
 
       "@utils": ["./utils/index.ts"],

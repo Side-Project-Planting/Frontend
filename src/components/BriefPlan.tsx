@@ -2,8 +2,7 @@ import React from 'react';
 
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-
-import { TaskInfo } from '../types';
+import { ITaskInfo } from 'types';
 
 import { ReactComponent as NoData } from '@assets/images/noData.svg';
 import { hashStringToColor, parseTasksByStatus } from '@utils';
@@ -137,7 +136,7 @@ interface Props {
   planName: string;
   planId: string;
   tabName: string[];
-  tasks: TaskInfo[];
+  tasks: ITaskInfo[];
 }
 
 function BriefPlan({ planName, planId, tabName, tasks }: Props) {
@@ -183,7 +182,7 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
                   <p>{`${tabName[idx]}(${taskList.length})`}</p>
                 </TaskStatusName>
                 <TaskFrame>
-                  {taskList.map((task: TaskInfo) => (
+                  {taskList.map((task: ITaskInfo) => (
                     <Task key={task.id}>
                       <div className="task-item">
                         <div className="task-name">{task.name}</div>

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-import { MemberType } from 'types';
+import { ILabel } from 'types';
 
 import { ReactComponent as DeadlineDate } from '@assets/images/deadlineCheck.svg';
 import { ReactComponent as StartDate } from '@assets/images/startDate.svg';
 import LabelInput from '@components/LabelInput';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
+import { membersState } from '@recoil/atoms';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -98,14 +100,10 @@ const DeadlineField = styled.div`
   }
 `;
 
-interface Props {
-  members: MemberType[];
-  allLabels: string[];
-}
-
-export default function AddTaskModal({ members, allLabels }: Props) {
+export default function AddTaskModal() {
   const today = new Date();
 
+  const members = useRecoilValue(membersState);
   const [taskName, setTaskName] = useState<string>('');
   const [assignee, setAssignee] = useState<string>('');
   const [checkDeadline, setCheckDeadline] = useState<boolean>(false);
@@ -113,7 +111,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
     [today.getFullYear(), today.getMonth() + 1, today.getDate()].join('-'),
   );
   const [endDate, setEndDate] = useState<string>(startDate);
-  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<ILabel[]>([]);
 
   const options = members.map((member) => {
     return { value: member.id.toString(), label: member.name };
@@ -193,7 +191,7 @@ export default function AddTaskModal({ members, allLabels }: Props) {
           </DeadlineField>
         </Fields>
         <InputField>
-          <LabelInput allLabels={allLabels} alreadySelected={[]} selectedLabelsHandler={setSelectedLabels} />
+          <LabelInput alreadySelected={[]} selectedLabelsHandler={setSelectedLabels} />
         </InputField>
         <ModalButton type="submit">추가하기</ModalButton>
       </FormContainer>
