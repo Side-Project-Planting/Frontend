@@ -40,22 +40,14 @@ const ModalContainer = styled.div`
 
 type ModalType = 'none' | 'normal' | 'exitPlan' | 'addTask';
 
-interface MemberType {
-  id: number;
-  name: string;
-  imgUrl?: string;
-  isAdmin: boolean;
-}
-
 interface Props {
   type: ModalType;
   description?: string;
   requestAPI: () => void;
   onClose: () => void;
-  members?: MemberType[];
 }
 
-export default function Modal({ type, description, requestAPI, onClose, members }: Props) {
+export default function Modal({ type, description, requestAPI, onClose }: Props) {
   useEffect(() => {
     const keyDownEscCloseModal = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -74,10 +66,10 @@ export default function Modal({ type, description, requestAPI, onClose, members 
             {type === 'normal' && description && (
               <NormalModal description={description} requestAPI={requestAPI} onClose={onClose} />
             )}
-            {type === 'exitPlan' && description && members && (
-              <ExitPlanModal description={description} members={members} requestAPI={requestAPI} onClose={onClose} />
+            {type === 'exitPlan' && description && (
+              <ExitPlanModal description={description} requestAPI={requestAPI} onClose={onClose} />
             )}
-            {type === 'addTask' && members && <AddTaskModal members={members} />}
+            {type === 'addTask' && <AddTaskModal />}
           </ModalContainer>
         </ModalWrapper>
       </ModalOverlay>
@@ -87,5 +79,4 @@ export default function Modal({ type, description, requestAPI, onClose, members 
 
 Modal.defaultProps = {
   description: '',
-  members: [],
 };

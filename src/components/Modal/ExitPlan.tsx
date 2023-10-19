@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-import { IMember } from 'types';
 
 import { ModalButton, ModalButtonContainer, ModalDescription } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
+import { membersState } from '@recoil/atoms';
 
 const SelectAdminContainer = styled.div`
   display: flex;
@@ -18,13 +19,13 @@ const SelectAdminText = styled.p`
 
 interface ExitPlanProps {
   description: string;
-  members: IMember[];
   requestAPI: () => void;
   onClose: () => void;
 }
 
 // 관리자가 플랜을 나갈떄 사용할 모달
-export default function ExitPlanModal({ description, members, requestAPI, onClose }: ExitPlanProps) {
+export default function ExitPlanModal({ description, requestAPI, onClose }: ExitPlanProps) {
+  const members = useRecoilValue(membersState);
   const [admin, setAdmin] = useState<string>('');
   const options = members.map((member) => {
     return { value: member.id.toString(), label: member.name };

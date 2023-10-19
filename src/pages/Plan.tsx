@@ -355,7 +355,6 @@ function Plan() {
           requestAPI={() => {
             // TODO: 할 일 추가 API 입력
           }}
-          members={plan?.members}
         />
       )}
     </Wrapper>
