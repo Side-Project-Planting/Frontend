@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
+import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { getPlanInfo } from '@apis';
@@ -10,6 +11,7 @@ import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import { Tab, TasksContainer } from '@components/Tab';
 import useModal from '@hooks/useModal';
+import { labelsState, membersState } from '@recoil/atoms';
 
 interface Label {
   id: number;
@@ -177,6 +179,8 @@ function Plan() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { Modal, showModal, openModal, closeModal } = useModal();
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
+  const setMembers = useSetRecoilState(membersState);
+  const setLabels = useSetRecoilState(labelsState);
 
   const sortTabsAndFilterPlanByLabels = (data: PlanType, labels: number[]) => {
     if (!data) {
@@ -215,6 +219,8 @@ function Plan() {
       try {
         const data = await getPlanInfo();
         const sortedTabsAndFilteredPlan = sortTabsAndFilterPlanByLabels(data, selectedLabels);
+        setMembers(sortedTabsAndFilteredPlan.members);
+        setLabels(sortedTabsAndFilteredPlan.labels);
         setPlan(sortedTabsAndFilteredPlan);
       } catch (error) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
