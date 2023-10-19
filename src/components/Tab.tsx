@@ -153,8 +153,6 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: TabHeaderProps) {
 export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
   return (
     <Container>
-      {/* TODO 할일 칸반 리스트 */}
-      {/* {tasks?.map((item) => <span key={item.order}>{item.title}</span>)} */}
       {tasks?.map((task) => <TaskItem key={task.id} task={task} />)}
       {/* TODO 할일 drag&drop */}
       <AddButton type="button" className="add" onClick={onClickHandler}>
