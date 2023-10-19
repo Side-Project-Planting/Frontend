@@ -117,7 +117,7 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
     return !(labelArr.find((label) => label.id === currentLabelId) === undefined);
   };
 
-  const addLabel = (currentLabel: ILabel) => {
+  const selectLabel = (currentLabel: ILabel) => {
     if (isIncludeIn(selected, currentLabel.id)) {
       // eslint-disable-next-line
       alert('이미 등록된 레이블입니다!');
@@ -151,19 +151,19 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
           alert('최소 1글자 이상 입력해주세요!');
           return;
         }
-        addLabel(searched[searchedIdx]);
+        selectLabel(searched[searchedIdx]);
         return;
       }
       let currentLabel = findLabel(+labelInput.current.id);
       currentLabel = currentLabel || createNewLabel(labelInput.current.value);
-      addLabel(currentLabel);
+      selectLabel(currentLabel);
     }
   };
 
   const onClickSearchedLabel = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const currentLabel = searched[searchedIdx];
-    addLabel(currentLabel);
+    selectLabel(currentLabel);
   };
 
   const onClickDeleteLabel = (e: React.MouseEvent<HTMLButtonElement>) => {
