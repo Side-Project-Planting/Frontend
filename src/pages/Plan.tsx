@@ -5,6 +5,7 @@ import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
+import { ITask } from 'types';
 
 import { getPlanInfo } from '@apis';
 import LabelFilter from '@components/LabelFilter';
@@ -18,21 +19,10 @@ interface Label {
   value: string;
 }
 
-interface TaskType {
-  id: number;
-  title: string;
-  tabId: number;
-  labels: Label[];
-  assignee: string;
-  assigneeId: number;
-  order: number;
-  dateRange: null | string[];
-}
-
 interface TabType {
   id: number;
   title: string;
-  tasks?: TaskType[];
+  tasks?: ITask[];
 }
 
 interface MemberType {
@@ -50,7 +40,7 @@ interface PlanType {
   tabOrder: number[];
   tabs: TabType[];
   labels: Label[];
-  tasks: TaskType[];
+  tasks: ITask[];
 }
 
 const Wrapper = styled.main`
@@ -189,9 +179,7 @@ function Plan() {
 
     // 라벨 배렬의 길이가 0보다 클때만 라벨 필터링
     const filteredByLabelTasks =
-      labels.length > 0
-        ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label.id)))
-        : data.tasks;
+      labels.length > 0 ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label))) : data.tasks;
 
     // {3: id=3인 탭, 1: id=1인 탭, 2:id=2인 탭}
     const tabIndex: Record<number, TabType> = {};

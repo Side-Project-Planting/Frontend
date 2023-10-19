@@ -14,8 +14,10 @@ export interface ILabel {
 export interface ITask {
   id: number;
   title: string;
+  tabId: number;
   labels: number[];
   assignee: string;
+  assigneeId: number;
   order: number;
   dateRange: null | string[];
 }

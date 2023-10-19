@@ -2,8 +2,11 @@ import React from 'react';
 
 import { IoClose, IoInfinite } from 'react-icons/io5';
 import { PiClockFill } from 'react-icons/pi';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
+import { ITask } from 'types';
 
+import { filteredLabelsSelector } from '@recoil/selectors';
 import { hashStringToColor } from '@utils';
 
 const ItemWrapper = styled.div`
@@ -76,25 +79,13 @@ const DateField = styled.div`
   }
 `;
 
-interface Label {
-  id: number;
-  value: string;
-}
-
-interface TaskType {
-  id: number;
-  title: string;
-  labels: Label[];
-  assignee: string;
-  order: number;
-  dateRange: null | string[];
-}
-
 interface Props {
-  task: TaskType;
+  task: ITask;
 }
 
 export default function TaskItem({ task }: Props) {
+  const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
+
   return (
     <ItemWrapper>
       <button type="button">
@@ -102,8 +93,8 @@ export default function TaskItem({ task }: Props) {
       </button>
       <p id="task-title">{task.title}</p>
       <LabelField>
-        {task.labels.map((label) => (
-          <LabelItem key={label.id} color={hashStringToColor(label.id.toString())}>
+        {filteredLabels.map((label) => (
+          <LabelItem key={label.id} color={hashStringToColor(label.value)}>
             {label.value}
           </LabelItem>
         ))}
