@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react';
 
 import styled from 'styled-components';
 
-import Dropdown from './Dropdown';
-import TaskItem from './TaskItem';
+import Dropdown from '@components/Dropdown';
+import TaskItem from '@components/TaskItem';
 
 interface Label {
   id: number;
