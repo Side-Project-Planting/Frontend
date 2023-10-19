@@ -19,12 +19,13 @@ export const filteredLabelsSelector = selectorFamily<ILabel[], number[]>({
       const filteredLabels: ILabel[] = [];
       const labels = get(labelsState);
       let p = 0;
-      for (let i = 0; i < labels.length; i += 1) {
-        if (labels[i].id === idList[p]) {
-          filteredLabels.push(labels[i]);
+
+      labels.forEach((label) => {
+        if (label.id === idList[p]) {
+          filteredLabels.push(label);
           p += 1;
         }
-      }
+      });
       return filteredLabels;
     },
 });
