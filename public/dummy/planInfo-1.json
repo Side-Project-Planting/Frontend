@@ -50,6 +50,7 @@
    ],
 	"tasks" : [
          {
+            "id": 1,
             "title":"NC SOFT 서류 제출",
             "tabId": 3,
             "labels": [3],
@@ -57,12 +58,15 @@
             "order": 0
          },
          {
+            "id": 2,
             "title":"이펙티브 완독",
             "tabId": 1,
             "labels": [1],
             "assigneeId": 3,
             "order": 0
-         },              {
+         },
+         {
+            "id": 3,
             "title":"타입스크립트 Chap1",
             "tabId": 2,
             "labels": [1],
@@ -70,6 +74,7 @@
             "order": 0
          },
          {
+            "id": 4,
             "title":"백준 삼성 기출",
             "tabId": 2,
             "labels": [2],
