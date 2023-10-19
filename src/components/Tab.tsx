@@ -161,13 +161,7 @@ export function Tab({
   onDrop,
 }: TabProps) {
   return (
-    <Wrapper
-      draggable
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-      // style={{ opacity: draggedTab === id ? 0.5 : 1 }}
-    >
+    <Wrapper draggable onDragStart={onDragStart} onDragOver={onDragOver} onDrop={onDrop}>
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
       <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>

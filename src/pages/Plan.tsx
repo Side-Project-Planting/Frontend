@@ -171,28 +171,30 @@ function Plan() {
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
-  const [draggedTab, setDraggedTab] = useState<number | null>(null);
+  const [draggedTabId, setDraggedTabId] = useState<number | null>(null);
 
-  const sortTabsAndFilterPlanByLabels = (data: PlanType, labels: number[]) => {
+  const FilterPlanTasks = (data: PlanType, labels: number[]) => {
     if (!data) {
       return data;
     }
 
-    // 라벨 배렬의 길이가 0보다 클때만 라벨 필터링
-    const filteredByLabelTasks =
+    // 라벨 배열의 길이가 0보다 클때만 라벨 필터링
+    const filteredTasksByLabel =
       labels.length > 0 ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label))) : data.tasks;
 
-    return { ...data, tasks: filteredByLabelTasks };
+    // TODO : memberId로 tasks 필터링
+
+    return { ...data, tasks: filteredTasksByLabel };
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getPlanInfo();
-        const sortedTabsAndFilteredPlan = sortTabsAndFilterPlanByLabels(data, selectedLabels);
-        setMembers(sortedTabsAndFilteredPlan.members);
-        setLabels(sortedTabsAndFilteredPlan.labels);
-        setPlan(sortedTabsAndFilteredPlan);
+        const FilteredPlan = FilterPlanTasks(data, selectedLabels);
+        setMembers(FilteredPlan.members);
+        setLabels(FilteredPlan.labels);
+        setPlan(FilteredPlan);
       } catch (error) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
@@ -205,11 +207,11 @@ function Plan() {
     return <div>Loading...</div>;
   }
 
-  const tabLookup: Record<number, TabType> = {};
+  const tabById: Record<number, TabType> = {};
   plan.tabs.forEach((tab) => {
-    tabLookup[tab.id] = tab;
+    tabById[tab.id] = tab;
   });
-  const sortedTabs = plan.tabOrder.map((tabId) => tabLookup[tabId]);
+  const sortedTabs = plan.tabOrder.map((tabId) => tabById[tabId]);
 
   const tasksByTab: Record<number, ITask[]> = {};
   plan.tasks.forEach((task) => {
@@ -280,7 +282,7 @@ function Plan() {
   };
 
   const handleDragTabStart = (e: React.DragEvent, tabId: number) => {
-    setDraggedTab(tabId);
+    setDraggedTabId(tabId);
     e.dataTransfer.setData('text/plain', tabId.toString());
   };
 
@@ -291,15 +293,16 @@ function Plan() {
   const handleDropTab = (e: React.DragEvent, targetTabId: number) => {
     e.preventDefault();
 
-    if (draggedTab === null) return;
+    if (draggedTabId === null) return;
 
     const newTabOrder = [...plan.tabOrder];
-    const draggedTabIndex = newTabOrder.indexOf(draggedTab);
+    const draggedTabIndex = newTabOrder.indexOf(draggedTabId);
     const targetTabIndex = newTabOrder.indexOf(targetTabId);
 
     newTabOrder.splice(draggedTabIndex, 1);
-    newTabOrder.splice(targetTabIndex, 0, draggedTab);
+    newTabOrder.splice(targetTabIndex, 0, draggedTabId);
 
+    // TODO: 서버에 탭 순서 변경 요청
     if (plan) {
       setPlan((prev) => {
         if (!prev) return prev;
@@ -307,7 +310,7 @@ function Plan() {
         return { ...prev, tabOrder: newTabOrder };
       });
     }
-    setDraggedTab(null);
+    setDraggedTabId(null);
   };
 
   return (
