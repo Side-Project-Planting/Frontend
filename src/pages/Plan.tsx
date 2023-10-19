@@ -17,11 +17,14 @@ interface Label {
 }
 
 interface TaskType {
+  id: number;
   title: string;
   tabId: number;
   labels: Label[];
+  assignee: string;
   assigneeId: number;
   order: number;
+  dateRange: null | string[];
 }
 
 interface TabType {
@@ -322,7 +325,9 @@ function Plan() {
               title={item.title!}
               onDeleteTab={() => handleDeleteTab(item.id)}
               tasks={item.tasks!}
-              onClickHandler={openModal}
+              onClickHandler={() => {
+                openModal('addTask');
+              }}
               onSaveTitle={handleSaveTabTitle}
             />
           ))}
@@ -337,7 +342,11 @@ function Plan() {
                 onKeyDown={handleInputKeyDown}
               />
               {/* TODO 탭 추가하다 취소하는 버튼 추가 */}
-              <TasksContainer onClickHandler={openModal} />
+              <TasksContainer
+                onClickHandler={() => {
+                  openModal('addTask');
+                }}
+              />
             </TabWrapper>
           )}
           <AddTapButton>
@@ -345,14 +354,14 @@ function Plan() {
           </AddTapButton>
         </TabGroup>
       </MainContainer>
-      {showModal && (
+      {showModal === 'addTask' && (
         <Modal
-          type="addTask"
+          type={showModal}
           onClose={closeModal}
           requestAPI={() => {
             // TODO: 할 일 추가 API 입력
           }}
-          members={plan?.members.map((member) => [member.name, member.id.toString()])}
+          members={plan?.members}
           allLabels={['개발도서', '코테', '이력서']}
         />
       )}

@@ -38,14 +38,21 @@ const ModalContainer = styled.div`
   justify-content: space-between;
 `;
 
-type ModalType = 'normal' | 'exitPlan' | 'addTask';
+type ModalType = 'none' | 'normal' | 'exitPlan' | 'addTask';
+
+interface MemberType {
+  id: number;
+  name: string;
+  imgUrl?: string;
+  isAdmin: boolean;
+}
 
 interface Props {
   type: ModalType;
   description?: string;
   requestAPI: () => void;
   onClose: () => void;
-  members?: string[][];
+  members?: MemberType[];
   allLabels?: string[];
 }
 
@@ -59,6 +66,7 @@ export default function Modal({ type, description, requestAPI, onClose, members,
     window.addEventListener('keydown', keyDownEscCloseModal);
     return () => window.removeEventListener('keydown', keyDownEscCloseModal);
   }, []);
+
   return (
     <ModalPortal>
       <ModalOverlay onClick={onClose}>
