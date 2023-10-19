@@ -12,6 +12,9 @@ type TabProps = {
   onDeleteTab: () => void;
   onSaveTitle: (title: string) => void;
   onClickHandler: () => void;
+  onDragStart: (e: React.DragEvent) => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent) => void;
 };
 
 type TabHeaderProps = {
@@ -139,18 +142,32 @@ export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
   return (
     <Container>
       {tasks?.map((task) => <TaskItem key={task.id} task={task} />)}
-      {/* TODO 할일 drag&drop */}
       <AddButton type="button" className="add" onClick={onClickHandler}>
-        {/* TODO 클릭시 일정 추가(모달) */}
+        {/* TODO 클릭시 일정 추가 */}
         Add Item
       </AddButton>
     </Container>
   );
 }
 
-export function Tab({ title, tasks, onDeleteTab, onClickHandler, onSaveTitle }: TabProps) {
+export function Tab({
+  title,
+  tasks,
+  onDeleteTab,
+  onClickHandler,
+  onSaveTitle,
+  onDragStart,
+  onDragOver,
+  onDrop,
+}: TabProps) {
   return (
-    <Wrapper>
+    <Wrapper
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      // style={{ opacity: draggedTab === id ? 0.5 : 1 }}
+    >
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
       <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>

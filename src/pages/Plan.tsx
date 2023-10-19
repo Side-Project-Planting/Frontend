@@ -171,6 +171,7 @@ function Plan() {
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
+  const [draggedTab, setDraggedTab] = useState<number | null>(null);
 
   const sortTabsAndFilterPlanByLabels = (data: PlanType, labels: number[]) => {
     if (!data) {
@@ -180,25 +181,6 @@ function Plan() {
     // 라벨 배렬의 길이가 0보다 클때만 라벨 필터링
     const filteredByLabelTasks =
       labels.length > 0 ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label))) : data.tasks;
-
-    // console.log(filteredByLabelTasks);
-    // // {3: id=3인 탭, 1: id=1인 탭, 2:id=2인 탭}
-    // const tabIndex: Record<number, TabType> = {};
-    // data.tabs.forEach((tab) => {
-    //   tabIndex[tab.id] = { ...tab, tasks: [] };
-    // });
-
-    // filteredByLabelTasks.forEach((task) => {
-    //   const tab = tabIndex[task.tabId];
-    //   if (tab) {
-    //     tab.tasks!.push(task);
-    //   }
-    // });
-
-    // const arrangedTabs = data.tabOrder.map((tabId) => {
-    //   const tab = tabIndex[tabId];
-    //   return tab;
-    // });
 
     return { ...data, tasks: filteredByLabelTasks };
   };
@@ -297,6 +279,37 @@ function Plan() {
     return title;
   };
 
+  const handleDragTabStart = (e: React.DragEvent, tabId: number) => {
+    setDraggedTab(tabId);
+    e.dataTransfer.setData('text/plain', tabId.toString());
+  };
+
+  const handleDragTabOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDropTab = (e: React.DragEvent, targetTabId: number) => {
+    e.preventDefault();
+
+    if (draggedTab === null) return;
+
+    const newTabOrder = [...plan.tabOrder];
+    const draggedTabIndex = newTabOrder.indexOf(draggedTab);
+    const targetTabIndex = newTabOrder.indexOf(targetTabId);
+
+    newTabOrder.splice(draggedTabIndex, 1);
+    newTabOrder.splice(targetTabIndex, 0, draggedTab);
+
+    if (plan) {
+      setPlan((prev) => {
+        if (!prev) return prev;
+
+        return { ...prev, tabOrder: newTabOrder };
+      });
+    }
+    setDraggedTab(null);
+  };
+
   return (
     <Wrapper>
       <SideContainer>
@@ -342,6 +355,9 @@ function Plan() {
                 openModal('addTask');
               }}
               onSaveTitle={handleSaveTabTitle}
+              onDragStart={(e: React.DragEvent) => handleDragTabStart(e, item.id)}
+              onDragOver={handleDragTabOver}
+              onDrop={(e: React.DragEvent) => handleDropTab(e, item.id)}
             />
           ))}
           {isAddingTab && (
