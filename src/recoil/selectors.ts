@@ -7,6 +7,16 @@ export const filteredLabelsSelector = selectorFamily<ILabel[], number[]>({
   key: 'filteredLabels',
   get:
     (idList: number[]) =>
-    ({ get }) =>
-      get(labelsState).filter((label, idx) => label.id === idList[idx]),
+    ({ get }) => {
+      const filteredLabels: ILabel[] = [];
+      const labels = get(labelsState);
+      let p = 0;
+      for (let i = 0; i < labels.length; i += 1) {
+        if (labels[i].id === idList[p]) {
+          filteredLabels.push(labels[i]);
+          p += 1;
+        }
+      }
+      return filteredLabels;
+    },
 });
