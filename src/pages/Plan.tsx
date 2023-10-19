@@ -181,25 +181,26 @@ function Plan() {
     const filteredByLabelTasks =
       labels.length > 0 ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label))) : data.tasks;
 
-    // {3: id=3인 탭, 1: id=1인 탭, 2:id=2인 탭}
-    const tabIndex: Record<number, TabType> = {};
-    data.tabs.forEach((tab) => {
-      tabIndex[tab.id] = { ...tab, tasks: [] };
-    });
+    // console.log(filteredByLabelTasks);
+    // // {3: id=3인 탭, 1: id=1인 탭, 2:id=2인 탭}
+    // const tabIndex: Record<number, TabType> = {};
+    // data.tabs.forEach((tab) => {
+    //   tabIndex[tab.id] = { ...tab, tasks: [] };
+    // });
 
-    filteredByLabelTasks.forEach((task) => {
-      const tab = tabIndex[task.tabId];
-      if (tab) {
-        tab.tasks!.push(task);
-      }
-    });
+    // filteredByLabelTasks.forEach((task) => {
+    //   const tab = tabIndex[task.tabId];
+    //   if (tab) {
+    //     tab.tasks!.push(task);
+    //   }
+    // });
 
-    const arrangedTabs = data.tabOrder.map((tabId) => {
-      const tab = tabIndex[tabId];
-      return tab;
-    });
+    // const arrangedTabs = data.tabOrder.map((tabId) => {
+    //   const tab = tabIndex[tabId];
+    //   return tab;
+    // });
 
-    return { ...data, tabs: arrangedTabs };
+    return { ...data, tasks: filteredByLabelTasks };
   };
 
   useEffect(() => {
@@ -217,6 +218,12 @@ function Plan() {
 
     fetchData();
   }, [selectedLabels]);
+
+  if (!plan) {
+    return <div>Loading...</div>;
+  }
+
+  const sortedTabs = plan.tabOrder.map((tabId) => plan.tabs.find((tab) => tab.id === tabId)!);
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -313,12 +320,12 @@ function Plan() {
           </UtilContainer>
         </TopContainer>
         <TabGroup>
-          {plan?.tabs?.map((item) => (
+          {sortedTabs.map((item) => (
             <Tab
               key={item.id}
-              title={item.title!}
+              title={item.title}
               onDeleteTab={() => handleDeleteTab(item.id)}
-              tasks={item.tasks!}
+              tasks={plan.tasks.filter((task) => task.tabId === item.id)}
               onClickHandler={() => {
                 openModal('addTask');
               }}
