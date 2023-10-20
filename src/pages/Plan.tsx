@@ -171,45 +171,30 @@ function Plan() {
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
+  const [draggedTabId, setDraggedTabId] = useState<number | null>(null);
 
-  const sortTabsAndFilterPlanByLabels = (data: PlanType, labels: number[]) => {
+  const filterPlanTasks = (data: PlanType, labels: number[]) => {
     if (!data) {
       return data;
     }
 
-    // 라벨 배렬의 길이가 0보다 클때만 라벨 필터링
-    const filteredByLabelTasks =
+    // 라벨 배열의 길이가 0보다 클때만 라벨 필터링
+    const filteredTasksByLabel =
       labels.length > 0 ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label))) : data.tasks;
 
-    // {3: id=3인 탭, 1: id=1인 탭, 2:id=2인 탭}
-    const tabIndex: Record<number, TabType> = {};
-    data.tabs.forEach((tab) => {
-      tabIndex[tab.id] = { ...tab, tasks: [] };
-    });
+    // TODO : memberId로 tasks 필터링
 
-    filteredByLabelTasks.forEach((task) => {
-      const tab = tabIndex[task.tabId];
-      if (tab) {
-        tab.tasks!.push(task);
-      }
-    });
-
-    const arrangedTabs = data.tabOrder.map((tabId) => {
-      const tab = tabIndex[tabId];
-      return tab;
-    });
-
-    return { ...data, tabs: arrangedTabs };
+    return { ...data, tasks: filteredTasksByLabel };
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getPlanInfo();
-        const sortedTabsAndFilteredPlan = sortTabsAndFilterPlanByLabels(data, selectedLabels);
-        setMembers(sortedTabsAndFilteredPlan.members);
-        setLabels(sortedTabsAndFilteredPlan.labels);
-        setPlan(sortedTabsAndFilteredPlan);
+        const filteredPlan = filterPlanTasks(data, selectedLabels);
+        setMembers(filteredPlan.members);
+        setLabels(filteredPlan.labels);
+        setPlan(filteredPlan);
       } catch (error) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
@@ -217,6 +202,24 @@ function Plan() {
 
     fetchData();
   }, [selectedLabels]);
+
+  if (!plan) {
+    return <div>Loading...</div>;
+  }
+
+  const tabById: Record<number, TabType> = {};
+  plan.tabs.forEach((tab) => {
+    tabById[tab.id] = tab;
+  });
+  const sortedTabs = plan.tabOrder.map((tabId) => tabById[tabId]);
+
+  const tasksByTab: Record<number, ITask[]> = {};
+  plan.tasks.forEach((task) => {
+    if (!tasksByTab[task.tabId]) {
+      tasksByTab[task.tabId] = [];
+    }
+    tasksByTab[task.tabId].push(task);
+  });
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -278,6 +281,38 @@ function Plan() {
     return title;
   };
 
+  const handleDragTabStart = (e: React.DragEvent, tabId: number) => {
+    setDraggedTabId(tabId);
+    e.dataTransfer.setData('text/plain', tabId.toString());
+  };
+
+  const handleDragTabOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDropTab = (e: React.DragEvent, targetTabId: number) => {
+    e.preventDefault();
+
+    if (draggedTabId === null) return;
+
+    const newTabOrder = [...plan.tabOrder];
+    const draggedTabIndex = newTabOrder.indexOf(draggedTabId);
+    const targetTabIndex = newTabOrder.indexOf(targetTabId);
+
+    newTabOrder.splice(draggedTabIndex, 1);
+    newTabOrder.splice(targetTabIndex, 0, draggedTabId);
+
+    // TODO: 서버에 탭 순서 변경 요청
+    if (plan) {
+      setPlan((prev) => {
+        if (!prev) return prev;
+
+        return { ...prev, tabOrder: newTabOrder };
+      });
+    }
+    setDraggedTabId(null);
+  };
+
   return (
     <Wrapper>
       <SideContainer>
@@ -313,16 +348,19 @@ function Plan() {
           </UtilContainer>
         </TopContainer>
         <TabGroup>
-          {plan?.tabs?.map((item) => (
+          {sortedTabs.map((item) => (
             <Tab
               key={item.id}
-              title={item.title!}
+              title={item.title}
               onDeleteTab={() => handleDeleteTab(item.id)}
-              tasks={item.tasks!}
+              tasks={tasksByTab[item.id]}
               onClickHandler={() => {
                 openModal('addTask');
               }}
               onSaveTitle={handleSaveTabTitle}
+              onDragStart={(e: React.DragEvent) => handleDragTabStart(e, item.id)}
+              onDragOver={handleDragTabOver}
+              onDrop={(e: React.DragEvent) => handleDropTab(e, item.id)}
             />
           ))}
           {isAddingTab && (
