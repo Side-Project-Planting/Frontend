@@ -6,38 +6,7 @@ import { ITask } from 'types';
 import Dropdown from '@components/Dropdown';
 import TaskItem from '@components/TaskItem';
 
-// interface Label {
-//   id: number;
-//   value: string;
-// }
-
-// interface TabType {
-//   id: number;
-//   title: string;
-//   tasks?: ITask[];
-// }
-
-// interface MemberType {
-//   id: number;
-//   name: string;
-//   imgUrl?: string;
-//   isAdmin: boolean;
-// }
-
-// interface PlanType {
-//   title: string;
-//   description: string;
-//   isPublic: boolean;
-//   members: MemberType[];
-//   tabOrder: number[];
-//   tabs: TabType[];
-//   labels: Label[];
-//   tasks: ITask[];
-// }
-
 type TabProps = {
-  // plan: PlanType;
-  // setPlan: Dispatch<SetStateAction<PlanType | null>>;
   id: number;
   index: number;
   title: string;
@@ -45,10 +14,6 @@ type TabProps = {
   onDeleteTab: () => void;
   onSaveTitle: (title: string) => void;
   onClickHandler: () => void;
-  // isDragging: boolean;
-  // onDragStart: (e: React.DragEvent) => void;
-  // onDragEnter: (e: React.DragEvent) => void;
-  // onDragEnd: (e: React.DragEvent) => void;
 };
 
 type TabHeaderProps = {
@@ -72,14 +37,6 @@ const Wrapper = styled.li`
   flex-direction: column;
   gap: 0.5rem;
   justify-content: space-between;
-  cursor: grab;
-  transition: opacity 0.2s;
-
-  &.dragging {
-    /* dragging할 때 curosr가 not-allowed인 버그가 있음 */
-    cursor: grabbing;
-    opacity: 0.5;
-  }
 `;
 
 const Header = styled.div`
@@ -192,31 +149,9 @@ export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
   );
 }
 
-export function Tab({
-  id,
-  index,
-  title,
-  tasks,
-  onDeleteTab,
-  onClickHandler,
-  onSaveTitle, // isDragging,
-  // onDragEnter,
-} // onDragStart,
-// onDragEnd,
-: TabProps) {
-  // console.log(isDragging, onDragStart, onDragEnter, onDragEnd);
-  console.log(index);
+export function Tab({ id, index, title, tasks, onDeleteTab, onClickHandler, onSaveTitle }: TabProps) {
   return (
-    <Wrapper
-      draggable
-      data-index={index}
-      data-id={id}
-      className="dnd-item"
-      // onDragStart={onDragStart}
-      // onDragEnter={onDragEnter}
-      // onDragEnd={onDragEnd}
-      // className={isDragging ? 'dragging' : ''}
-    >
+    <Wrapper draggable data-index={index} data-id={id} className="dnd-item">
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
       <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>

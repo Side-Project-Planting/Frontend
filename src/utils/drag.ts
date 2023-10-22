@@ -1,5 +1,15 @@
 /* eslint-disable no-param-reassign */
 
+export type TDropItem = {
+  id: number;
+  index: number;
+};
+
+export type TDropEvent = {
+  source: TDropItem;
+  destination?: TDropItem;
+};
+
 const startEventName = 'mousedown';
 const moveEventName = 'mousemove';
 const endEventName = 'mouseup';
@@ -14,18 +24,7 @@ const getDelta = (startEvent: MouseEvent, moveEvent: MouseEvent) => {
   };
 };
 
-export type DropItem = {
-  //   droppableId: string;
-  id: number;
-  index: number;
-};
-
-export type DropEvent = {
-  source: DropItem;
-  destination?: DropItem;
-};
-
-export default function registDND(onDrop: (event: DropEvent) => void) {
+export default function registDND(onDrop: (event: TDropEvent) => void) {
   const startHandler = (startEvent: MouseEvent) => {
     const item = (startEvent.target as HTMLElement).closest<HTMLElement>('.dnd-item');
 
@@ -37,7 +36,6 @@ export default function registDND(onDrop: (event: DropEvent) => void) {
     let destination: HTMLElement | null | undefined;
     let destinationItem: HTMLElement | null | undefined;
     let destinationIndex: number;
-    let destinationDroppableId: string;
     let destinationId: number;
 
     const source = item.closest<HTMLElement>('[data-droppable-id]'); // tab을 갖고 있는 ul
@@ -47,11 +45,10 @@ export default function registDND(onDrop: (event: DropEvent) => void) {
     // 사실 필요없다.
     const sourceIndex = Number(item.dataset.index);
     const sourceId = Number(item.dataset.id);
-    const sourceDroppableId = source.dataset.droppableId!;
 
     const itemRect = item.getBoundingClientRect();
 
-    // tab이랑 똑같이 생긴애 하나 만든다.
+    // tab이랑 똑같이 생긴 ghost 요소를 만든다.
     const ghostItem = item.cloneNode(true) as HTMLElement;
     ghostItem.classList.add('ghost');
     ghostItem.style.position = 'fixed';
@@ -92,22 +89,15 @@ export default function registDND(onDrop: (event: DropEvent) => void) {
         ghostItemRect.top + ghostItemRect.height / 2,
       );
 
-      console.log('point', pointTarget);
       const currentDestinationItem = pointTarget?.closest<HTMLElement>('.dnd-item');
       const currentDestination = pointTarget?.closest<HTMLElement>('[data-droppable-id]');
       const currentDestinationDroppableId = currentDestination?.dataset.droppableId;
       const currentDestinationIndex = Number(currentDestinationItem?.dataset.index);
-      const currentDestinationId = Number(currentDestinationItem?.dataset.id);
-
-      console.log('currentDestinationId', currentDestinationId, currentDestinationIndex, currentDestinationItem);
 
       const currentSourceItem = movingItem ?? item;
       const currentSourceIndex = Number(currentSourceItem.dataset.index);
-      const currentSourceId = Number(currentSourceItem.dataset.id);
       const currentSource = currentSourceItem.closest<HTMLElement>('[data-droppable-id]')!;
       const currentSourceDroppableId = currentSource.dataset.droppableId;
-
-      console.log('currentSourceId', currentSourceId);
 
       if (
         currentDestinationItem?.isSameNode(currentSourceItem) ||
@@ -129,7 +119,6 @@ export default function registDND(onDrop: (event: DropEvent) => void) {
 
         currentDestination.appendChild(movingItem);
         destination = currentDestination;
-        destinationDroppableId = currentDestinationDroppableId;
         destinationIndex = currentDestination.querySelectorAll('.dnd-item').length - 1;
 
         currentDestination.querySelectorAll<HTMLElement>('.dnd-item').forEach((v, i) => {
@@ -144,25 +133,16 @@ export default function registDND(onDrop: (event: DropEvent) => void) {
         });
       }
 
-      console.log(
-        `'${currentSourceDroppableId}': ${currentSourceIndex} -> '${currentDestinationDroppableId}': ${currentDestinationIndex}`,
-      );
-
       if (!currentDestinationItem) {
         return;
       }
 
-      const ITEM_MARGIN = 24;
-      const distance = itemRect.width + ITEM_MARGIN;
-
-      console.log(itemRect);
+      const TAB_MARGIN = 24;
+      const distance = itemRect.width + TAB_MARGIN;
 
       destinationItem = currentDestinationItem;
       destination = currentDestinationItem.closest<HTMLElement>('[data-droppable-id]');
-      destinationDroppableId = `${destination?.dataset.droppableId}`;
       destinationId = Number(destinationItem.dataset.id);
-
-      console.log('destinationItem', destinationItem, destinationId);
 
       const isForward = currentSourceIndex < currentDestinationIndex;
       const isDestinationMoved = destinationItem.classList.contains('moved');
@@ -174,18 +154,15 @@ export default function registDND(onDrop: (event: DropEvent) => void) {
 
       //   드래그 할 때 이동
       const transX = indexDiff * distance;
-      console.log('isForward', isForward, 'transX', transX);
       currentSourceItem.style.transform = `translate3d(${transX}px, 0, 0)`;
 
       let target = currentDestinationItem;
       while (target && target.classList.contains('dnd-item') && !target.classList.contains('placeholder')) {
-        console.log('플레이스홀더');
         if (isDestinationMoved) {
           target.style.transform = '';
           target.classList.remove('moved');
           target = (isForward ? target.nextElementSibling : target.previousElementSibling) as HTMLElement;
         } else {
-          console.log('밑으로 간다');
           target.style.transform = `translate3d(${isForward ? -distance : distance}px, 0 , 0)`;
           target.classList.add('moved');
           target = (isForward ? target.previousElementSibling : target.nextElementSibling) as HTMLElement;
@@ -211,7 +188,6 @@ export default function registDND(onDrop: (event: DropEvent) => void) {
       movingItem?.classList.remove('placeholder');
 
       document.body.removeAttribute('style');
-      //   clearDroppableShadow();
 
       const elementRect = sourceItem.getBoundingClientRect();
       ghostItem.classList.add('moving');
@@ -239,19 +215,13 @@ export default function registDND(onDrop: (event: DropEvent) => void) {
 
           ghostItem.remove();
 
-          console.log(
-            `result >> '${sourceDroppableId}': ${sourceIndex} -> '${destinationDroppableId}': ${destinationIndex}`,
-          );
-
           onDrop({
             source: {
-              //   droppableId: sourceDroppableId,
               id: sourceId,
               index: sourceIndex,
             },
             destination: destination
               ? {
-                  //   droppableId: destinationDroppableId,
                   id: destinationId, // 타겟 탭 id가 와야함
                   index: destinationIndex,
                 }
