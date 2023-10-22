@@ -6,16 +6,49 @@ import { ITask } from 'types';
 import Dropdown from '@components/Dropdown';
 import TaskItem from '@components/TaskItem';
 
+// interface Label {
+//   id: number;
+//   value: string;
+// }
+
+// interface TabType {
+//   id: number;
+//   title: string;
+//   tasks?: ITask[];
+// }
+
+// interface MemberType {
+//   id: number;
+//   name: string;
+//   imgUrl?: string;
+//   isAdmin: boolean;
+// }
+
+// interface PlanType {
+//   title: string;
+//   description: string;
+//   isPublic: boolean;
+//   members: MemberType[];
+//   tabOrder: number[];
+//   tabs: TabType[];
+//   labels: Label[];
+//   tasks: ITask[];
+// }
+
 type TabProps = {
+  // plan: PlanType;
+  // setPlan: Dispatch<SetStateAction<PlanType | null>>;
+  id: number;
+  index: number;
   title: string;
   tasks: ITask[];
   onDeleteTab: () => void;
   onSaveTitle: (title: string) => void;
   onClickHandler: () => void;
-  isDragging: boolean;
-  onDragStart: (e: React.DragEvent) => void;
-  onDragEnter: (e: React.DragEvent) => void;
-  onDragEnd: (e: React.DragEvent) => void;
+  // isDragging: boolean;
+  // onDragStart: (e: React.DragEvent) => void;
+  // onDragEnter: (e: React.DragEvent) => void;
+  // onDragEnd: (e: React.DragEvent) => void;
 };
 
 type TabHeaderProps = {
@@ -160,23 +193,29 @@ export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
 }
 
 export function Tab({
+  id,
+  index,
   title,
   tasks,
   onDeleteTab,
   onClickHandler,
-  onSaveTitle,
-  isDragging,
-  onDragStart,
-  onDragEnter,
-  onDragEnd,
-}: TabProps) {
+  onSaveTitle, // isDragging,
+  // onDragEnter,
+} // onDragStart,
+// onDragEnd,
+: TabProps) {
+  // console.log(isDragging, onDragStart, onDragEnter, onDragEnd);
+  console.log(index);
   return (
     <Wrapper
       draggable
-      onDragStart={onDragStart}
-      onDragEnter={onDragEnter}
-      onDragEnd={onDragEnd}
-      className={isDragging ? 'dragging' : ''}
+      data-index={index}
+      data-id={id}
+      className="dnd-item"
+      // onDragStart={onDragStart}
+      // onDragEnter={onDragEnter}
+      // onDragEnd={onDragEnd}
+      // className={isDragging ? 'dragging' : ''}
     >
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
       <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />

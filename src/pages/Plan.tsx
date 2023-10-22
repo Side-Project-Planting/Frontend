@@ -13,6 +13,7 @@ import MemberFilter from '@components/MemberFilter';
 import { Tab, TasksContainer } from '@components/Tab';
 import useModal from '@hooks/useModal';
 import { labelsState, membersState } from '@recoil/atoms';
+import registDND from '@utils/drag';
 
 interface Label {
   id: number;
@@ -43,6 +44,15 @@ interface PlanType {
   tasks: ITask[];
 }
 
+type DropItem = {
+  id: number;
+  index: number;
+};
+
+type DropEvent = {
+  source: DropItem;
+  destination?: DropItem;
+};
 const Wrapper = styled.main`
   width: 100vw;
   min-height: 100vh;
@@ -171,7 +181,7 @@ function Plan() {
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
-  const [draggedTabId, setDraggedTabId] = useState<number | null>(null);
+  // const [draggedTabId, setDraggedTabId] = useState<number | null>(null);
 
   const filterPlanTasks = (data: PlanType, labels: number[]) => {
     if (!data) {
@@ -202,6 +212,35 @@ function Plan() {
 
     fetchData();
   }, [selectedLabels]);
+
+  const handleDrag = ({ source, destination }: DropEvent) => {
+    if (!destination) return;
+
+    if (!plan) return;
+    const newTabOrder = [...plan.tabOrder];
+    // const scourceKey = source.droppableId;
+    // const destinationKey = destination.droppableId;
+    console.log(source, destination);
+    console.log(newTabOrder);
+    const draggedTabIndex = newTabOrder.indexOf(source.id);
+    const targetTabIndex = newTabOrder.indexOf(destination.id);
+    newTabOrder.splice(draggedTabIndex, 1);
+    newTabOrder.splice(targetTabIndex, 0, source.id);
+
+    console.log(source.id, destination.id);
+
+    setPlan((prev) => {
+      if (!prev) return prev;
+
+      return { ...prev, tabOrder: newTabOrder };
+    });
+  };
+
+  useEffect(() => {
+    console.log('hi');
+    const clear = registDND(handleDrag);
+    return () => clear();
+  }, [plan]);
 
   if (!plan) {
     return <div>Loading...</div>;
@@ -281,40 +320,50 @@ function Plan() {
     return title;
   };
 
-  const handleDragTabStart = (e: React.DragEvent, tabId: number) => {
-    setDraggedTabId(tabId);
-    // e.dataTransfer.setData('text/plain', tabId.toString());
-    // draggable 속정을 주면 요소가 반투명하게 따라오는 걸 없애기 위해 빈 이미지 생성함
-    // const img = new Image();
-    // e.dataTransfer.setDragImage(img, 0, 0);
-  };
+  // const handleDragTabStart = (e: React.DragEvent, tabId: number) => {
+  //   setDraggedTabId(tabId);
+  //   // e.dataTransfer.setData('text/plain', tabId.toString());
+  //   // draggable 속정을 주면 요소가 반투명하게 따라오는 걸 없애기 위해 빈 이미지 생성함
+  //   // const img = new Image();
+  //   // e.dataTransfer.setDragImage(img, 0, 0);
+  // };
 
-  const handleDragTabEnter = (e: React.DragEvent, targetTabId: number) => {
-    if (draggedTabId === null) return;
+  // const handleDragTabEnter = (e: React.DragEvent, targetTabId: number) => {
+  //   if (draggedTabId === null) return;
 
-    const newTabOrder = [...plan.tabOrder];
-    const draggedTabIndex = newTabOrder.indexOf(draggedTabId);
-    const targetTabIndex = newTabOrder.indexOf(targetTabId);
+  //   const newTabOrder = [...plan.tabOrder];
+  //   const draggedTabIndex = newTabOrder.indexOf(draggedTabId);
+  //   const targetTabIndex = newTabOrder.indexOf(targetTabId);
 
-    newTabOrder.splice(draggedTabIndex, 1);
-    newTabOrder.splice(targetTabIndex, 0, draggedTabId);
+  //   newTabOrder.splice(draggedTabIndex, 1);
+  //   newTabOrder.splice(targetTabIndex, 0, draggedTabId);
 
-    // TODO: 서버에 탭 순서 변경 요청
-    if (plan) {
-      setPlan((prev) => {
-        if (!prev) return prev;
+  //   // TODO: 서버에 탭 순서 변경 요청
+  //   if (plan) {
+  //     setPlan((prev) => {
+  //       if (!prev) return prev;
 
-        return { ...prev, tabOrder: newTabOrder };
-      });
-    }
-  };
+  //       return { ...prev, tabOrder: newTabOrder };
+  //     });
+  //   }
+  // };
 
-  const handleDragTabEnd = () => {
-    setDraggedTabId(null);
-  };
+  // const handleDragTabEnd = () => {
+  //   setDraggedTabId(null);
+  // };
 
+  // type DropItem = {
+  //   droppableId: string;
+  //   index: number;
+  // };
+
+  // type DropEvent = {
+  //   source: DropItem;
+  //   destination?: DropItem;
+  // };
+  console.log(sortedTabs);
   return (
-    <Wrapper>
+    <Wrapper data-droppable-id={1}>
       <SideContainer>
         <PlanCategory>
           {planNameList.map((item) => (
@@ -348,9 +397,13 @@ function Plan() {
           </UtilContainer>
         </TopContainer>
         <TabGroup>
-          {sortedTabs.map((item) => (
+          {sortedTabs.map((item, index) => (
             <Tab
+              // plan={plan}
+              // setPlan={setPlan}
+              id={item.id}
               key={item.id}
+              index={index}
               title={item.title}
               onDeleteTab={() => handleDeleteTab(item.id)}
               tasks={tasksByTab[item.id]}
@@ -358,10 +411,10 @@ function Plan() {
                 openModal('addTask');
               }}
               onSaveTitle={handleSaveTabTitle}
-              isDragging={draggedTabId === item.id}
-              onDragStart={(e: React.DragEvent) => handleDragTabStart(e, item.id)}
-              onDragEnter={(e: React.DragEvent) => handleDragTabEnter(e, item.id)}
-              onDragEnd={handleDragTabEnd}
+              // isDragging={draggedTabId === item.id}
+              // onDragStart={(e: React.DragEvent) => handleDragTabStart(e, item.id)}
+              // onDragEnter={(e: React.DragEvent) => handleDragTabEnter(e, item.id)}
+              // onDragEnd={handleDragTabEnd}
             />
           ))}
           {isAddingTab && (
