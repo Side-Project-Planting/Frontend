@@ -15,34 +15,31 @@ const moveEventName = 'mousemove';
 const endEventName = 'mouseup';
 
 const getDelta = (startEvent: MouseEvent, moveEvent: MouseEvent) => {
-  const se = startEvent;
-  const me = moveEvent;
-
   return {
-    deltaX: me.pageX - se.pageX,
-    deltaY: me.pageY - se.pageY,
+    deltaX: moveEvent.pageX - startEvent.pageX,
+    deltaY: moveEvent.pageY - startEvent.pageY,
   };
 };
 
 export default function registDND(onDrop: (event: TDropEvent) => void) {
-  const startHandler = (startEvent: MouseEvent) => {
+  const handleStart = (startEvent: MouseEvent) => {
     const item = (startEvent.target as HTMLElement).closest<HTMLElement>('.dnd-item');
 
     if (!item || item.classList.contains('moving')) {
       return;
     }
 
-    // 여기가 드래그할 때 타겟아이템 관련 id, index다.
     let destination: HTMLElement | null | undefined;
     let destinationItem: HTMLElement | null | undefined;
     let destinationIndex: number;
     let destinationId: number;
 
-    const source = item.closest<HTMLElement>('[data-droppable-id]'); // tab을 갖고 있는 ul
+    // tab을 갖고 있는 ul
+    const source = item.closest<HTMLElement>('[data-droppable-id]');
     if (!source) throw Error('Need `data-droppable-id` at dnd-item parent');
 
     let movingItem: HTMLElement;
-    // 사실 필요없다.
+
     const sourceIndex = Number(item.dataset.index);
     const sourceId = Number(item.dataset.id);
 
@@ -63,7 +60,7 @@ export default function registDND(onDrop: (event: TDropEvent) => void) {
     ghostItem.style.transform = 'scale(1.05)';
     ghostItem.style.transition = 'transform 200ms ease, opacity 200ms ease, boxShadow 200ms ease';
 
-    // 사실 여기도 필요 없을 듯
+    // placeholder 아이템이 들어갈 자리를 만들어준다.
     item.classList.add('placeholder');
     item.style.cursor = 'grabbing';
 
@@ -182,7 +179,7 @@ export default function registDND(onDrop: (event: TDropEvent) => void) {
       }, 200);
     };
 
-    const endHandler = () => {
+    const handleEnd = () => {
       const sourceItem = movingItem ?? item;
       item.classList.remove('placeholder');
       movingItem?.classList.remove('placeholder');
@@ -195,7 +192,6 @@ export default function registDND(onDrop: (event: TDropEvent) => void) {
       ghostItem.style.top = `${elementRect.top}px`;
       ghostItem.style.opacity = '1';
       ghostItem.style.transform = 'none';
-      ghostItem.style.borderWidth = '0px';
       ghostItem.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.15)';
       ghostItem.style.transition = 'all 200ms ease';
 
@@ -235,9 +231,9 @@ export default function registDND(onDrop: (event: TDropEvent) => void) {
     };
 
     document.addEventListener(moveEventName, moveHandler, { passive: false });
-    document.addEventListener(endEventName, endHandler, { once: true });
+    document.addEventListener(endEventName, handleEnd, { once: true });
   };
 
-  document.addEventListener(startEventName, startHandler);
-  return () => document.removeEventListener(startEventName, startHandler);
+  document.addEventListener(startEventName, handleStart);
+  return () => document.removeEventListener(startEventName, handleStart);
 }

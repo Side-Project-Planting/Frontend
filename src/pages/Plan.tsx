@@ -263,11 +263,12 @@ function Plan() {
         title: newTabTitle,
       };
 
+      // 서버에 탭 추가 요청
       setPlan((prev) => {
         if (!prev) {
           return prev;
         }
-        return { ...plan!, tabs: [...plan!.tabs, newTab] };
+        return { ...plan, tabs: [...plan.tabs, newTab], tabOrder: [...plan.tabOrder, newTab.id] };
       });
 
       setIsAddingTab(false);
