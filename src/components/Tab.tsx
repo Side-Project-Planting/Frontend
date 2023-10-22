@@ -43,8 +43,9 @@ const Wrapper = styled.li`
   transition: opacity 0.2s;
 
   &.dragging {
+    /* dragging할 때 curosr가 not-allowed인 버그가 있음 */
+    cursor: grabbing;
     opacity: 0.5;
-    /* border: 2px solid #64d4ab; */
   }
 `;
 
