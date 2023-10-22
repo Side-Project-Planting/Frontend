@@ -283,16 +283,13 @@ function Plan() {
 
   const handleDragTabStart = (e: React.DragEvent, tabId: number) => {
     setDraggedTabId(tabId);
-    e.dataTransfer.setData('text/plain', tabId.toString());
+    // e.dataTransfer.setData('text/plain', tabId.toString());
+    // draggable 속정을 주면 요소가 반투명하게 따라오는 걸 없애기 위해 빈 이미지 생성함
+    // const img = new Image();
+    // e.dataTransfer.setDragImage(img, 0, 0);
   };
 
-  const handleDragTabOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDropTab = (e: React.DragEvent, targetTabId: number) => {
-    e.preventDefault();
-
+  const handleDragTabEnter = (e: React.DragEvent, targetTabId: number) => {
     if (draggedTabId === null) return;
 
     const newTabOrder = [...plan.tabOrder];
@@ -310,6 +307,9 @@ function Plan() {
         return { ...prev, tabOrder: newTabOrder };
       });
     }
+  };
+
+  const handleDragTabEnd = () => {
     setDraggedTabId(null);
   };
 
@@ -358,9 +358,10 @@ function Plan() {
                 openModal('addTask');
               }}
               onSaveTitle={handleSaveTabTitle}
+              isDragging={draggedTabId === item.id}
               onDragStart={(e: React.DragEvent) => handleDragTabStart(e, item.id)}
-              onDragOver={handleDragTabOver}
-              onDrop={(e: React.DragEvent) => handleDropTab(e, item.id)}
+              onDragEnter={(e: React.DragEvent) => handleDragTabEnter(e, item.id)}
+              onDragEnd={handleDragTabEnd}
             />
           ))}
           {isAddingTab && (

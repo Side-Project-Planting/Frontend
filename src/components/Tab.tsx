@@ -12,9 +12,10 @@ type TabProps = {
   onDeleteTab: () => void;
   onSaveTitle: (title: string) => void;
   onClickHandler: () => void;
+  isDragging: boolean;
   onDragStart: (e: React.DragEvent) => void;
-  onDragOver: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent) => void;
+  onDragEnter: (e: React.DragEvent) => void;
+  onDragEnd: (e: React.DragEvent) => void;
 };
 
 type TabHeaderProps = {
@@ -38,6 +39,13 @@ const Wrapper = styled.li`
   flex-direction: column;
   gap: 0.5rem;
   justify-content: space-between;
+  cursor: grab;
+  transition: opacity 0.2s;
+
+  &.dragging {
+    opacity: 0.5;
+    /* border: 2px solid #64d4ab; */
+  }
 `;
 
 const Header = styled.div`
@@ -156,12 +164,19 @@ export function Tab({
   onDeleteTab,
   onClickHandler,
   onSaveTitle,
+  isDragging,
   onDragStart,
-  onDragOver,
-  onDrop,
+  onDragEnter,
+  onDragEnd,
 }: TabProps) {
   return (
-    <Wrapper draggable onDragStart={onDragStart} onDragOver={onDragOver} onDrop={onDrop}>
+    <Wrapper
+      draggable
+      onDragStart={onDragStart}
+      onDragEnter={onDragEnter}
+      onDragEnd={onDragEnd}
+      className={isDragging ? 'dragging' : ''}
+    >
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
       <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>
