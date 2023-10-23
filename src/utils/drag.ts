@@ -1,14 +1,14 @@
 /* eslint-disable no-param-reassign */
 
-export type TDropItem = {
+export interface IDropItem {
   id: number;
   index: number;
-};
+}
 
-export type TDropEvent = {
-  source: TDropItem;
-  destination?: TDropItem;
-};
+export interface IDropEvent {
+  source: IDropItem;
+  destination?: IDropItem;
+}
 
 const startEventName = 'mousedown';
 const moveEventName = 'mousemove';
@@ -22,7 +22,7 @@ const getDelta = (startEvent: MouseEvent, moveEvent: MouseEvent) => {
   };
 };
 
-export default function registDND(onDrop: (event: TDropEvent) => void) {
+export default function registDND(onDrop: (event: IDropEvent) => void) {
   const handleStart = (startEvent: MouseEvent) => {
     // 드래그할 탭 요소
     const item = (startEvent.target as HTMLElement).closest<HTMLElement>('.dnd-item');

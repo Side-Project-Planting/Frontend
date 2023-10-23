@@ -13,34 +13,34 @@ import MemberFilter from '@components/MemberFilter';
 import { Tab, TasksContainer } from '@components/Tab';
 import useModal from '@hooks/useModal';
 import { labelsState, membersState } from '@recoil/atoms';
-import registDND, { TDropEvent } from '@utils/drag';
+import registDND, { IDropEvent } from '@utils/drag';
 
-interface Label {
+interface ILabel {
   id: number;
   value: string;
 }
 
-interface TabType {
+interface ITab {
   id: number;
   title: string;
   tasks?: ITask[];
 }
 
-interface MemberType {
+interface IMember {
   id: number;
   name: string;
   imgUrl?: string;
   isAdmin: boolean;
 }
 
-interface PlanType {
+interface IPlan {
   title: string;
   description: string;
   isPublic: boolean;
-  members: MemberType[];
+  members: IMember[];
   tabOrder: number[];
-  tabs: TabType[];
-  labels: Label[];
+  tabs: ITab[];
+  labels: ILabel[];
   tasks: ITask[];
 }
 
@@ -163,7 +163,7 @@ const planNameList = [
 ];
 
 function Plan() {
-  const [plan, setPlan] = useState<PlanType | null>(null);
+  const [plan, setPlan] = useState<IPlan | null>(null);
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
@@ -173,7 +173,7 @@ function Plan() {
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
 
-  const filterPlanTasks = (data: PlanType, labels: number[]) => {
+  const filterPlanTasks = (data: IPlan, labels: number[]) => {
     if (!data) {
       return data;
     }
@@ -203,7 +203,7 @@ function Plan() {
     fetchData();
   }, [selectedLabels]);
 
-  const handleDrag = ({ source, destination }: TDropEvent) => {
+  const handleDrag = ({ source, destination }: IDropEvent) => {
     if (!destination) return;
 
     if (!plan) return;
@@ -231,7 +231,7 @@ function Plan() {
     return <div>Loading...</div>;
   }
 
-  const tabById: Record<number, TabType> = {};
+  const tabById: Record<number, ITab> = {};
   plan.tabs.forEach((tab) => {
     tabById[tab.id] = tab;
   });
@@ -258,7 +258,7 @@ function Plan() {
     if (newTabTitle.trim() === '') {
       setIsAddingTab(false);
     } else {
-      const newTab: TabType = {
+      const newTab: ITab = {
         id: (plan?.tabs.length || 0) + 1,
         title: newTabTitle,
       };
