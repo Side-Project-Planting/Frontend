@@ -213,7 +213,7 @@ function Plan() {
     newTabOrder.splice(draggedTabIndex, 1);
     newTabOrder.splice(targetTabIndex, 0, source.id);
 
-    console.log(source.id, destination.id);
+    // console.log(source.id, destination.id);
 
     setPlan((prev) => {
       if (!prev) return prev;
