@@ -1,3 +1,6 @@
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/no-unused-prop-types */
+
 import React, { useState, useRef } from 'react';
 
 import styled from 'styled-components';
@@ -6,31 +9,27 @@ import { ITask } from 'types';
 import Dropdown from '@components/Dropdown';
 import TaskItem from '@components/TaskItem';
 
-type TabProps = {
+interface ITabProps {
+  id: number;
+  index: number;
   title: string;
   tasks: ITask[];
   onDeleteTab: () => void;
   onSaveTitle: (title: string) => void;
   onClickHandler: () => void;
-  onDragStart: (e: React.DragEvent) => void;
-  onDragOver: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent) => void;
-};
+}
 
-type TabHeaderProps = {
+interface ITabHeaderProps {
   initialTitle: string;
   onDeleteTab: () => void;
-  // eslint-disable-next-line react/no-unused-prop-types, react/require-default-props
   onClickHandler?: () => void;
   onSaveTitle: (title: string) => void;
-};
+}
 
-type TaskContainerProps = {
-  // eslint-disable-next-line react/require-default-props
+interface ITaskContainerProps {
   tasks?: ITask[];
-  // eslint-disable-next-line react/require-default-props
   onClickHandler?: () => void;
-};
+}
 
 const Wrapper = styled.li`
   height: 100%;
@@ -92,7 +91,7 @@ const AddButton = styled.button`
   transform: translateX(-50%);
 `;
 
-function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: TabHeaderProps) {
+function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) {
   const tabEditOptions = [{ id: 1, label: '삭제', value: 'delete' }];
   const [title, setTitle] = useState(initialTitle);
   const [isEditing, setIsEditing] = useState(false);
@@ -138,7 +137,7 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: TabHeaderProps) {
   );
 }
 
-export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
+export function TasksContainer({ tasks, onClickHandler }: ITaskContainerProps) {
   return (
     <Container>
       {tasks?.map((task) => <TaskItem key={task.id} task={task} />)}
@@ -150,18 +149,9 @@ export function TasksContainer({ tasks, onClickHandler }: TaskContainerProps) {
   );
 }
 
-export function Tab({
-  title,
-  tasks,
-  onDeleteTab,
-  onClickHandler,
-  onSaveTitle,
-  onDragStart,
-  onDragOver,
-  onDrop,
-}: TabProps) {
+export function Tab({ id, index, title, tasks, onDeleteTab, onClickHandler, onSaveTitle }: ITabProps) {
   return (
-    <Wrapper draggable onDragStart={onDragStart} onDragOver={onDragOver} onDrop={onDrop}>
+    <Wrapper draggable data-index={index} data-id={id} className="dnd-item">
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
       <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>
