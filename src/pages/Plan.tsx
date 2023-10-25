@@ -179,15 +179,16 @@ function Plan() {
       return data;
     }
 
-    // 라벨 배열의 길이가 0보다 클때만 라벨 필터링
-    const filteredTasksByLabel =
-      labels.length > 0 ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label))) : data.tasks;
+    const filteredTasks = data.tasks.filter((task) => {
+      // 라벨 배열의 길이가 0보다 클때만 라벨 필터링
+      const labelFilter = labels.length === 0 || task.labels.some((label) => labels.includes(label));
+      // 멤버 필터링
+      const memberFilter = member === 0 || task.assigneeId === member;
 
-    // TODO : memberId로 tasks 필터링
-    const filteredTasksByMember =
-      member === 0 ? filteredTasksByLabel : filteredTasksByLabel.filter((task) => task.assigneeId === member);
+      return labelFilter && memberFilter;
+    });
 
-    return { ...data, tasks: filteredTasksByMember };
+    return { ...data, tasks: filteredTasks };
   };
 
   useEffect(() => {
