@@ -170,6 +170,7 @@ function Plan() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { Modal, showModal, openModal, closeModal } = useModal();
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
+  const [selectedMember, setSelectedMember] = useState<number>(0);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
 
@@ -301,6 +302,10 @@ function Plan() {
     });
   };
 
+  const handleChangeMember = async (memberId: number) => {
+    setSelectedMember(memberId);
+  };
+
   const handleSaveTabTitle = (title: string) => {
     // TODO : 서버로 planId, tabId, title로 title 수정 요청 날리기
     return title;
@@ -327,9 +332,8 @@ function Plan() {
         <LabelFilter selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
-        {/* TODO 멤버 필터링 */}
         <TopContainer>
-          <MemberFilter />
+          <MemberFilter selectedMember={selectedMember} onClick={handleChangeMember} />
           <UtilContainer>
             {/* TODO 클릭시 즐겨찾기 토글, 설정으로 이동 */}
             <div className="icon">
