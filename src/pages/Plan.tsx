@@ -5,7 +5,7 @@ import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { ITask } from 'types';
+import { ITask, ITab, IMember, ILabel } from 'types';
 
 import { getPlanInfo } from '@apis';
 import LabelFilter from '@components/LabelFilter';
@@ -14,24 +14,6 @@ import { Tab, TasksContainer } from '@components/Tab';
 import useModal from '@hooks/useModal';
 import { labelsState, membersState } from '@recoil/atoms';
 import registDND, { IDropEvent } from '@utils/drag';
-
-interface ILabel {
-  id: number;
-  value: string;
-}
-
-interface ITab {
-  id: number;
-  title: string;
-  tasks?: ITask[];
-}
-
-interface IMember {
-  id: number;
-  name: string;
-  imgUrl?: string;
-  isAdmin: boolean;
-}
 
 interface IPlan {
   title: string;

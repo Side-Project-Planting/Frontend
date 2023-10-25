@@ -28,3 +28,9 @@ export interface IMember {
   imgUrl?: string;
   isAdmin: boolean;
 }
+
+export interface ITab {
+  id: number;
+  title: string;
+  tasks?: ITask[];
+}
