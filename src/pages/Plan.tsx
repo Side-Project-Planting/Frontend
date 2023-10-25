@@ -5,7 +5,7 @@ import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { ITask } from 'types';
+import { ITask, ITab, IMember, ILabel } from 'types';
 
 import { getPlanInfo } from '@apis';
 import LabelFilter from '@components/LabelFilter';
@@ -14,24 +14,6 @@ import { Tab, TasksContainer } from '@components/Tab';
 import useModal from '@hooks/useModal';
 import { labelsState, membersState } from '@recoil/atoms';
 import registDND, { IDropEvent } from '@utils/drag';
-
-interface ILabel {
-  id: number;
-  value: string;
-}
-
-interface ITab {
-  id: number;
-  title: string;
-  tasks?: ITask[];
-}
-
-interface IMember {
-  id: number;
-  name: string;
-  imgUrl?: string;
-  isAdmin: boolean;
-}
 
 interface IPlan {
   title: string;
@@ -170,28 +152,32 @@ function Plan() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { Modal, showModal, openModal, closeModal } = useModal();
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
+  const [selectedMember, setSelectedMember] = useState<number>(0);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
 
-  const filterPlanTasks = (data: IPlan, labels: number[]) => {
+  const filterPlanTasks = (data: IPlan, labels: number[], member: number) => {
     if (!data) {
       return data;
     }
 
-    // 라벨 배열의 길이가 0보다 클때만 라벨 필터링
-    const filteredTasksByLabel =
-      labels.length > 0 ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label))) : data.tasks;
+    const filteredTasks = data.tasks.filter((task) => {
+      // 라벨 배열의 길이가 0보다 클때만 라벨 필터링
+      const labelFilter = labels.length === 0 || task.labels.some((label) => labels.includes(label));
+      // 멤버 필터링
+      const memberFilter = member === 0 || task.assigneeId === member;
 
-    // TODO : memberId로 tasks 필터링
+      return labelFilter && memberFilter;
+    });
 
-    return { ...data, tasks: filteredTasksByLabel };
+    return { ...data, tasks: filteredTasks };
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getPlanInfo();
-        const filteredPlan = filterPlanTasks(data, selectedLabels);
+        const filteredPlan = filterPlanTasks(data, selectedLabels, selectedMember);
         setMembers(filteredPlan.members);
         setLabels(filteredPlan.labels);
         setPlan(filteredPlan);
@@ -201,7 +187,7 @@ function Plan() {
     };
 
     fetchData();
-  }, [selectedLabels]);
+  }, [selectedLabels, selectedMember]);
 
   const handleDrag = ({ source, destination }: IDropEvent) => {
     if (!destination) return;
@@ -302,6 +288,10 @@ function Plan() {
     });
   };
 
+  const handleChangeMember = async (memberId: number) => {
+    setSelectedMember(memberId);
+  };
+
   const handleSaveTabTitle = (title: string) => {
     // TODO : 서버로 planId, tabId, title로 title 수정 요청 날리기
     return title;
@@ -328,9 +318,8 @@ function Plan() {
         <LabelFilter selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
-        {/* TODO 멤버 필터링 */}
         <TopContainer>
-          <MemberFilter />
+          <MemberFilter selectedMember={selectedMember} onClick={handleChangeMember} />
           <UtilContainer>
             {/* TODO 클릭시 즐겨찾기 토글, 설정으로 이동 */}
             <div className="icon">
