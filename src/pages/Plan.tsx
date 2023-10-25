@@ -12,7 +12,7 @@ import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import { Tab, TasksContainer } from '@components/Tab';
 import useModal from '@hooks/useModal';
-import { labelsState, membersState } from '@recoil/atoms';
+import { labelsState, membersState, modalState } from '@recoil/atoms';
 import registDND, { IDropEvent } from '@utils/drag';
 
 interface IPlan {
@@ -146,6 +146,7 @@ const planNameList = [
 
 function Plan() {
   const [plan, setPlan] = useState<IPlan | null>(null);
+  const [tasks, setTasks] = useState<ITask[]>([]);
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
@@ -155,6 +156,7 @@ function Plan() {
   const [selectedMember, setSelectedMember] = useState<number>(0);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
+  const setModalInfo = useSetRecoilState(modalState);
 
   const filterPlanTasks = (data: IPlan, labels: number[], member: number) => {
     if (!data) {
@@ -181,6 +183,7 @@ function Plan() {
         setMembers(filteredPlan.members);
         setLabels(filteredPlan.labels);
         setPlan(filteredPlan);
+        setTasks(filteredPlan.tasks);
       } catch (error) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
@@ -225,7 +228,7 @@ function Plan() {
   const sortedTabs = plan.tabOrder.map((tabId) => tabById[tabId]);
 
   const tasksByTab: Record<number, ITask[]> = {};
-  plan.tasks.forEach((task) => {
+  tasks.forEach((task) => {
     if (!tasksByTab[task.tabId]) {
       tasksByTab[task.tabId] = [];
     }
@@ -331,20 +334,23 @@ function Plan() {
           </UtilContainer>
         </TopContainer>
         <TabGroup data-droppable-id={1} className="droppable">
-          {sortedTabs.map((item, index) => (
-            <Tab
-              id={item.id}
-              key={item.id}
-              index={index}
-              title={item.title}
-              onDeleteTab={() => handleDeleteTab(item.id)}
-              tasks={tasksByTab[item.id]}
-              onClickHandler={() => {
-                openModal('addTask');
-              }}
-              onSaveTitle={handleSaveTabTitle}
-            />
-          ))}
+          {sortedTabs.map((item, index) => {
+            return (
+              <Tab
+                id={item.id}
+                key={item.id}
+                index={index}
+                title={item.title}
+                onDeleteTab={() => handleDeleteTab(item.id)}
+                tasks={tasksByTab[item.id]}
+                onClickHandler={() => {
+                  setModalInfo({ tabId: item.id, taskOrder: tasksByTab[item.id].length });
+                  openModal('addTask');
+                }}
+                onSaveTitle={handleSaveTabTitle}
+              />
+            );
+          })}
           {isAddingTab && (
             <TabWrapper>
               <input
@@ -372,6 +378,9 @@ function Plan() {
         <Modal
           type={showModal}
           onClose={closeModal}
+          addTaskHandler={(task: ITask): void => {
+            setTasks([...tasks, task]);
+          }}
           requestAPI={() => {
             // TODO: 할 일 추가 API 입력
           }}
