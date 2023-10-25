@@ -33,3 +33,8 @@ export interface ISelectOption {
   id: number;
   name: string;
 }
+
+export interface IAddTaskModal {
+  tabId: number;
+  taskOrder: number;
+}

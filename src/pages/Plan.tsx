@@ -12,7 +12,7 @@ import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import { Tab, TasksContainer } from '@components/Tab';
 import useModal from '@hooks/useModal';
-import { labelsState, membersState } from '@recoil/atoms';
+import { labelsState, membersState, modalState } from '@recoil/atoms';
 import registDND, { IDropEvent } from '@utils/drag';
 
 interface ILabel {
@@ -173,6 +173,7 @@ function Plan() {
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
+  const setModalInfo = useSetRecoilState(modalState);
 
   const filterPlanTasks = (data: IPlan, labels: number[]) => {
     if (!data) {
@@ -343,20 +344,23 @@ function Plan() {
           </UtilContainer>
         </TopContainer>
         <TabGroup data-droppable-id={1} className="droppable">
-          {sortedTabs.map((item, index) => (
-            <Tab
-              id={item.id}
-              key={item.id}
-              index={index}
-              title={item.title}
-              onDeleteTab={() => handleDeleteTab(item.id)}
-              tasks={tasksByTab[item.id]}
-              onClickHandler={() => {
-                openModal('addTask');
-              }}
-              onSaveTitle={handleSaveTabTitle}
-            />
-          ))}
+          {sortedTabs.map((item, index) => {
+            return (
+              <Tab
+                id={item.id}
+                key={item.id}
+                index={index}
+                title={item.title}
+                onDeleteTab={() => handleDeleteTab(item.id)}
+                tasks={tasksByTab[item.id]}
+                onClickHandler={() => {
+                  setModalInfo({ tabId: item.id, taskOrder: tasksByTab[item.id].length });
+                  openModal('addTask');
+                }}
+                onSaveTitle={handleSaveTabTitle}
+              />
+            );
+          })}
           {isAddingTab && (
             <TabWrapper>
               <input

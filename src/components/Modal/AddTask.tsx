@@ -9,7 +9,7 @@ import { ReactComponent as StartDate } from '@assets/images/startDate.svg';
 import LabelInput from '@components/LabelInput';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
-import { membersState } from '@recoil/atoms';
+import { membersState, modalState } from '@recoil/atoms';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -117,6 +117,7 @@ export default function AddTaskModal({ addTaskHandler, onClose }: Props) {
   );
   const [endDate, setEndDate] = useState<string>(startDate);
   const [selectedLabels, setSelectedLabels] = useState<ILabel[]>([]);
+  const modalInfo = useRecoilValue(modalState);
 
   const options = members.map((member) => {
     return { id: member.id, name: member.name };
@@ -138,19 +139,20 @@ export default function AddTaskModal({ addTaskHandler, onClose }: Props) {
 
   const submitAddTask = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const newTask: ITask = {
+      // TODO: 백엔드로 할 일 추가 요청 후 id 받아와야 함
       id: Math.floor(Math.random() * 1000) + 5,
       title: taskName,
-      tabId: 1,
+      tabId: modalInfo.tabId,
       labels: selectedLabels.map((label) => label.id),
       assignee: assignee.name,
       assigneeId: assignee.id,
-      order: Math.floor(Math.random() * 1000) + 5,
+      order: modalInfo.taskOrder,
       dateRange: checkDeadline ? [startDate, endDate] : null,
     };
     // Plan 페이지 tasks 상태에 반영
     addTaskHandler(newTask);
-    // TODO: 백엔드로 할 일 추가 요청
     // 모달 닫기
     onClose();
   };
