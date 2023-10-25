@@ -205,6 +205,7 @@ function Plan() {
 
   const handleDrag = ({ source, destination }: IDropEvent) => {
     if (!destination) return;
+    if (source.index === destination.index) return;
 
     if (!plan) return;
     const newTabOrder = [...plan.tabOrder];
