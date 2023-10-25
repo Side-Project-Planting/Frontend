@@ -29,6 +29,12 @@ export interface IMember {
   isAdmin: boolean;
 }
 
+export interface ITab {
+  id: number;
+  title: string;
+  tasks?: ITask[];
+}
+
 export interface ISelectOption {
   id: number;
   name: string;
