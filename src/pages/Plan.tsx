@@ -174,7 +174,7 @@ function Plan() {
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
 
-  const filterPlanTasks = (data: IPlan, labels: number[]) => {
+  const filterPlanTasks = (data: IPlan, labels: number[], member: number) => {
     if (!data) {
       return data;
     }
@@ -184,15 +184,17 @@ function Plan() {
       labels.length > 0 ? data.tasks.filter((task) => task.labels.some((label) => labels.includes(label))) : data.tasks;
 
     // TODO : memberId로 tasks 필터링
+    const filteredTasksByMember =
+      member === 0 ? filteredTasksByLabel : filteredTasksByLabel.filter((task) => task.assigneeId === member);
 
-    return { ...data, tasks: filteredTasksByLabel };
+    return { ...data, tasks: filteredTasksByMember };
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getPlanInfo();
-        const filteredPlan = filterPlanTasks(data, selectedLabels);
+        const filteredPlan = filterPlanTasks(data, selectedLabels, selectedMember);
         setMembers(filteredPlan.members);
         setLabels(filteredPlan.labels);
         setPlan(filteredPlan);
@@ -202,7 +204,7 @@ function Plan() {
     };
 
     fetchData();
-  }, [selectedLabels]);
+  }, [selectedLabels, selectedMember]);
 
   const handleDrag = ({ source, destination }: IDropEvent) => {
     if (!destination) return;
