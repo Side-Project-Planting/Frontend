@@ -1,9 +1,10 @@
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { ILabel } from 'types';
 
+import { createLabel } from '@apis';
 import LabelItem from '@components/LabelItem';
 import { labelsState } from '@recoil/atoms';
 
@@ -83,24 +84,12 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
   const [searchedIdx, setSearchedIdx] = useState<number>(-1);
   const [showSearchLabel, setShowSearchLabel] = useState<boolean>(false);
 
-  /* TODO: Test용 함수이므로 API 연결시 제거 필요 */
-  const getTempId = () => {
-    let count = 5;
-    return () => {
-      count += 1;
-      return count;
-    };
-  };
-  const getNewLabelId = useCallback(getTempId(), []);
-  /** ********************************************* */
-
   const findLabelByValue = (labelValue: string) => {
     return labelsClone.find((label) => label.value === labelValue);
   };
 
-  const createNewLabel = (labelValue: string) => {
-    // TODO: 새로운 라벨 생성 요청
-    const newId = getNewLabelId();
+  const createNewLabel = async (labelValue: string) => {
+    const { id: newId } = await createLabel(-1, labelValue);
     const newLabel: ILabel = { id: newId, value: labelValue };
     setLabels([...labelsClone, newLabel]);
     labelsClone = [...labelsClone, newLabel];
@@ -147,7 +136,7 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
     labelInput.current!.value = '';
   };
 
-  const onKeyDownInlabelInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDownInlabelInput = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.nativeEvent.isComposing === true) return;
     if (searched.length > 0) {
       if (e.key === 'ArrowDown') {
@@ -173,7 +162,7 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
       const inputValue = labelInput.current.value;
       if (searchedIdx < 0) {
         let currentLabel = findLabelByValue(inputValue);
-        currentLabel = currentLabel || createNewLabel(inputValue);
+        currentLabel = currentLabel || (await createNewLabel(inputValue));
         selectLabel(currentLabel);
       } else {
         selectLabel(searched[searchedIdx]);
