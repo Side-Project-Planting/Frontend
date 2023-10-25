@@ -43,7 +43,7 @@ interface Props {
 
 export default function LabelItem({ height, labelInfo, deleteHandler }: Props) {
   return (
-    <LabelContainer id={labelInfo.id.toString()} height={height} color={hashStringToColor(labelInfo.id.toString())}>
+    <LabelContainer id={labelInfo.id.toString()} height={height} color={hashStringToColor(labelInfo.value)}>
       <span>{labelInfo.value}</span>
       <button id={`delete-${labelInfo.value}`} type="button" onClick={deleteHandler}>
         <IoClose />
