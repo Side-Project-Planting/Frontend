@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
+import { ISelectOption } from 'types';
 
 import { ModalButton, ModalButtonContainer, ModalDescription } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
@@ -26,9 +27,9 @@ interface ExitPlanProps {
 // 관리자가 플랜을 나갈떄 사용할 모달
 export default function ExitPlanModal({ description, requestAPI, onClose }: ExitPlanProps) {
   const members = useRecoilValue(membersState);
-  const [admin, setAdmin] = useState<string>('');
+  const [admin, setAdmin] = useState<ISelectOption>({ id: -1, name: '' });
   const options = members.map((member) => {
-    return { value: member.id.toString(), label: member.name };
+    return { id: member.id, name: member.name };
   });
 
   // eslint-disable-next-line

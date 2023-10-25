@@ -164,6 +164,7 @@ const planNameList = [
 
 function Plan() {
   const [plan, setPlan] = useState<IPlan | null>(null);
+  const [tasks, setTasks] = useState<ITask[]>([]);
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
@@ -195,6 +196,7 @@ function Plan() {
         setMembers(filteredPlan.members);
         setLabels(filteredPlan.labels);
         setPlan(filteredPlan);
+        setTasks(filteredPlan.tasks);
       } catch (error) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
@@ -238,7 +240,7 @@ function Plan() {
   const sortedTabs = plan.tabOrder.map((tabId) => tabById[tabId]);
 
   const tasksByTab: Record<number, ITask[]> = {};
-  plan.tasks.forEach((task) => {
+  tasks.forEach((task) => {
     if (!tasksByTab[task.tabId]) {
       tasksByTab[task.tabId] = [];
     }
@@ -382,6 +384,9 @@ function Plan() {
         <Modal
           type={showModal}
           onClose={closeModal}
+          addTaskHandler={(task: ITask): void => {
+            setTasks([...tasks, task]);
+          }}
           requestAPI={() => {
             // TODO: 할 일 추가 API 입력
           }}

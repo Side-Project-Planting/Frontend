@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-import { ILabel } from 'types';
+import { ILabel, ISelectOption, ITask } from 'types';
 
 import { ReactComponent as DeadlineDate } from '@assets/images/deadlineCheck.svg';
 import { ReactComponent as StartDate } from '@assets/images/startDate.svg';
@@ -100,12 +100,17 @@ const DeadlineField = styled.div`
   }
 `;
 
-export default function AddTaskModal() {
+interface Props {
+  addTaskHandler: (task: ITask) => void;
+  onClose: () => void;
+}
+
+export default function AddTaskModal({ addTaskHandler, onClose }: Props) {
   const today = new Date();
 
   const members = useRecoilValue(membersState);
   const [taskName, setTaskName] = useState<string>('');
-  const [assignee, setAssignee] = useState<string>('');
+  const [assignee, setAssignee] = useState<ISelectOption>({ id: -1, name: '' });
   const [checkDeadline, setCheckDeadline] = useState<boolean>(false);
   const [startDate, setStartDate] = useState<string>(
     [today.getFullYear(), today.getMonth() + 1, today.getDate()].join('-'),
@@ -114,7 +119,7 @@ export default function AddTaskModal() {
   const [selectedLabels, setSelectedLabels] = useState<ILabel[]>([]);
 
   const options = members.map((member) => {
-    return { value: member.id.toString(), label: member.name };
+    return { id: member.id, name: member.name };
   });
 
   const changeStartDate = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,15 +138,21 @@ export default function AddTaskModal() {
 
   const submitAddTask = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: 백엔드로 할 일 추가 요청
-    const requestData = {
-      taskName,
-      assignee,
-      dateRange: checkDeadline ? [startDate, endDate] : [null, null],
-      selectedLabels,
+    const newTask: ITask = {
+      id: Math.floor(Math.random() * 1000) + 5,
+      title: taskName,
+      tabId: 1,
+      labels: selectedLabels.map((label) => label.id),
+      assignee: assignee.name,
+      assigneeId: assignee.id,
+      order: Math.floor(Math.random() * 1000) + 5,
+      dateRange: checkDeadline ? [startDate, endDate] : null,
     };
-    // eslint-disable-next-line
-    console.log(requestData);
+    // Plan 페이지 tasks 상태에 반영
+    addTaskHandler(newTask);
+    // TODO: 백엔드로 할 일 추가 요청
+    // 모달 닫기
+    onClose();
   };
 
   return (

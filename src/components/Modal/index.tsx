@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 
 import styled from 'styled-components';
+import { ITask } from 'types';
 
 import AddTaskModal from '@components/Modal/AddTask';
 import ExitPlanModal from '@components/Modal/ExitPlan';
@@ -45,9 +46,10 @@ interface Props {
   description?: string;
   requestAPI: () => void;
   onClose: () => void;
+  addTaskHandler?: (task: ITask) => void;
 }
 
-export default function Modal({ type, description, requestAPI, onClose }: Props) {
+export default function Modal({ type, description, requestAPI, onClose, addTaskHandler }: Props) {
   useEffect(() => {
     const keyDownEscCloseModal = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -69,7 +71,7 @@ export default function Modal({ type, description, requestAPI, onClose }: Props)
             {type === 'exitPlan' && description && (
               <ExitPlanModal description={description} requestAPI={requestAPI} onClose={onClose} />
             )}
-            {type === 'addTask' && <AddTaskModal />}
+            {addTaskHandler && type === 'addTask' && <AddTaskModal addTaskHandler={addTaskHandler} onClose={onClose} />}
           </ModalContainer>
         </ModalWrapper>
       </ModalOverlay>
@@ -79,4 +81,5 @@ export default function Modal({ type, description, requestAPI, onClose }: Props)
 
 Modal.defaultProps = {
   description: '',
+  addTaskHandler: () => {},
 };

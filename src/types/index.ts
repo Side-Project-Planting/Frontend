@@ -28,3 +28,8 @@ export interface IMember {
   imgUrl?: string;
   isAdmin: boolean;
 }
+
+export interface ISelectOption {
+  id: number;
+  name: string;
+}

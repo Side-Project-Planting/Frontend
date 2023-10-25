@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import styled from 'styled-components';
+import { ISelectOption } from 'types';
 
 const SelectBoxContainer = styled.div`
   position: relative;
@@ -57,40 +58,34 @@ const SelectBoxArrow = styled.svg<{ $showOptions: boolean }>`
   transition-duration: 0.3s;
   transform: rotate(${(props) => (props.$showOptions ? '180deg' : 0)});
 `;
-
-interface SelectOption {
-  value: string;
-  label: string;
-}
-
 interface Props {
-  options: SelectOption[];
-  setValue: Dispatch<SetStateAction<string>>;
+  options: ISelectOption[];
+  setValue: Dispatch<SetStateAction<ISelectOption>>;
 }
 
 export default function SelectBox({ options, setValue }: Props) {
-  const [selectedValue, setSelectedValue] = useState<SelectOption>(options[0]);
+  const [selectedValue, setSelectedValue] = useState<ISelectOption>(options[0]);
   const [showOptions, setShowOptions] = useState<boolean>(false);
 
   useEffect(() => {
-    setValue(options[0].value);
+    setValue(options[0]);
   }, [setValue]);
 
   return (
     <SelectBoxContainer onClick={() => setShowOptions((prev) => !prev)}>
-      <Selected>{selectedValue.label}</Selected>
+      <Selected>{selectedValue.name}</Selected>
       {showOptions && (
         <SelectOptions>
           {options.map((option) => (
             <Option
-              key={option.value}
-              value={option.value}
+              key={option.id}
+              value={option.id}
               onClick={() => {
                 setSelectedValue(option);
-                setValue(option.value);
+                setValue(option);
               }}
             >
-              {option.label}
+              {option.name}
             </Option>
           ))}
         </SelectOptions>
