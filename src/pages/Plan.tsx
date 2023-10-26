@@ -145,6 +145,7 @@ const planNameList = [
 ];
 
 function Plan() {
+  const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [plan, setPlan] = useState<IPlan | null>(null);
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
@@ -158,9 +159,9 @@ function Plan() {
   const setLabels = useSetRecoilState(labelsState);
   const setModalInfo = useSetRecoilState(modalState);
 
-  const filterPlanTasks = (data: IPlan, labels: number[], member: number) => {
+  const filterAndSetPlan = (data: IPlan, labels: number[], member: number) => {
     if (!data) {
-      return data;
+      return;
     }
 
     const filteredTasks = data.tasks.filter((task) => {
@@ -172,25 +173,33 @@ function Plan() {
       return labelFilter && memberFilter;
     });
 
-    return { ...data, tasks: filteredTasks };
+    const filteredPlan = { ...data, tasks: filteredTasks };
+    setPlan(filteredPlan);
+    setTasks(filteredTasks);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getPlanInfo();
-        const filteredPlan = filterPlanTasks(data, selectedLabels, selectedMember);
-        setMembers(filteredPlan.members);
-        setLabels(filteredPlan.labels);
-        setPlan(filteredPlan);
-        setTasks(filteredPlan.tasks);
+        setMembers(data.members);
+        setLabels(data.labels);
+        setOriginalPlan(data); // 원래의 플랜 데이터 저장
+        filterAndSetPlan(data, selectedLabels, selectedMember);
       } catch (error) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
     };
 
     fetchData();
-  }, [selectedLabels, selectedMember]);
+  }, []);
+
+  useEffect(() => {
+    if (originalPlan) {
+      // 원래의 플랜 데이터를 기반으로 다시 필터링
+      filterAndSetPlan(originalPlan, selectedLabels, selectedMember);
+    }
+  }, [selectedLabels, selectedMember, originalPlan]);
 
   const handleDrag = ({ source, destination }: IDropEvent) => {
     if (!destination) return;
