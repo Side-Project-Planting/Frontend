@@ -5,11 +5,10 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import allImg from '@assets/images/allImg.svg';
 import { membersState } from '@recoil/atoms';
 
 interface IMmeberFilterProp {
-  selectedMember: number;
+  selectedMember: number[];
   onClick: (id: number) => void;
 }
 
@@ -58,13 +57,16 @@ const Tooltip = styled.span`
 
 export default function MemberFilter({ selectedMember, onClick }: IMmeberFilterProp) {
   const memberList = useRecoilValue(membersState);
-  const modifiedMemberList = [{ id: 0, name: 'All', imgUrl: allImg, isAdmin: false }, ...memberList];
 
   return (
     <Memberlist>
-      {modifiedMemberList.map((item) => (
+      {memberList.map((item) => (
         <MemberItem key={item.id} onClick={() => onClick(item.id)}>
-          <MemberImg src={item.imgUrl} alt="profile-img" className={`${selectedMember === item.id && 'selected'}`} />
+          <MemberImg
+            src={item.imgUrl}
+            alt="profile-img"
+            className={`${selectedMember.includes(item.id) && 'selected'}`}
+          />
           {item.id !== 0 && <Tooltip className="tooltip">{item.name}</Tooltip>}
         </MemberItem>
       ))}

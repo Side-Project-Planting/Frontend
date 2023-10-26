@@ -145,6 +145,7 @@ const planNameList = [
 ];
 
 function Plan() {
+  const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [plan, setPlan] = useState<IPlan | null>(null);
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
@@ -153,44 +154,52 @@ function Plan() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { Modal, showModal, openModal, closeModal } = useModal();
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
-  const [selectedMember, setSelectedMember] = useState<number>(0);
+  const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
   const setModalInfo = useSetRecoilState(modalState);
 
-  const filterPlanTasks = (data: IPlan, labels: number[], member: number) => {
+  const filterAndSetPlan = (data: IPlan, labels: number[], members: number[]) => {
     if (!data) {
-      return data;
+      return;
     }
 
     const filteredTasks = data.tasks.filter((task) => {
       // 라벨 배열의 길이가 0보다 클때만 라벨 필터링
       const labelFilter = labels.length === 0 || task.labels.some((label) => labels.includes(label));
       // 멤버 필터링
-      const memberFilter = member === 0 || task.assigneeId === member;
+      const memberFilter = members.length === 0 || members.includes(task.assigneeId);
 
       return labelFilter && memberFilter;
     });
 
-    return { ...data, tasks: filteredTasks };
+    const filteredPlan = { ...data, tasks: filteredTasks };
+    setPlan(filteredPlan);
+    setTasks(filteredTasks);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getPlanInfo();
-        const filteredPlan = filterPlanTasks(data, selectedLabels, selectedMember);
-        setMembers(filteredPlan.members);
-        setLabels(filteredPlan.labels);
-        setPlan(filteredPlan);
-        setTasks(filteredPlan.tasks);
+        setMembers(data.members);
+        setLabels(data.labels);
+        setOriginalPlan(data); // 원래의 플랜 데이터 저장
+        filterAndSetPlan(data, selectedLabels, selectedMembers);
       } catch (error) {
         throw new Error('플랜 정보를 가져오는데 실패했습니다.');
       }
     };
 
     fetchData();
-  }, [selectedLabels, selectedMember]);
+  }, []);
+
+  useEffect(() => {
+    if (originalPlan) {
+      // 원래의 플랜 데이터를 기반으로 다시 필터링
+      filterAndSetPlan(originalPlan, selectedLabels, selectedMembers);
+    }
+  }, [selectedLabels, selectedMembers, originalPlan]);
 
   const handleDrag = ({ source, destination }: IDropEvent) => {
     if (!destination) return;
@@ -292,7 +301,12 @@ function Plan() {
   };
 
   const handleChangeMember = async (memberId: number) => {
-    setSelectedMember(memberId);
+    setSelectedMembers((prev) => {
+      if (prev.includes(memberId)) {
+        return prev.filter((item) => item !== memberId);
+      }
+      return [...prev, memberId];
+    });
   };
 
   const handleSaveTabTitle = (title: string) => {
@@ -322,7 +336,7 @@ function Plan() {
       </SideContainer>
       <MainContainer>
         <TopContainer>
-          <MemberFilter selectedMember={selectedMember} onClick={handleChangeMember} />
+          <MemberFilter selectedMember={selectedMembers} onClick={handleChangeMember} />
           <UtilContainer>
             {/* TODO 클릭시 즐겨찾기 토글, 설정으로 이동 */}
             <div className="icon">
