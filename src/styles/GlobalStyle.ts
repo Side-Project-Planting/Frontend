@@ -4,6 +4,20 @@ import reset from 'styled-reset';
 export default createGlobalStyle`
   ${reset}
 
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #ececec;
+    border-radius: 1rem;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #fff;
+  }
+
   /* 여기에 추가적인 전역 스타일을 설정할 수 있습니다 */
   body {
     font-family: Arial, sans-serif;

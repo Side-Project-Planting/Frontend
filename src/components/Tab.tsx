@@ -74,19 +74,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #ececec;
-    border-radius: 1rem;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #fff;
-  }
 `;
 
 const TaskList = styled.ul`
