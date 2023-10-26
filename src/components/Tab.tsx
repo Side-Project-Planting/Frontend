@@ -70,25 +70,40 @@ const Container = styled.div`
   padding: 1rem;
   border-radius: 1.1rem;
   background-color: #ffffff;
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  overflow: auto;
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #ececec;
+    border-radius: 1rem;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #fff;
+  }
+`;
+
+const TaskList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 570px;
+  overflow-y: auto;
 `;
 
 const AddButton = styled.button`
-  position: absolute;
   width: 17rem;
   height: 3rem;
   border-radius: 0.5rem;
   background-color: #fafafa;
   color: #8993a1;
   font-weight: 600;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
 `;
 
 function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) {
@@ -140,9 +155,8 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
 export function TasksContainer({ tasks, onClickHandler }: ITaskContainerProps) {
   return (
     <Container>
-      {tasks?.map((task) => <TaskItem key={task.id} task={task} />)}
+      <TaskList> {tasks?.map((task) => <TaskItem key={task.id} task={task} />)}</TaskList>
       <AddButton type="button" className="add" onClick={onClickHandler}>
-        {/* TODO 클릭시 일정 추가 */}
         Add Item
       </AddButton>
     </Container>
