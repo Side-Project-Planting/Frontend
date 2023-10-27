@@ -67,12 +67,13 @@ const EditableTitle = styled.input`
 const Container = styled.div`
   width: 20rem;
   height: calc(100% - 2rem);
-  padding: 1rem;
+  padding: 0.5rem;
   border-radius: 1.1rem;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
 `;
 
@@ -91,6 +92,24 @@ const AddButton = styled.button`
   background-color: #fafafa;
   color: #8993a1;
   font-weight: 600;
+`;
+
+const Interactions = styled.div`
+  width: 100%;
+  /* height: rem; */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+`;
+
+const TabDragBar = styled.button`
+  width: 95%;
+  height: 0.5rem;
+
+  background-color: lightgray;
+  border-radius: 15px;
 `;
 
 function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) {
@@ -143,9 +162,12 @@ export function TasksContainer({ tasks, onClickHandler }: ITaskContainerProps) {
   return (
     <Container>
       <TaskList> {tasks?.map((task) => <TaskItem key={task.id} task={task} />)}</TaskList>
-      <AddButton type="button" className="add" onClick={onClickHandler}>
-        Add Item
-      </AddButton>
+      <Interactions>
+        <AddButton type="button" className="add" onClick={onClickHandler}>
+          Add Item
+        </AddButton>
+        <TabDragBar type="button" />
+      </Interactions>
     </Container>
   );
 }
