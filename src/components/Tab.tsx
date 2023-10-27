@@ -96,7 +96,6 @@ const AddButton = styled.button`
 
 const Interactions = styled.div`
   width: 100%;
-  /* height: rem; */
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -107,7 +106,6 @@ const Interactions = styled.div`
 const TabDragBar = styled.button`
   width: 95%;
   height: 0.5rem;
-
   background-color: lightgray;
   border-radius: 15px;
 `;
@@ -166,7 +164,7 @@ export function TasksContainer({ tasks, onClickHandler }: ITaskContainerProps) {
         <AddButton type="button" className="add" onClick={onClickHandler}>
           Add Item
         </AddButton>
-        <TabDragBar type="button" />
+        <TabDragBar type="button" draggable className="dnd-item" />
       </Interactions>
     </Container>
   );
@@ -174,7 +172,7 @@ export function TasksContainer({ tasks, onClickHandler }: ITaskContainerProps) {
 
 export function Tab({ id, index, title, tasks, onDeleteTab, onClickHandler, onSaveTitle }: ITabProps) {
   return (
-    <Wrapper draggable data-index={index} data-id={id} className="dnd-item">
+    <Wrapper className="dnd-tab" data-index={index} data-id={id}>
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
       <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>
