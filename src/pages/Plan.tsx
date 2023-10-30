@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 
+import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
@@ -104,6 +105,10 @@ const TabGroup = styled.ul`
   width: calc(100vw - 22rem);
   height: calc(100% - 4rem);
   display: flex;
+`;
+
+const TabContainer = styled.div`
+  display: flex;
   gap: 1.5rem;
   overflow-x: auto;
 `;
@@ -147,7 +152,7 @@ const planNameList = [
 function Plan() {
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [plan, setPlan] = useState<IPlan | null>(null);
-  const [tasks, setTasks] = useState<ITask[]>([]);
+  const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
@@ -175,7 +180,15 @@ function Plan() {
 
     const filteredPlan = { ...data, tasks: filteredTasks };
     setPlan(filteredPlan);
-    setTasks(filteredTasks);
+
+    const tasksByTab: Record<number, ITask[]> = {};
+    filteredTasks.forEach((task) => {
+      if (!tasksByTab[task.tabId]) {
+        tasksByTab[task.tabId] = [];
+      }
+      tasksByTab[task.tabId].push(task);
+    });
+    setTasks(tasksByTab);
   };
 
   useEffect(() => {
@@ -235,14 +248,6 @@ function Plan() {
     tabById[tab.id] = tab;
   });
   const sortedTabs = plan.tabOrder.map((tabId) => tabById[tabId]);
-
-  const tasksByTab: Record<number, ITask[]> = {};
-  tasks.forEach((task) => {
-    if (!tasksByTab[task.tabId]) {
-      tasksByTab[task.tabId] = [];
-    }
-    tasksByTab[task.tabId].push(task);
-  });
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -314,6 +319,66 @@ function Plan() {
     return title;
   };
 
+  interface IDragDropResult {
+    source: {
+      droppableId: string;
+      index: number;
+    };
+    destination: {
+      droppableId: string;
+      index: number;
+    };
+    draggableId: string;
+  }
+
+  const onDragEnd = (result: IDragDropResult) => {
+    const { destination, source } = result;
+
+    if (!destination) return;
+
+    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+
+    const start = tasks[+source.droppableId];
+    const finish = tasks[+destination.droppableId];
+
+    const updatedTask = start[source.index];
+    start.splice(source.index, 1);
+
+    if (start === finish) {
+      start.splice(destination.index, 0, updatedTask);
+
+      setTasks((prev) => {
+        const newTasks = { ...prev };
+        newTasks[+source.droppableId] = [...start];
+        return newTasks;
+      });
+      return;
+    }
+
+    updatedTask.tabId = +destination.droppableId;
+    finish.splice(destination.index, 0, updatedTask);
+
+    const newStart = [...start].map((item, index) => {
+      const newItem = { ...item };
+      newItem.order = index;
+      return item;
+    });
+    const newFinish = [...finish].map((item, index) => {
+      const newItem = { ...item };
+      newItem.order = index;
+      return item;
+    });
+
+    setTasks((prev) => {
+      const newTasks = {
+        ...prev,
+        [source.droppableId]: newStart,
+        [destination.droppableId]: newFinish,
+      };
+      return newTasks;
+    });
+  };
+
   return (
     <Wrapper>
       <SideContainer>
@@ -348,41 +413,45 @@ function Plan() {
           </UtilContainer>
         </TopContainer>
         <TabGroup data-droppable-id={1} className="droppable">
-          {sortedTabs.map((item, index) => {
-            return (
-              <Tab
-                id={item.id}
-                key={item.id}
-                index={index}
-                title={item.title}
-                onDeleteTab={() => handleDeleteTab(item.id)}
-                tasks={tasksByTab[item.id]}
-                onClickHandler={() => {
-                  setModalInfo({ tabId: item.id, taskOrder: tasksByTab[item.id].length });
-                  openModal('addTask');
-                }}
-                onSaveTitle={handleSaveTabTitle}
-              />
-            );
-          })}
-          {isAddingTab && (
-            <TabWrapper>
-              <input
-                type="text"
-                ref={inputRef}
-                value={newTabTitle}
-                onChange={(e) => setNewTabTitle(e.target.value)}
-                onBlur={handleAddTab}
-                onKeyDown={handleInputKeyDown}
-              />
-              {/* TODO 탭 추가하다 취소하는 버튼 추가 */}
-              <TasksContainer
-                onClickHandler={() => {
-                  openModal('addTask');
-                }}
-              />
-            </TabWrapper>
-          )}
+          <DragDropContext onDragEnd={onDragEnd as OnDragEndResponder}>
+            <TabContainer>
+              {sortedTabs.map((item, index) => {
+                return (
+                  <Tab
+                    id={item.id}
+                    key={item.id}
+                    index={index}
+                    title={item.title}
+                    onDeleteTab={() => handleDeleteTab(item.id)}
+                    tasks={tasks[item.id]}
+                    onClickHandler={() => {
+                      setModalInfo({ tabId: item.id, taskOrder: tasks[item.id].length });
+                      openModal('addTask');
+                    }}
+                    onSaveTitle={handleSaveTabTitle}
+                  />
+                );
+              })}
+              {isAddingTab && (
+                <TabWrapper>
+                  <input
+                    type="text"
+                    ref={inputRef}
+                    value={newTabTitle}
+                    onChange={(e) => setNewTabTitle(e.target.value)}
+                    onBlur={handleAddTab}
+                    onKeyDown={handleInputKeyDown}
+                  />
+                  {/* TODO 탭 추가하다 취소하는 버튼 추가 */}
+                  <TasksContainer
+                    onClickHandler={() => {
+                      openModal('addTask');
+                    }}
+                  />
+                </TabWrapper>
+              )}
+            </TabContainer>
+          </DragDropContext>
           <AddTapButton>
             <SlPlus size={35} color="#8993A1" onClick={handleStartAddingTab} />
           </AddTapButton>
@@ -392,9 +461,7 @@ function Plan() {
         <Modal
           type={showModal}
           onClose={closeModal}
-          addTaskHandler={(task: ITask): void => {
-            setTasks([...tasks, task]);
-          }}
+          addTaskHandler={setTasks}
           requestAPI={() => {
             // TODO: 할 일 추가 API 입력
           }}

@@ -1,5 +1,8 @@
+/* eslint-disable react/jsx-props-no-spreading */
+
 import React from 'react';
 
+import { Draggable } from 'react-beautiful-dnd';
 import { IoClose, IoInfinite } from 'react-icons/io5';
 import { PiClockFill } from 'react-icons/pi';
 import { useRecoilValue } from 'recoil';
@@ -9,9 +12,10 @@ import { ITask } from 'types';
 import { filteredLabelsSelector, memberSelector } from '@recoil/selectors';
 import { hashStringToColor } from '@utils';
 
-const ItemWrapper = styled.div`
+const ItemContainer = styled.div`
   position: relative;
   padding: 1rem;
+  margin-bottom: 1rem;
   width: 18rem;
   min-height: 8rem;
   display: flex;
@@ -81,44 +85,49 @@ const DateField = styled.div`
 
 interface Props {
   task: ITask;
+  index: number;
 }
 
-export default function TaskItem({ task }: Props) {
+export default function TaskItem({ task, index }: Props) {
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
   const assignee = useRecoilValue(memberSelector(task.assigneeId));
 
   return (
-    <ItemWrapper>
-      <button type="button">
-        <IoClose size={20} />
-      </button>
-      <p id="task-title">{task.title}</p>
-      <LabelField>
-        {filteredLabels.map((label) => (
-          <LabelItem key={label.id} color={hashStringToColor(label.value)}>
-            {label.value}
-          </LabelItem>
-        ))}
-      </LabelField>
-      <InfoField>
-        <DateField>
-          {task.dateRange ? (
-            <>
-              <PiClockFill size={16} color="#64D4AB" />
-              <div>
-                {`${task.dateRange[0]}`}
-                <br />
-                {` ~ ${task.dateRange[1]}`}
-              </div>
-            </>
-          ) : (
-            <div className="date-infinity">
-              <IoInfinite size={24} color="#1C2A4B" />
-            </div>
-          )}
-        </DateField>
-        <div>{assignee.name}</div>
-      </InfoField>
-    </ItemWrapper>
+    <Draggable draggableId={task.id.toString()} index={index}>
+      {(provided) => (
+        <ItemContainer {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+          <button type="button">
+            <IoClose size={20} />
+          </button>
+          <p id="task-title">{task.title}</p>
+          <LabelField>
+            {filteredLabels.map((label) => (
+              <LabelItem key={label.id} color={hashStringToColor(label.value)}>
+                {label.value}
+              </LabelItem>
+            ))}
+          </LabelField>
+          <InfoField>
+            <DateField>
+              {task.dateRange ? (
+                <>
+                  <PiClockFill size={16} color="#64D4AB" />
+                  <div>
+                    {`${task.dateRange[0]}`}
+                    <br />
+                    {` ~ ${task.dateRange[1]}`}
+                  </div>
+                </>
+              ) : (
+                <div className="date-infinity">
+                  <IoInfinite size={24} color="#1C2A4B" />
+                </div>
+              )}
+            </DateField>
+            <div>{assignee.name}</div>
+          </InfoField>
+        </ItemContainer>
+      )}
+    </Draggable>
   );
 }

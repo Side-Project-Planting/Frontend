@@ -26,7 +26,9 @@ export default function registDND(onDrop: (event: IDropEvent) => void) {
   const handleStart = (startEvent: MouseEvent) => {
     // 드래그할 탭 요소
     const item = (startEvent.target as HTMLElement).closest<HTMLElement>('.dnd-item');
+    const tabItem = item?.closest<HTMLElement>('.dnd-tab');
 
+    if (!tabItem || tabItem.classList.contains('moving')) return;
     if (!item || item.classList.contains('moving')) return;
 
     // 탭을 드래그해서 이동시킬 목표지점
@@ -42,19 +44,19 @@ export default function registDND(onDrop: (event: IDropEvent) => void) {
 
     // 드래그되는 탭 관련
     // id=2인 탭이 속한 부모 요소
-    const source = item.closest<HTMLElement>('[data-droppable-id]');
+    const source = tabItem.closest<HTMLElement>('[data-droppable-id]');
     // id=2인 탭의 index는 0
-    const sourceIndex = Number(item.dataset.index);
+    const sourceIndex = Number(tabItem.dataset.index);
     // id=2인 탭의 id는 2
-    const sourceId = Number(item.dataset.id);
+    const sourceId = Number(tabItem.dataset.id);
     if (!source) throw Error('dnd-item의 부모 요소에는 data-droppable-id가 주어져야 합니다.');
 
-    let movingItem: HTMLElement;
+    let movingTabItem: HTMLElement;
 
-    const itemRect = item.getBoundingClientRect();
+    const itemRect = tabItem.getBoundingClientRect();
 
     // tab이랑 똑같이 생긴 ghost 탭 요소 생성
-    const ghostItem = item.cloneNode(true) as HTMLElement;
+    const ghostItem = tabItem.cloneNode(true) as HTMLElement;
     ghostItem.classList.add('ghost');
     ghostItem.style.position = 'fixed';
     ghostItem.style.top = `${itemRect.top}px`;
@@ -68,14 +70,14 @@ export default function registDND(onDrop: (event: IDropEvent) => void) {
     ghostItem.style.transition = 'transform 200ms ease, opacity 200ms ease, boxShadow 200ms ease';
 
     // placeholder 아이템이 들어갈 자리를 만들어준다.
-    item.style.cursor = 'grabbing';
-    item.classList.add('placeholder');
+    tabItem.style.cursor = 'grabbing';
+    tabItem.classList.add('placeholder');
 
     document.body.style.cursor = 'grabbing';
     document.body.appendChild(ghostItem);
 
     // ghost가 아닌 dnd-item탭 요소에 대해서
-    document.querySelectorAll<HTMLElement>('.dnd-item:not(.ghost)').forEach((el) => {
+    document.querySelectorAll<HTMLElement>('.dnd-tab:not(.ghost)').forEach((el) => {
       el.style.transition = 'all 200ms ease';
     });
 
@@ -96,13 +98,13 @@ export default function registDND(onDrop: (event: IDropEvent) => void) {
 
       // 현재 목표지점 탭
       // pointTarget으로부터 가장 가까운 className이 "dnd-item"인 탭이 목표지점 탭이 됨
-      const currentDestinationItem = pointTarget?.closest<HTMLElement>('.dnd-item');
+      const currentDestinationItem = pointTarget?.closest<HTMLElement>('.dnd-tab');
       const currentDestination = pointTarget?.closest<HTMLElement>('[data-droppable-id]');
       const currentDestinationDroppableId = currentDestination?.dataset.droppableId;
       const currentDestinationIndex = Number(currentDestinationItem?.dataset.index);
 
       // 현재 드래그되는 탭
-      const currentSourceItem = movingItem || item;
+      const currentSourceItem = movingTabItem || tabItem;
       const currentSource = currentSourceItem.closest<HTMLElement>('[data-droppable-id]')!;
       const currentSourceDroppableId = currentSource.dataset.droppableId;
       const currentSourceIndex = Number(currentSourceItem.dataset.index);
@@ -118,22 +120,22 @@ export default function registDND(onDrop: (event: IDropEvent) => void) {
         currentDestinationDroppableId &&
         currentDestinationDroppableId !== currentSourceDroppableId
       ) {
-        if (!movingItem) {
-          movingItem = item.cloneNode(true) as HTMLElement;
-          item.classList.remove('dnd-item');
-          item.style.display = 'none';
+        if (!movingTabItem) {
+          movingTabItem = tabItem.cloneNode(true) as HTMLElement;
+          tabItem.classList.remove('dnd-tab');
+          tabItem.style.display = 'none';
         }
 
-        currentDestination.appendChild(movingItem);
+        currentDestination.appendChild(movingTabItem);
         destination = currentDestination;
-        destinationIndex = currentDestination.querySelectorAll('.dnd-item').length - 1;
+        destinationIndex = currentDestination.querySelectorAll('.dnd-tab').length - 1;
 
-        currentDestination.querySelectorAll<HTMLElement>('.dnd-item').forEach((el, idx) => {
+        currentDestination.querySelectorAll<HTMLElement>('.dnd-tab').forEach((el, idx) => {
           el.dataset.index = `${idx}`;
           el.style.transform = '';
           el.classList.remove('moved');
         });
-        currentSource.querySelectorAll<HTMLElement>('.dnd-item').forEach((el, idx) => {
+        currentSource.querySelectorAll<HTMLElement>('.dnd-tab').forEach((el, idx) => {
           el.dataset.index = `${idx}`;
           el.style.transform = '';
           el.classList.remove('moved');
@@ -164,7 +166,7 @@ export default function registDND(onDrop: (event: IDropEvent) => void) {
       currentSourceItem.style.transform = `translate(${transX}px, 0)`;
 
       let target = currentDestinationItem;
-      while (target && target.classList.contains('dnd-item') && !target.classList.contains('placeholder')) {
+      while (target && target.classList.contains('dnd-tab') && !target.classList.contains('placeholder')) {
         if (isDestinationMoved) {
           target.style.transform = '';
           target.classList.remove('moved');
@@ -190,9 +192,9 @@ export default function registDND(onDrop: (event: IDropEvent) => void) {
     };
 
     const handleEnd = () => {
-      const sourceItem = movingItem || item;
-      item.classList.remove('placeholder');
-      movingItem?.classList.remove('placeholder');
+      const sourceItem = movingTabItem || tabItem;
+      tabItem.classList.remove('placeholder');
+      movingTabItem?.classList.remove('placeholder');
 
       document.body.removeAttribute('style');
 
@@ -209,14 +211,14 @@ export default function registDND(onDrop: (event: IDropEvent) => void) {
         'transitionend',
         () => {
           setTimeout(() => {
-            document.querySelectorAll<HTMLElement>('.dnd-item').forEach((el) => {
+            document.querySelectorAll<HTMLElement>('.dnd-tab').forEach((el) => {
               el.removeAttribute('style');
               el.classList.remove('moving', 'moved');
             });
 
-            item.classList.add('dnd-item');
-            item.removeAttribute('style');
-            movingItem?.remove();
+            tabItem.classList.add('dnd-tab');
+            tabItem.removeAttribute('style');
+            movingTabItem?.remove();
           }, 0);
 
           ghostItem.remove();
