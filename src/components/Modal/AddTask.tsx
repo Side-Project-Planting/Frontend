@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
@@ -101,7 +101,7 @@ const DeadlineField = styled.div`
 `;
 
 interface Props {
-  addTaskHandler: (task: ITask) => void;
+  addTaskHandler: Dispatch<SetStateAction<Record<number, ITask[]>>>;
   onClose: () => void;
 }
 
@@ -152,7 +152,11 @@ export default function AddTaskModal({ addTaskHandler, onClose }: Props) {
       dateRange: checkDeadline ? [startDate, endDate] : null,
     };
     // Plan 페이지 tasks 상태에 반영
-    addTaskHandler(newTask);
+    addTaskHandler((prev) => {
+      const newTasks = { ...prev };
+      newTasks[modalInfo.tabId].push(newTask);
+      return newTasks;
+    });
     // 모달 닫기
     onClose();
   };

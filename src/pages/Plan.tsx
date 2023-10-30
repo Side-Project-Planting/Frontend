@@ -147,7 +147,7 @@ const planNameList = [
 function Plan() {
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [plan, setPlan] = useState<IPlan | null>(null);
-  const [tasks, setTasks] = useState<ITask[]>([]);
+  const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
@@ -175,7 +175,15 @@ function Plan() {
 
     const filteredPlan = { ...data, tasks: filteredTasks };
     setPlan(filteredPlan);
-    setTasks(filteredTasks);
+
+    const tasksByTab: Record<number, ITask[]> = {};
+    filteredTasks.forEach((task) => {
+      if (!tasksByTab[task.tabId]) {
+        tasksByTab[task.tabId] = [];
+      }
+      tasksByTab[task.tabId].push(task);
+    });
+    setTasks(tasksByTab);
   };
 
   useEffect(() => {
@@ -235,14 +243,6 @@ function Plan() {
     tabById[tab.id] = tab;
   });
   const sortedTabs = plan.tabOrder.map((tabId) => tabById[tabId]);
-
-  const tasksByTab: Record<number, ITask[]> = {};
-  tasks.forEach((task) => {
-    if (!tasksByTab[task.tabId]) {
-      tasksByTab[task.tabId] = [];
-    }
-    tasksByTab[task.tabId].push(task);
-  });
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -356,9 +356,9 @@ function Plan() {
                 index={index}
                 title={item.title}
                 onDeleteTab={() => handleDeleteTab(item.id)}
-                tasks={tasksByTab[item.id]}
+                tasks={tasks[item.id]}
                 onClickHandler={() => {
-                  setModalInfo({ tabId: item.id, taskOrder: tasksByTab[item.id].length });
+                  setModalInfo({ tabId: item.id, taskOrder: tasks[item.id].length });
                   openModal('addTask');
                 }}
                 onSaveTitle={handleSaveTabTitle}
@@ -392,9 +392,7 @@ function Plan() {
         <Modal
           type={showModal}
           onClose={closeModal}
-          addTaskHandler={(task: ITask): void => {
-            setTasks([...tasks, task]);
-          }}
+          addTaskHandler={setTasks}
           requestAPI={() => {
             // TODO: 할 일 추가 API 입력
           }}

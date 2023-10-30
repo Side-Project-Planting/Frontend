@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 
 import styled from 'styled-components';
 import { ITask } from 'types';
@@ -46,7 +46,7 @@ interface Props {
   description?: string;
   requestAPI: () => void;
   onClose: () => void;
-  addTaskHandler?: (task: ITask) => void;
+  addTaskHandler?: Dispatch<SetStateAction<Record<number, ITask[]>>>;
 }
 
 export default function Modal({ type, description, requestAPI, onClose, addTaskHandler }: Props) {
