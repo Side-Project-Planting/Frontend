@@ -1,8 +1,10 @@
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/jsx-props-no-spreading */
 
 import React, { useState, useRef } from 'react';
 
+import { Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import { ITask } from 'types';
 
@@ -27,6 +29,7 @@ interface ITabHeaderProps {
 }
 
 interface ITaskContainerProps {
+  id?: number;
   tasks?: ITask[];
   onClickHandler?: () => void;
 }
@@ -80,8 +83,8 @@ const Container = styled.div`
 const TaskList = styled.ul`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  height: 570px;
+  width: 100%;
+  height: 38rem;
   overflow-y: auto;
 `;
 
@@ -156,10 +159,18 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
   );
 }
 
-export function TasksContainer({ tasks, onClickHandler }: ITaskContainerProps) {
+export function TasksContainer({ id, tasks, onClickHandler }: ITaskContainerProps) {
+  if (!id) return null;
   return (
     <Container>
-      <TaskList> {tasks?.map((task) => <TaskItem key={task.id} task={task} />)}</TaskList>
+      <Droppable droppableId={id.toString()}>
+        {(provided) => (
+          <TaskList {...provided.droppableProps} ref={provided.innerRef}>
+            {tasks?.map((task, index) => <TaskItem key={task.id} task={task} index={index} />)}
+            {provided.placeholder}
+          </TaskList>
+        )}
+      </Droppable>
       <Interactions>
         <AddButton type="button" className="add" onClick={onClickHandler}>
           Add Item
@@ -174,7 +185,7 @@ export function Tab({ id, index, title, tasks, onDeleteTab, onClickHandler, onSa
   return (
     <Wrapper className="dnd-tab" data-index={index} data-id={id}>
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
-      <TasksContainer tasks={tasks} onClickHandler={onClickHandler} />
+      <TasksContainer id={id} tasks={tasks} onClickHandler={onClickHandler} />
     </Wrapper>
   );
 }
