@@ -70,7 +70,6 @@ const EditableTitle = styled.input`
 const Container = styled.div`
   width: 20rem;
   height: calc(100% - 2rem);
-  padding: 0.5rem;
   border-radius: 1.1rem;
   background-color: #ffffff;
   display: flex;
@@ -81,6 +80,8 @@ const Container = styled.div`
 `;
 
 const TaskList = styled.ul`
+  margin: 0.5rem;
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   width: 100%;
