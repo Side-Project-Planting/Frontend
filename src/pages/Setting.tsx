@@ -295,42 +295,52 @@ function Setting() {
     title: planData.title,
     description: planData.description,
   });
-  const [memberEmailList, setMemberEmailList] = useState<string[]>([]);
-  const [isPublic, setIsPublic] = useState<boolean>(planData.isPublic);
+  const [newMemberEmailList, setNewMemberEmailList] = useState<string[]>([]);
   const initialAdmin = planData.members.find((item) => item.isAdmin === true);
+  const [deletedExistMemberIdList, setDeletedExistMemberIdList] = useState<number[]>([]);
   const [admin, setAdmin] = useState<ISelectOption>({ id: initialAdmin?.id, name: initialAdmin?.name });
-  const [deletedList, setDeletedList] = useState<number[]>([]);
+  const [isPublic, setIsPublic] = useState<boolean>(planData.isPublic);
+
   const options = planData.members.map((member) => {
     return { id: member.id, name: member.name };
   });
+
   const changePlanInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPlanInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const addMember = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleAddMember = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value.trim();
     if (e.key !== 'Enter' || !value) return;
-    setMemberEmailList((prev) => [...prev, value]);
+    setNewMemberEmailList((prev) => [...prev, value]);
     e.currentTarget.value = '';
   };
 
-  const deleteMember = (deletedEmail: string) => {
-    const updatedMembers = memberEmailList.filter((email) => email !== deletedEmail);
-    setMemberEmailList(updatedMembers);
+  const handleDeleteNewMember = (deletedEmail: string) => {
+    const updatedMembers = newMemberEmailList.filter((email) => email !== deletedEmail);
+    setNewMemberEmailList(updatedMembers);
   };
 
   const togglePublic = () => {
     setIsPublic((prev) => !prev);
   };
 
-  const handleDelete = (deletedId: number) => {
-    setDeletedList((prev) => {
+  const handleDeleteExistMember = (deletedId: number) => {
+    setDeletedExistMemberIdList((prev) => {
       if (prev.includes(deletedId)) {
         return prev.filter((id) => id !== deletedId);
       }
       return [...prev, deletedId];
     });
+  };
+
+  const handleDeletePlan = () => {
+    // TODO: 서버에 플랜 삭제 요청
+  };
+
+  const handleSavePlan = () => {
+    // TODO: 서버에 플랜 수정 요청
   };
 
   return (
@@ -370,7 +380,7 @@ function Setting() {
             id="members"
             name="members"
             className="email"
-            onKeyUp={addMember}
+            onKeyUp={handleAddMember}
             placeholder="초대할 팀원의 이메일을 알려주세요"
           />
         </InputField>
@@ -378,10 +388,10 @@ function Setting() {
           <MemberList>
             <span className="subTitle">새로운 팀원</span>
             <ul>
-              {memberEmailList.map((item) => (
+              {newMemberEmailList.map((item) => (
                 <MemberItem key={item}>
                   <span className="invite">{item}</span>
-                  <button type="button" onClick={() => deleteMember(item)} className="invite">
+                  <button type="button" onClick={() => handleDeleteNewMember(item)} className="invite">
                     <MdOutlineClose size="16" color="#939393" />
                   </button>
                 </MemberItem>
@@ -398,9 +408,9 @@ function Setting() {
                     <span>{item.email}</span>
                   </div>
                   <div className="delete">
-                    {deletedList.includes(item.id) && <span className="pending">삭제 예정</span>}
-                    <button type="button" onClick={() => handleDelete(item.id)} className="exist">
-                      {deletedList.includes(item.id) ? '되돌리기' : '삭제'}
+                    {deletedExistMemberIdList.includes(item.id) && <span className="pending">삭제 예정</span>}
+                    <button type="button" onClick={() => handleDeleteExistMember(item.id)} className="exist">
+                      {deletedExistMemberIdList.includes(item.id) ? '되돌리기' : '삭제'}
                     </button>
                   </div>
                 </MemberItem>
@@ -421,10 +431,10 @@ function Setting() {
         </SettingItem>
       </ImportantSetting>
       <ButtonContainer>
-        <Button type="button" className="delete">
+        <Button type="button" className="delete" onClick={handleDeletePlan}>
           플랜 삭제
         </Button>
-        <Button type="submit" className="save">
+        <Button type="submit" className="save" onClick={handleSavePlan}>
           변경사항 저장
         </Button>
       </ButtonContainer>
