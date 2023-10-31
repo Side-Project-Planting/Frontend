@@ -15,6 +15,15 @@ const Wrapper = styled.div`
   width: 100vw;
   min-height: 100vh;
   padding: 110px 70px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+const Title = styled.h2`
+  font-size: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgb(216, 222, 228);
 `;
 
 const InputField = styled.div`
@@ -24,26 +33,28 @@ const InputField = styled.div`
 
   input {
     display: block;
-    width: 100%;
-    padding: 1rem;
-    margin-top: 8px;
-    border-radius: 8px;
+    width: 75rem;
+    height: 2.2rem;
+    padding: 0.5rem 0.7rem;
+    margin-top: 0.4rem;
+    border: 1px solid rgb(208, 215, 222);
+    border-radius: 6px;
+    outline: none;
     background-color: #fafafa;
+    font-size: 14px;
+
+    &.email {
+      width: 600px;
+      margin-top: 0;
+    }
+
+    &::placeholder {
+      font-size: inherit;
+    }
 
     &:focus {
-      outline: 1px solid #b8b8b84f;
+      border: 2px solid #64d4ab;
     }
-  }
-`;
-
-const MemberItem = styled.li`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #000;
-
-  button {
-    background-color: inherit;
   }
 `;
 
@@ -51,57 +62,47 @@ const ManageTeam = styled.div`
   width: 600px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
 
   h3 {
     font-weight: 600;
-  }
-
-  input {
-    width: 100%;
-    height: 2.7rem;
-    border-radius: 0.5rem;
-    border: 1px solid #d1d1d1;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    &::placeholder {
-      color: #939393;
-    }
-
-    &:focus {
-      outline: none;
-    }
   }
 `;
 
 const ManageTeamContainer = styled.div`
   background-color: #fafafa;
-  padding: 2rem;
+  padding: 1rem;
+  border: 1px solid rgb(208, 215, 222);
   border-radius: 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 2rem;
 
   color: #939393;
   font-size: 14px;
 `;
 
 const MemberList = styled.div`
+  .subTitle {
+    font-weight: 600;
+  }
+
   ul {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-top: 0.7rem;
-
-    .subTitle {
-      font-size: 1rem;
-    }
+    margin-top: 0.5rem;
   }
 `;
 
-const ExistItem = styled.li`
+const MemberItem = styled.li`
   display: flex;
   justify-content: space-between;
+  align-items: center;
+
+  .invite {
+    color: #000;
+  }
 
   .memberInfo {
     display: flex;
@@ -113,12 +114,42 @@ const ExistItem = styled.li`
     }
   }
 
+  .delete {
+    display: flex;
+    align-items: center;
+
+    .pending {
+      margin-right: 1rem;
+      color: #cf2d7b;
+      font-weight: 600;
+    }
+  }
+
   button {
-    border-radius: 0.5rem;
-    border: 1px solid #d1d1d1;
+    font-weight: 600;
     color: #939393;
-    padding-inline: 0.9rem;
-    height: 2.2rem;
+
+    &.invite {
+      height: fit-content;
+      border: none;
+    }
+
+    &.exist {
+      border-radius: 0.5rem;
+      border: 1px solid #d1d1d1;
+      padding-inline: 0.9rem;
+      height: 2.2rem;
+      transition:
+        color,
+        background-color,
+        border 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+
+      &:hover {
+        background-color: #ff5353;
+        color: #fff;
+        border: none;
+      }
+    }
   }
 `;
 
@@ -202,6 +233,8 @@ const ManageAdmin = styled.div`
 `;
 
 const Button = styled.button`
+  align-self: center;
+  width: fit-content;
   font-size: 14px;
   height: 2.4rem;
   padding-inline: 1.5rem;
@@ -348,6 +381,7 @@ function Setting() {
 
   return (
     <Wrapper>
+      <Title>플랜 설정</Title>
       <InputField>
         <label htmlFor="title">
           플랜 제목
@@ -376,21 +410,24 @@ function Setting() {
       </InputField>
       <ManageTeam>
         <h3>팀원 관리</h3>
-        <input
-          type="email"
-          id="members"
-          name="members"
-          onKeyUp={addMember}
-          placeholder="초대할 팀원의 이메일을 알려주세요"
-        />
+        <InputField>
+          <input
+            type="email"
+            id="members"
+            name="members"
+            className="email"
+            onKeyUp={addMember}
+            placeholder="초대할 팀원의 이메일을 알려주세요"
+          />
+        </InputField>
         <ManageTeamContainer>
           <MemberList>
-            <span className="subTitle">새로 초대할 팀원</span>
+            <span className="subTitle">새로운 팀원</span>
             <ul>
               {memberEmailList.map((item) => (
                 <MemberItem key={item}>
-                  {item}
-                  <button type="button" onClick={() => deleteMember(item)}>
+                  <span className="invite">{item}</span>
+                  <button type="button" onClick={() => deleteMember(item)} className="invite">
                     <MdOutlineClose size="16" color="#939393" />
                   </button>
                 </MemberItem>
@@ -401,16 +438,18 @@ function Setting() {
             <span className="subTitle">팀원 현황</span>
             <ul>
               {planData.members.map((item) => (
-                <ExistItem key={item.id}>
+                <MemberItem key={item.id}>
                   <div className="memberInfo">
                     <span className="name">{item.name}</span>
                     <span>{item.email}</span>
                   </div>
-                  {deletedList.includes(item.id) && <p>삭제 예정</p>}
-                  <button type="button" onClick={() => handleDelete(item.id)}>
-                    {deletedList.includes(item.id) ? '되돌리기' : '삭제'}
-                  </button>
-                </ExistItem>
+                  <div className="delete">
+                    {deletedList.includes(item.id) && <span className="pending">삭제 예정</span>}
+                    <button type="button" onClick={() => handleDelete(item.id)} className="exist">
+                      {deletedList.includes(item.id) ? '되돌리기' : '삭제'}
+                    </button>
+                  </div>
+                </MemberItem>
               ))}
             </ul>
           </MemberList>
