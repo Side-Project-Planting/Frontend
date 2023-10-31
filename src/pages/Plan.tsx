@@ -1,9 +1,12 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useState, useRef } from 'react';
 
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
+import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { ITask, ITab, IMember, ILabel } from 'types';
@@ -163,6 +166,8 @@ function Plan() {
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
   const setModalInfo = useSetRecoilState(modalState);
+
+  const navigate = useNavigate();
 
   const filterAndSetPlan = (data: IPlan, labels: number[], members: number[]) => {
     if (!data) {
@@ -407,7 +412,7 @@ function Plan() {
             <div className="icon">
               <IoIosStarOutline size={25} />
             </div>
-            <div className="icon">
+            <div className="icon" onClick={() => navigate('/setting')}>
               <CiSettings size={28} />
             </div>
           </UtilContainer>
