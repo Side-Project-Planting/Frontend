@@ -430,7 +430,7 @@ function Plan() {
                     onDeleteTab={() => handleDeleteTab(item.id)}
                     tasks={tasks[item.id]}
                     onClickHandler={() => {
-                      setModalInfo({ tabId: item.id, taskOrder: tasks[item.id].length });
+                      setModalInfo({ tabId: item.id, taskOrder: tasks[item.id] ? tasks[item.id].length : 0 });
                       openModal('addTask');
                     }}
                     onSaveTitle={handleSaveTabTitle}
