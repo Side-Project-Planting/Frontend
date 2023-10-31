@@ -154,20 +154,6 @@ const MemberItem = styled.li`
   }
 `;
 
-const DangerZone = styled.div`
-  .set {
-    display: flex;
-    align-items: center;
-    gap: 3.8rem;
-  }
-`;
-
-const ManageAdmin = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
 const ButtonContainer = styled.div`
   align-self: center;
   display: flex;
@@ -190,6 +176,24 @@ const Button = styled.button`
   &.delete {
     background-color: #ff5353;
   }
+`;
+
+const ImportantSetting = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 14px;
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+`;
+
+const SettingItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 `;
 
 const planData = {
@@ -405,19 +409,17 @@ function Setting() {
           </MemberList>
         </ManageTeamContainer>
       </ManageTeam>
-      <DangerZone>
+      <ImportantSetting>
         <h3>중요 설정 변경</h3>
-        <div className="set">
-          <ManageAdmin>
-            <span>관리자</span>
-            <SelectBox options={options} value={admin} setValue={setAdmin} />
-          </ManageAdmin>
-          <ManageAdmin>
-            <span>{isPublic ? '플랜을 공개할게요' : '플랜을 공개하지 않아요'}</span>
-            <ToggleSwitch isPublic={isPublic} onChange={togglePublic} />
-          </ManageAdmin>
-        </div>
-      </DangerZone>
+        <SettingItem>
+          <span>관리자</span>
+          <SelectBox options={options} value={admin} setValue={setAdmin} />
+        </SettingItem>
+        <SettingItem>
+          <span>공개 여부</span>
+          <ToggleSwitch isPublic={isPublic} onChange={togglePublic} />
+        </SettingItem>
+      </ImportantSetting>
       <ButtonContainer>
         <Button type="button" className="delete">
           플랜 삭제
