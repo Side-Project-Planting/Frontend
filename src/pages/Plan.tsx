@@ -173,7 +173,7 @@ function Plan() {
       // 라벨 배열의 길이가 0보다 클때만 라벨 필터링
       const labelFilter = labels.length === 0 || task.labels.some((label) => labels.includes(label));
       // 멤버 필터링
-      const memberFilter = members.length === 0 || members.includes(task.assigneeId);
+      const memberFilter = members.length === 0 || members.includes(task.assigneeId!);
 
       return labelFilter && memberFilter;
     });

@@ -16,8 +16,8 @@ export interface ITask {
   title: string;
   tabId: number;
   labels: number[];
-  assignee: string;
-  assigneeId: number;
+  assignee: string | undefined;
+  assigneeId: number | undefined;
   order: number;
   dateRange: null | string[];
 }
@@ -36,8 +36,8 @@ export interface ITab {
 }
 
 export interface ISelectOption {
-  id: number;
-  name: string;
+  id: number | undefined;
+  name: string | undefined;
 }
 
 export interface IAddTaskModal {

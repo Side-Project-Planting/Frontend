@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import styled from 'styled-components';
@@ -60,15 +61,16 @@ const SelectBoxArrow = styled.svg<{ $showOptions: boolean }>`
 `;
 interface Props {
   options: ISelectOption[];
+  value?: ISelectOption;
   setValue: Dispatch<SetStateAction<ISelectOption>>;
 }
 
-export default function SelectBox({ options, setValue }: Props) {
+export default function SelectBox({ options, value, setValue }: Props) {
   const [selectedValue, setSelectedValue] = useState<ISelectOption>(options[0]);
   const [showOptions, setShowOptions] = useState<boolean>(false);
 
   useEffect(() => {
-    setValue(options[0]);
+    setValue(value || options[0]);
   }, [setValue]);
 
   return (
