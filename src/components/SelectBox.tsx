@@ -66,7 +66,7 @@ interface Props {
 }
 
 export default function SelectBox({ options, value, setValue }: Props) {
-  const [selectedValue, setSelectedValue] = useState<ISelectOption>(options[0]);
+  const [selectedValue, setSelectedValue] = useState<ISelectOption>(value || options[0]);
   const [showOptions, setShowOptions] = useState<boolean>(false);
 
   useEffect(() => {
