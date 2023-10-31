@@ -279,6 +279,11 @@ function Plan() {
         }
         return { ...plan, tabs: [...plan.tabs, newTab], tabOrder: [...plan.tabOrder, newTab.id] };
       });
+      setTasks((prev) => {
+        const newTasks = { ...prev };
+        newTasks[newTab.id] = [];
+        return newTasks;
+      });
 
       setIsAddingTab(false);
     }
