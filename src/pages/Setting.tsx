@@ -161,15 +161,6 @@ const DangerZone = styled.div`
   }
 `;
 
-const DeleteButton = styled.button`
-  font-size: 14px;
-  height: 2.4rem;
-  padding-inline: 1.5rem;
-  background-color: #ff5353;
-  border-radius: 0.5rem;
-  color: #fff;
-`;
-
 const SelectBoxContainer = styled.div`
   position: relative;
   width: 6rem;
@@ -232,15 +223,28 @@ const ManageAdmin = styled.div`
   gap: 1rem;
 `;
 
-const Button = styled.button`
+const ButtonContainer = styled.div`
   align-self: center;
-  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const Button = styled.button`
   font-size: 14px;
   height: 2.4rem;
   padding-inline: 1.5rem;
-  background-color: #64d4ab;
+  border: none;
   border-radius: 0.5rem;
   color: #fff;
+
+  &.save {
+    background-color: #64d4ab;
+  }
+
+  &.delete {
+    background-color: #ff5353;
+  }
 `;
 
 const planData = {
@@ -456,7 +460,7 @@ function Setting() {
         </ManageTeamContainer>
       </ManageTeam>
       <DangerZone>
-        <span className="subTitle">중요 설정 변경</span>
+        <h3>중요 설정 변경</h3>
         <div className="set">
           <ManageAdmin>
             <span>관리자</span>
@@ -495,10 +499,16 @@ function Setting() {
             <span>{isPublic ? '플랜을 공개할게요' : '플랜을 공개하지 않아요'}</span>
             <ToggleSwitch isPublic={isPublic} onChange={togglePublic} />
           </ManageAdmin>
-          <DeleteButton type="button">플랜 삭제</DeleteButton>
         </div>
       </DangerZone>
-      <Button type="submit">변경사항 저장</Button>
+      <ButtonContainer>
+        <Button type="button" className="delete">
+          플랜 삭제
+        </Button>
+        <Button type="submit" className="save">
+          변경사항 저장
+        </Button>
+      </ButtonContainer>
     </Wrapper>
   );
 }
