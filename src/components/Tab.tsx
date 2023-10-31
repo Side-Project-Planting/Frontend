@@ -161,17 +161,20 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
 }
 
 export function TasksContainer({ id, tasks, onClickHandler }: ITaskContainerProps) {
-  if (!id) return null;
   return (
     <Container>
-      <Droppable droppableId={id.toString()}>
-        {(provided) => (
-          <TaskList {...provided.droppableProps} ref={provided.innerRef}>
-            {tasks?.map((task, index) => <TaskItem key={task.id} task={task} index={index} />)}
-            {provided.placeholder}
-          </TaskList>
-        )}
-      </Droppable>
+      {id ? (
+        <Droppable droppableId={id.toString()}>
+          {(provided) => (
+            <TaskList {...provided.droppableProps} ref={provided.innerRef}>
+              {tasks?.map((task, index) => <TaskItem key={task.id} task={task} index={index} />)}
+              {provided.placeholder}
+            </TaskList>
+          )}
+        </Droppable>
+      ) : (
+        <TaskList />
+      )}
       <Interactions>
         <AddButton type="button" className="add" onClick={onClickHandler}>
           Add Item
