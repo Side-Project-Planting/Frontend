@@ -16,7 +16,7 @@ const ItemContainer = styled.div`
   position: relative;
   padding: 1rem;
   margin-bottom: 1rem;
-  width: 18rem;
+  width: 99%;
   min-height: 8rem;
   display: flex;
   flex-direction: column;

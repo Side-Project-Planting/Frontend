@@ -279,6 +279,11 @@ function Plan() {
         }
         return { ...plan, tabs: [...plan.tabs, newTab], tabOrder: [...plan.tabOrder, newTab.id] };
       });
+      setTasks((prev) => {
+        const newTasks = { ...prev };
+        newTasks[newTab.id] = [];
+        return newTasks;
+      });
 
       setIsAddingTab(false);
     }
@@ -430,7 +435,7 @@ function Plan() {
                     onDeleteTab={() => handleDeleteTab(item.id)}
                     tasks={tasks[item.id]}
                     onClickHandler={() => {
-                      setModalInfo({ tabId: item.id, taskOrder: tasks[item.id].length });
+                      setModalInfo({ tabId: item.id, taskOrder: tasks[item.id] ? tasks[item.id].length : 0 });
                       openModal('addTask');
                     }}
                     onSaveTitle={handleSaveTabTitle}

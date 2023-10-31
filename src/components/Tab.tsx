@@ -70,7 +70,6 @@ const EditableTitle = styled.input`
 const Container = styled.div`
   width: 20rem;
   height: calc(100% - 2rem);
-  padding: 0.5rem;
   border-radius: 1.1rem;
   background-color: #ffffff;
   display: flex;
@@ -81,6 +80,8 @@ const Container = styled.div`
 `;
 
 const TaskList = styled.ul`
+  margin: 0.5rem;
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -160,17 +161,20 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
 }
 
 export function TasksContainer({ id, tasks, onClickHandler }: ITaskContainerProps) {
-  if (!id) return null;
   return (
     <Container>
-      <Droppable droppableId={id.toString()}>
-        {(provided) => (
-          <TaskList {...provided.droppableProps} ref={provided.innerRef}>
-            {tasks?.map((task, index) => <TaskItem key={task.id} task={task} index={index} />)}
-            {provided.placeholder}
-          </TaskList>
-        )}
-      </Droppable>
+      {id ? (
+        <Droppable droppableId={id.toString()}>
+          {(provided) => (
+            <TaskList {...provided.droppableProps} ref={provided.innerRef}>
+              {tasks?.map((task, index) => <TaskItem key={task.id} task={task} index={index} />)}
+              {provided.placeholder}
+            </TaskList>
+          )}
+        </Droppable>
+      ) : (
+        <TaskList />
+      )}
       <Interactions>
         <AddButton type="button" className="add" onClick={onClickHandler}>
           Add Item
