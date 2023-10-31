@@ -90,7 +90,7 @@ interface Props {
 
 export default function TaskItem({ task, index }: Props) {
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
-  const assignee = useRecoilValue(memberSelector(task.assigneeId));
+  const assignee = useRecoilValue(memberSelector(task.assigneeId!));
 
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
