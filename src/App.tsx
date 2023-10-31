@@ -8,6 +8,7 @@ import CreatePlan from '@pages/CreatePlan';
 import GoogleOauthCallback from '@pages/GoogleOauthCallback';
 import Main from '@pages/Main';
 import Plan from '@pages/Plan';
+import Setting from '@pages/Setting';
 import SignIn from '@pages/SignIn';
 import SignUp from '@pages/SignUp';
 import GlobalFonts from '@styles/GlobalFont';
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: '/plan',
         element: <Plan />,
+      },
+      {
+        path: '/setting',
+        element: <Setting />,
       },
     ],
   },
