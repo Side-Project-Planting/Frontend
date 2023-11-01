@@ -4,8 +4,7 @@ import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { IAddTaskModal, ILabel, ISelectOption, ITask } from 'types';
 
-import { ReactComponent as DeadlineDate } from '@assets/images/deadlineCheck.svg';
-import { ReactComponent as StartDate } from '@assets/images/startDate.svg';
+import DateRange from '@components/DateRange';
 import LabelInput from '@components/LabelInput';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
@@ -66,52 +65,11 @@ const AssigneeField = styled.div`
   }
 `;
 
-const DeadlineField = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  .deadline-label {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-
-    .label-name {
-      color: #76808e;
-    }
-  }
-
-  .deadline-prop {
-    padding-left: 0.5rem;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    justify-content: center;
-
-    .prop-name-container {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      justify-content: center;
-
-      .prop-name {
-        font-size: 0.8rem;
-      }
-    }
-  }
-`;
-
 export default function AddTaskModal() {
-  const today = new Date();
-
   const members = useRecoilValue(membersState);
   const [taskName, setTaskName] = useState<string>('');
   const [assignee, setAssignee] = useState<ISelectOption>({ id: -1, name: '' });
-  const [checkDeadline, setCheckDeadline] = useState<boolean>(false);
-  const [startDate, setStartDate] = useState<string>(
-    [today.getFullYear(), today.getMonth() + 1, today.getDate()].join('-'),
-  );
-  const [endDate, setEndDate] = useState<string>(startDate);
+  const [dateRange, setDateRange] = useState<string[] | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<ILabel[]>([]);
   const modalData = useRecoilValue(modalDataState) as IAddTaskModal;
   const { closeModal } = useModal();
@@ -119,20 +77,6 @@ export default function AddTaskModal() {
   const options = members.map((member) => {
     return { id: member.id, name: member.name };
   });
-
-  const changeStartDate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.value > endDate) {
-      setEndDate(e.currentTarget.value);
-    }
-    setStartDate(e.currentTarget.value);
-  };
-
-  const changeEndDate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.value < startDate) {
-      setStartDate(e.currentTarget.value);
-    }
-    setEndDate(e.currentTarget.value);
-  };
 
   const submitAddTask = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -146,7 +90,7 @@ export default function AddTaskModal() {
       assignee: assignee.name,
       assigneeId: assignee.id,
       order: modalData.taskOrder,
-      dateRange: checkDeadline ? [startDate, endDate] : null,
+      dateRange: dateRange || null,
     };
     // Plan 페이지 tasks 상태에 반영
     modalData.addTaskHandler((prev) => {
@@ -179,30 +123,7 @@ export default function AddTaskModal() {
             <div className="assignee-label">담당자</div>
             <SelectBox options={options} setValue={setAssignee} />
           </AssigneeField>
-          <DeadlineField>
-            <div className="deadline-label">
-              <input type="checkbox" checked={checkDeadline} onChange={() => setCheckDeadline((prev) => !prev)} />
-              <div className="label-name">기간</div>
-            </div>
-            {checkDeadline && (
-              <>
-                <div className="deadline-prop">
-                  <div className="prop-name-container">
-                    <StartDate width="1rem" height="1rem" />
-                    <div className="prop-name">시작일</div>
-                  </div>
-                  <input type="date" value={startDate} onChange={changeStartDate} />
-                </div>
-                <div className="deadline-prop">
-                  <div className="prop-name-container">
-                    <DeadlineDate width="1rem" height="1rem" />
-                    <div className="prop-name">종료일</div>
-                  </div>
-                  <input type="date" value={endDate} onChange={changeEndDate} />
-                </div>
-              </>
-            )}
-          </DeadlineField>
+          <DateRange setDateRange={setDateRange} />
         </Fields>
         <InputField>
           <LabelInput alreadySelected={[]} selectedLabelsHandler={setSelectedLabels} />
