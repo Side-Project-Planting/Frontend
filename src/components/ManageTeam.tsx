@@ -15,6 +15,7 @@ interface Props {
 }
 
 const Container = styled.div`
+  min-height: 15rem;
   background-color: #fafafa;
   padding: 1rem;
   border: 1px solid rgb(208, 215, 222);

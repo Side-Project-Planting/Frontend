@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import boardIllust from '@assets/images/boardIllust.svg';
+import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
 import ToggleSwitch from '@components/ToggleSwitch';
 
@@ -16,25 +17,6 @@ const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
   gap: 32px;
-`;
-
-const InputField = styled.div`
-  label {
-    font-weight: 600;
-  }
-
-  input {
-    display: block;
-    width: 100%;
-    padding: 1rem;
-    margin-top: 8px;
-    border-radius: 8px;
-    background-color: #fafafa;
-
-    &:focus {
-      outline: 1px solid #b8b8b84f;
-    }
-  }
 `;
 
 const BottomContainer = styled.div`
@@ -163,6 +145,7 @@ function CreatePlan() {
                   type="email"
                   id="members"
                   name="members"
+                  className="email"
                   onKeyUp={addMember}
                   placeholder="초대할 팀원의 이메일을 알려주세요"
                 />
