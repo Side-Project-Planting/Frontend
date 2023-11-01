@@ -19,6 +19,7 @@ interface ITabProps {
   onDeleteTab: () => void;
   onSaveTitle: (title: string) => void;
   onClickHandler: () => void;
+  onRemoveTask: (tabId: number, taskId: number) => void;
 }
 
 interface ITabHeaderProps {
@@ -32,6 +33,7 @@ interface ITaskContainerProps {
   id?: number;
   tasks?: ITask[];
   onClickHandler?: () => void;
+  onRemoveTask?: (tabId: number, taskId: number) => void;
 }
 
 const Wrapper = styled.li`
@@ -160,14 +162,17 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
   );
 }
 
-export function TasksContainer({ id, tasks, onClickHandler }: ITaskContainerProps) {
+export function TasksContainer({ id, tasks, onClickHandler, onRemoveTask }: ITaskContainerProps) {
   return (
     <Container>
       {id ? (
         <Droppable droppableId={id.toString()}>
           {(provided) => (
             <TaskList {...provided.droppableProps} ref={provided.innerRef}>
-              {tasks?.map((task, index) => <TaskItem key={task.id} task={task} index={index} />)}
+              {tasks?.map((task, index) => (
+                // TODO: void 함수를 주는 것 외에 다른 방식을 생각해볼 필요가 있음
+                <TaskItem key={task.id} task={task} index={index} onRemoveTask={onRemoveTask || (() => {})} />
+              ))}
               {provided.placeholder}
             </TaskList>
           )}
@@ -185,11 +190,11 @@ export function TasksContainer({ id, tasks, onClickHandler }: ITaskContainerProp
   );
 }
 
-export function Tab({ id, index, title, tasks, onDeleteTab, onClickHandler, onSaveTitle }: ITabProps) {
+export function Tab({ id, index, title, tasks, onDeleteTab, onClickHandler, onSaveTitle, onRemoveTask }: ITabProps) {
   return (
     <Wrapper className="dnd-tab" data-index={index} data-id={id}>
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
-      <TasksContainer id={id} tasks={tasks} onClickHandler={onClickHandler} />
+      <TasksContainer id={id} tasks={tasks} onClickHandler={onClickHandler} onRemoveTask={onRemoveTask} />
     </Wrapper>
   );
 }

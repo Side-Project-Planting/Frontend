@@ -86,9 +86,10 @@ const DateField = styled.div`
 interface Props {
   task: ITask;
   index: number;
+  onRemoveTask: (tabId: number, taskId: number) => void;
 }
 
-export default function TaskItem({ task, index }: Props) {
+export default function TaskItem({ task, index, onRemoveTask }: Props) {
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
   const assignee = useRecoilValue(memberSelector(task.assigneeId!));
 
@@ -96,7 +97,12 @@ export default function TaskItem({ task, index }: Props) {
     <Draggable draggableId={task.id.toString()} index={index}>
       {(provided) => (
         <ItemContainer {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-          <button type="button">
+          <button
+            type="button"
+            onClick={() => {
+              onRemoveTask(task.tabId, task.id);
+            }}
+          >
             <IoClose size={20} />
           </button>
           <p id="task-title">{task.title}</p>

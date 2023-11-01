@@ -308,6 +308,18 @@ function Plan() {
     // TODO newTabTitle===""일떄 enter를 누르면 탭 추가 취소
   };
 
+  const handleDeleteTask = (tabId: number, taskId: number) => {
+    if (tasks) {
+      let idx = 0;
+      while (tasks[tabId][idx] && tasks[tabId][idx].id !== taskId) idx += 1;
+      setTasks((prev) => {
+        const newTasks = { ...prev };
+        newTasks[tabId].splice(idx, 1);
+        return newTasks;
+      });
+    }
+  };
+
   const handleDeleteTab = (tabId: number) => {
     if (plan) {
       const updatedTabOrder = plan.tabOrder.filter((item) => item !== tabId);
@@ -439,6 +451,7 @@ function Plan() {
                       openModal('addTask');
                     }}
                     onSaveTitle={handleSaveTabTitle}
+                    onRemoveTask={handleDeleteTask}
                   />
                 );
               })}
