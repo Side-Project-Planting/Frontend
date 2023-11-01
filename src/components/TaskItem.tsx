@@ -5,10 +5,12 @@ import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { IoClose, IoInfinite } from 'react-icons/io5';
 import { PiClockFill } from 'react-icons/pi';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { ITask } from 'types';
+import { INormalModal, ITask } from 'types';
 
+import useModal from '@hooks/useModal';
+import { modalDataState } from '@recoil/atoms';
 import { filteredLabelsSelector, memberSelector } from '@recoil/selectors';
 import { hashStringToColor } from '@utils';
 
@@ -92,17 +94,23 @@ interface Props {
 export default function TaskItem({ task, index, onRemoveTask }: Props) {
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
   const assignee = useRecoilValue(memberSelector(task.assigneeId!));
+  const setModalData = useSetRecoilState(modalDataState);
+  const { openModal } = useModal();
+
+  const removeTaskHandler = () => {
+    const requestAPI = () => {
+      // TODO: 서버에 태스크 삭제 요청
+      onRemoveTask(task.tabId, task.id);
+    };
+    setModalData({ description: `"${task.title}"을 삭제할까요?`, requestAPI } as INormalModal);
+    openModal('normal');
+  };
 
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
       {(provided) => (
         <ItemContainer {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-          <button
-            type="button"
-            onClick={() => {
-              onRemoveTask(task.tabId, task.id);
-            }}
-          >
+          <button type="button" onClick={removeTaskHandler}>
             <IoClose size={20} />
           </button>
           <p id="task-title">{task.title}</p>
