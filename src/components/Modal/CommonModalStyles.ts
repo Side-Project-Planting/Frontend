@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const ModalDescription = styled.p`
+export const ModalInformation = styled.p`
   font-size: 1.2rem;
   text-align: center;
 `;

@@ -105,7 +105,7 @@ export default function TaskItem({ task, index, onRemoveTask }: Props) {
       // TODO: 서버에 태스크 삭제 요청
       onRemoveTask(task.tabId, task.id);
     };
-    setModalData({ description: `"${task.title}"을 삭제할까요?`, requestAPI } as INormalModal);
+    setModalData({ information: `"${task.title}"을 삭제할까요?`, requestAPI } as INormalModal);
     openModal('normal');
   };
 

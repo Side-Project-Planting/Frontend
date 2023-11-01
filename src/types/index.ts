@@ -49,7 +49,7 @@ export interface IModalInfo {
 }
 
 export interface INormalModal {
-  description: string;
+  information: string;
   requestAPI: () => void;
 }
 
