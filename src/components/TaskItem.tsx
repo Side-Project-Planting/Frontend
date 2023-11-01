@@ -14,8 +14,15 @@ import { modalDataState } from '@recoil/atoms';
 import { filteredLabelsSelector, memberSelector } from '@recoil/selectors';
 import { hashStringToColor } from '@utils';
 
-const ItemContainer = styled.div`
+const ItemWrapper = styled.div`
   position: relative;
+  width: 100%;
+
+  &:hover .task-remove-button {
+    display: flex;
+  }
+`;
+const ItemContainer = styled.div`
   padding: 1rem;
   margin-bottom: 1rem;
   width: 99%;
@@ -31,23 +38,19 @@ const ItemContainer = styled.div`
     word-wrap: break-word;
   }
 
-  button {
-    display: none;
-    width: 1rem;
-    height: 1rem;
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    color: #f44336;
-  }
-
   &:hover {
     background-color: #ececec;
   }
+`;
 
-  &:hover button {
-    display: flex;
-  }
+const TaskRemoveButton = styled.button`
+  display: none;
+  width: 1rem;
+  height: 1rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: #f44336;
 `;
 
 const LabelField = styled.div`
@@ -109,38 +112,40 @@ export default function TaskItem({ task, index, onRemoveTask }: Props) {
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
       {(provided) => (
-        <ItemContainer {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-          <button type="button" onClick={removeTaskHandler}>
-            <IoClose size={20} />
-          </button>
-          <p id="task-title">{task.title}</p>
-          <LabelField>
-            {filteredLabels.map((label) => (
-              <LabelItem key={label.id} color={hashStringToColor(label.value)}>
-                {label.value}
-              </LabelItem>
-            ))}
-          </LabelField>
-          <InfoField>
-            <DateField>
-              {task.dateRange ? (
-                <>
-                  <PiClockFill size={16} color="#64D4AB" />
-                  <div>
-                    {`${task.dateRange[0]}`}
-                    <br />
-                    {` ~ ${task.dateRange[1]}`}
+        <ItemWrapper>
+          <ItemContainer {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+            <p id="task-title">{task.title}</p>
+            <LabelField>
+              {filteredLabels.map((label) => (
+                <LabelItem key={label.id} color={hashStringToColor(label.value)}>
+                  {label.value}
+                </LabelItem>
+              ))}
+            </LabelField>
+            <InfoField>
+              <DateField>
+                {task.dateRange ? (
+                  <>
+                    <PiClockFill size={16} color="#64D4AB" />
+                    <div>
+                      {`${task.dateRange[0]}`}
+                      <br />
+                      {` ~ ${task.dateRange[1]}`}
+                    </div>
+                  </>
+                ) : (
+                  <div className="date-infinity">
+                    <IoInfinite size={24} color="#1C2A4B" />
                   </div>
-                </>
-              ) : (
-                <div className="date-infinity">
-                  <IoInfinite size={24} color="#1C2A4B" />
-                </div>
-              )}
-            </DateField>
-            <div>{assignee.name}</div>
-          </InfoField>
-        </ItemContainer>
+                )}
+              </DateField>
+              <div>{assignee.name}</div>
+            </InfoField>
+          </ItemContainer>
+          <TaskRemoveButton className="task-remove-button" type="button" onClick={removeTaskHandler}>
+            <IoClose size={20} />
+          </TaskRemoveButton>
+        </ItemWrapper>
       )}
     </Draggable>
   );
