@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-import { MdOutlineClose } from 'react-icons/md';
 import styled from 'styled-components';
 
 import boardIllust from '@assets/images/boardIllust.svg';
+import ManageTeam from '@components/ManageTeam';
 import ToggleSwitch from '@components/ToggleSwitch';
 
 const Wrapper = styled.div`
@@ -60,28 +60,6 @@ const InviteContainer = styled.div`
   p.label {
     font-size: 18px;
     font-weight: bold;
-  }
-`;
-
-const MemberList = styled.ul`
-  width: 100%;
-  height: 300px;
-  border-radius: 8px;
-  padding: 1.5rem 1rem;
-  background-color: #fafafa;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  overflow-y: scroll;
-`;
-
-const MemberItem = styled.li`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  button {
-    background-color: inherit;
   }
 `;
 
@@ -190,16 +168,7 @@ function CreatePlan() {
                 />
               </label>
             </InputField>
-            <MemberList>
-              {memberEmailList.map((item) => (
-                <MemberItem key={item}>
-                  {item}
-                  <button type="button" onClick={() => deleteMember(item)}>
-                    <MdOutlineClose size="18" color="red" />
-                  </button>
-                </MemberItem>
-              ))}
-            </MemberList>
+            <ManageTeam type="create" newMemberEmailList={memberEmailList} handleDeleteNewMember={deleteMember} />
           </InviteContainer>
           <ImageContainer src={boardIllust} alt="member-illust" />
         </BottomContainer>

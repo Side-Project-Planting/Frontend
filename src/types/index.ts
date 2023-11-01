@@ -27,6 +27,7 @@ export interface IMember {
   name: string;
   imgUrl?: string;
   isAdmin: boolean;
+  email?: string;
 }
 
 export interface ITab {
