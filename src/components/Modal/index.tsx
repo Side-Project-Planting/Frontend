@@ -11,6 +11,11 @@ import ModalPortal from '@components/Modal/Portal';
 import useModal from '@hooks/useModal';
 import { modalState } from '@recoil/atoms';
 
+interface IModalSize {
+  width: number;
+  height: number;
+}
+
 const ModalOverlay = styled.div`
   position: absolute;
   top: 0;
@@ -24,10 +29,10 @@ const ModalOverlay = styled.div`
   background: rgba(100, 212, 171, 0.1);
 `;
 
-const ModalWrapper = styled.div<{ type: string }>`
+const ModalWrapper = styled.div<{ size: IModalSize }>`
   padding: 3rem 2.5rem;
-  width: ${(props) => (props.type === 'addTask' ? '56' : '32')}rem;
-  height: ${(props) => (props.type === 'addTask' ? '32' : '18')}rem;
+  width: ${(props) => props.size.width}rem;
+  height: ${(props) => props.size.height}rem;
   background: rgba(255, 255, 255, 1);
   border-radius: 8px;
   box-shadow: 0px 4px 16px 4px rgba(0, 0, 0, 0.2);
@@ -46,6 +51,13 @@ export default function Modal() {
   const { isOpen, type } = useRecoilValue(modalState);
   const { closeModal } = useModal();
 
+  const modalSize: Record<string, IModalSize> = {
+    normal: { width: 32, height: 18 },
+    exitPlan: { width: 32, height: 18 },
+    addTask: { width: 56, height: 32 },
+    editTask: { width: 56, height: 48 },
+  };
+
   useEffect(() => {
     const keyDownEscCloseModal = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -61,7 +73,7 @@ export default function Modal() {
       {isOpen && (
         <ModalPortal>
           <ModalOverlay onClick={closeModal}>
-            <ModalWrapper type={type} onClick={(e) => e.stopPropagation()}>
+            <ModalWrapper size={modalSize[type]} onClick={(e) => e.stopPropagation()}>
               <ModalContainer>
                 {type === 'normal' && <NormalModal />}
                 {type === 'exitPlan' && <ExitPlanModal />}
