@@ -1,12 +1,30 @@
-import { useState } from 'react';
+import { useCallback } from 'react';
 
-import Modal from '@components/Modal';
+import { useRecoilState } from 'recoil';
+import { TModalType } from 'types';
 
-type ModalType = 'none' | 'normal' | 'exitPlan' | 'addTask' | 'editTask';
+import { modalState } from '@recoil/atoms';
 
 export default function useModal() {
-  const [showModal, setShowModal] = useState<ModalType>('none');
-  const openModal = (modalType: ModalType) => setShowModal(modalType);
-  const closeModal = () => setShowModal('none');
-  return { Modal, showModal, openModal, closeModal };
+  const [modalInfo, setModalInfo] = useRecoilState(modalState);
+
+  const closeModal = useCallback(
+    () =>
+      setModalInfo({
+        isOpen: false,
+        type: 'none',
+      }),
+    [setModalInfo],
+  );
+
+  const openModal = useCallback(
+    (modalType: TModalType) =>
+      setModalInfo({
+        isOpen: true,
+        type: modalType,
+      }),
+    [setModalInfo],
+  );
+
+  return { modalInfo, closeModal, openModal };
 }

@@ -14,9 +14,9 @@ import { ITask, ITab, IMember, ILabel } from 'types';
 import { getPlanInfo } from '@apis';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
+import Modal from '@components/Modal';
 import { Tab, TasksContainer } from '@components/Tab';
-import useModal from '@hooks/useModal';
-import { labelsState, membersState, modalState } from '@recoil/atoms';
+import { labelsState, membersState } from '@recoil/atoms';
 import registDND, { IDropEvent } from '@utils/drag';
 
 interface IPlan {
@@ -172,12 +172,11 @@ function Plan() {
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { Modal, showModal, openModal, closeModal } = useModal();
+
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
-  const setModalInfo = useSetRecoilState(modalState);
 
   const navigate = useNavigate();
 
@@ -446,11 +445,8 @@ function Plan() {
                     title={item.title}
                     onDeleteTab={() => handleDeleteTab(item.id)}
                     tasks={tasks[item.id]}
-                    onClickHandler={() => {
-                      setModalInfo({ tabId: item.id, taskOrder: tasks[item.id] ? tasks[item.id].length : 0 });
-                      openModal('addTask');
-                    }}
                     onSaveTitle={handleSaveTabTitle}
+                    onAddTask={setTasks}
                     onRemoveTask={handleDeleteTask}
                   />
                 );
@@ -466,11 +462,7 @@ function Plan() {
                     onKeyDown={handleInputKeyDown}
                   />
                   {/* TODO 탭 추가하다 취소하는 버튼 추가 */}
-                  <TasksContainer
-                    onClickHandler={() => {
-                      openModal('addTask');
-                    }}
-                  />
+                  <TasksContainer />
                 </TabWrapper>
               )}
             </TabContainer>
@@ -480,16 +472,7 @@ function Plan() {
           </AddTapButton>
         </TabGroup>
       </MainContainer>
-      {showModal === 'addTask' && (
-        <Modal
-          type={showModal}
-          onClose={closeModal}
-          addTaskHandler={setTasks}
-          requestAPI={() => {
-            // TODO: 할 일 추가 API 입력
-          }}
-        />
-      )}
+      <Modal />
     </Wrapper>
   );
 }
