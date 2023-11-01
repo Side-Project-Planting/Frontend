@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import { IAddTaskModal, ILabel, IMember } from 'types';
+import { ILabel, IMember, IModalInfo, TModalData } from 'types';
 
 export const membersState = atom<IMember[]>({
   key: 'members',
@@ -11,7 +11,12 @@ export const labelsState = atom<ILabel[]>({
   default: [],
 });
 
-export const modalState = atom<IAddTaskModal>({
+export const modalState = atom<IModalInfo>({
   key: 'modal',
-  default: { tabId: 0, taskOrder: 0 },
+  default: { isOpen: false, type: 'none' },
+});
+
+export const modalDataState = atom<TModalData>({
+  key: 'modalData',
+  default: null,
 });

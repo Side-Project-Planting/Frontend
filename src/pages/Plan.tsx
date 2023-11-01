@@ -14,9 +14,9 @@ import { ITask, ITab, IMember, ILabel } from 'types';
 import { getPlanInfo } from '@apis';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
+import Modal from '@components/Modal';
 import { Tab, TasksContainer } from '@components/Tab';
-import useModal from '@hooks/useModal';
-import { labelsState, membersState, modalState } from '@recoil/atoms';
+import { labelsState, membersState } from '@recoil/atoms';
 import registDND, { IDropEvent } from '@utils/drag';
 
 interface IPlan {
@@ -28,6 +28,18 @@ interface IPlan {
   tabs: ITab[];
   labels: ILabel[];
   tasks: ITask[];
+}
+
+interface IDragDropResult {
+  source: {
+    droppableId: string;
+    index: number;
+  };
+  destination: {
+    droppableId: string;
+    index: number;
+  };
+  draggableId: string;
 }
 
 const Wrapper = styled.main`
@@ -160,12 +172,11 @@ function Plan() {
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { Modal, showModal, openModal, closeModal } = useModal();
+
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
-  const setModalInfo = useSetRecoilState(modalState);
 
   const navigate = useNavigate();
 
@@ -296,6 +307,18 @@ function Plan() {
     // TODO newTabTitle===""일떄 enter를 누르면 탭 추가 취소
   };
 
+  const handleDeleteTask = (tabId: number, taskId: number) => {
+    if (tasks) {
+      let idx = 0;
+      while (tasks[tabId][idx] && tasks[tabId][idx].id !== taskId) idx += 1;
+      setTasks((prev) => {
+        const newTasks = { ...prev };
+        newTasks[tabId].splice(idx, 1);
+        return newTasks;
+      });
+    }
+  };
+
   const handleDeleteTab = (tabId: number) => {
     if (plan) {
       const updatedTabOrder = plan.tabOrder.filter((item) => item !== tabId);
@@ -328,18 +351,6 @@ function Plan() {
     // TODO : 서버로 planId, tabId, title로 title 수정 요청 날리기
     return title;
   };
-
-  interface IDragDropResult {
-    source: {
-      droppableId: string;
-      index: number;
-    };
-    destination: {
-      droppableId: string;
-      index: number;
-    };
-    draggableId: string;
-  }
 
   const onDragEnd = (result: IDragDropResult) => {
     const { destination, source } = result;
@@ -434,11 +445,9 @@ function Plan() {
                     title={item.title}
                     onDeleteTab={() => handleDeleteTab(item.id)}
                     tasks={tasks[item.id]}
-                    onClickHandler={() => {
-                      setModalInfo({ tabId: item.id, taskOrder: tasks[item.id] ? tasks[item.id].length : 0 });
-                      openModal('addTask');
-                    }}
                     onSaveTitle={handleSaveTabTitle}
+                    onAddTask={setTasks}
+                    onRemoveTask={handleDeleteTask}
                   />
                 );
               })}
@@ -453,11 +462,7 @@ function Plan() {
                     onKeyDown={handleInputKeyDown}
                   />
                   {/* TODO 탭 추가하다 취소하는 버튼 추가 */}
-                  <TasksContainer
-                    onClickHandler={() => {
-                      openModal('addTask');
-                    }}
-                  />
+                  <TasksContainer />
                 </TabWrapper>
               )}
             </TabContainer>
@@ -467,16 +472,7 @@ function Plan() {
           </AddTapButton>
         </TabGroup>
       </MainContainer>
-      {showModal === 'addTask' && (
-        <Modal
-          type={showModal}
-          onClose={closeModal}
-          addTaskHandler={setTasks}
-          requestAPI={() => {
-            // TODO: 할 일 추가 API 입력
-          }}
-        />
-      )}
+      <Modal />
     </Wrapper>
   );
 }

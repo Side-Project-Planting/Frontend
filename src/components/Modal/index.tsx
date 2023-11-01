@@ -1,12 +1,15 @@
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+/* eslint-disable react/jsx-no-useless-fragment */
+import React, { useEffect } from 'react';
 
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-import { ITask } from 'types';
 
 import AddTaskModal from '@components/Modal/AddTask';
 import ExitPlanModal from '@components/Modal/ExitPlan';
 import NormalModal from '@components/Modal/Normal';
 import ModalPortal from '@components/Modal/Portal';
+import useModal from '@hooks/useModal';
+import { modalState } from '@recoil/atoms';
 
 const ModalOverlay = styled.div`
   position: absolute;
@@ -39,21 +42,14 @@ const ModalContainer = styled.div`
   justify-content: space-between;
 `;
 
-type ModalType = 'none' | 'normal' | 'exitPlan' | 'addTask';
+export default function Modal() {
+  const { isOpen, type } = useRecoilValue(modalState);
+  const { closeModal } = useModal();
 
-interface Props {
-  type: ModalType;
-  description?: string;
-  requestAPI: () => void;
-  onClose: () => void;
-  addTaskHandler?: Dispatch<SetStateAction<Record<number, ITask[]>>>;
-}
-
-export default function Modal({ type, description, requestAPI, onClose, addTaskHandler }: Props) {
   useEffect(() => {
     const keyDownEscCloseModal = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        closeModal();
       }
     };
     window.addEventListener('keydown', keyDownEscCloseModal);
@@ -61,21 +57,21 @@ export default function Modal({ type, description, requestAPI, onClose, addTaskH
   }, []);
 
   return (
-    <ModalPortal>
-      <ModalOverlay onClick={onClose}>
-        <ModalWrapper type={type} onClick={(e) => e.stopPropagation()}>
-          <ModalContainer>
-            {type === 'normal' && description && (
-              <NormalModal description={description} requestAPI={requestAPI} onClose={onClose} />
-            )}
-            {type === 'exitPlan' && description && (
-              <ExitPlanModal description={description} requestAPI={requestAPI} onClose={onClose} />
-            )}
-            {addTaskHandler && type === 'addTask' && <AddTaskModal addTaskHandler={addTaskHandler} onClose={onClose} />}
-          </ModalContainer>
-        </ModalWrapper>
-      </ModalOverlay>
-    </ModalPortal>
+    <>
+      {isOpen && (
+        <ModalPortal>
+          <ModalOverlay onClick={closeModal}>
+            <ModalWrapper type={type} onClick={(e) => e.stopPropagation()}>
+              <ModalContainer>
+                {type === 'normal' && <NormalModal />}
+                {type === 'exitPlan' && <ExitPlanModal />}
+                {type === 'addTask' && <AddTaskModal />}
+              </ModalContainer>
+            </ModalWrapper>
+          </ModalOverlay>
+        </ModalPortal>
+      )}
+    </>
   );
 }
 

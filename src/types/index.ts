@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react';
+
 export interface ITaskInfo {
   name: string;
   id: string;
@@ -41,7 +43,24 @@ export interface ISelectOption {
   name: string | undefined;
 }
 
+export interface IModalInfo {
+  isOpen: boolean;
+  type: TModalType;
+}
+
+export interface INormalModal {
+  description: string;
+  requestAPI: () => void;
+}
+
+export interface IExitPlanModal extends INormalModal {}
+
 export interface IAddTaskModal {
   tabId: number;
   taskOrder: number;
+  addTaskHandler: Dispatch<SetStateAction<Record<number, ITask[]>>>;
 }
+
+export type TModalType = 'none' | 'normal' | 'exitPlan' | 'addTask' | 'editTask';
+
+export type TModalData = null | INormalModal | IExitPlanModal | IAddTaskModal;

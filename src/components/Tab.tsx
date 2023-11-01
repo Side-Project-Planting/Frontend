@@ -2,14 +2,17 @@
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/jsx-props-no-spreading */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, Dispatch, SetStateAction } from 'react';
 
 import { Droppable } from 'react-beautiful-dnd';
+import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { ITask } from 'types';
 
 import Dropdown from '@components/Dropdown';
 import TaskItem from '@components/TaskItem';
+import useModal from '@hooks/useModal';
+import { modalDataState } from '@recoil/atoms';
 
 interface ITabProps {
   id: number;
@@ -18,7 +21,8 @@ interface ITabProps {
   tasks: ITask[];
   onDeleteTab: () => void;
   onSaveTitle: (title: string) => void;
-  onClickHandler: () => void;
+  onAddTask: Dispatch<SetStateAction<Record<number, ITask[]>>>;
+  onRemoveTask: (tabId: number, taskId: number) => void;
 }
 
 interface ITabHeaderProps {
@@ -31,7 +35,8 @@ interface ITabHeaderProps {
 interface ITaskContainerProps {
   id?: number;
   tasks?: ITask[];
-  onClickHandler?: () => void;
+  onAddTask?: Dispatch<SetStateAction<Record<number, ITask[]>>>;
+  onRemoveTask?: (tabId: number, taskId: number) => void;
 }
 
 const Wrapper = styled.li`
@@ -160,14 +165,30 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
   );
 }
 
-export function TasksContainer({ id, tasks, onClickHandler }: ITaskContainerProps) {
+export function TasksContainer({ id, tasks, onAddTask, onRemoveTask }: ITaskContainerProps) {
+  const { openModal } = useModal();
+  const setModalData = useSetRecoilState(modalDataState);
+
+  const handleAddTask = () => {
+    if (!tasks || !id || !onAddTask) return;
+    setModalData({
+      tabId: id,
+      taskOrder: tasks ? tasks.length : 0,
+      addTaskHandler: onAddTask,
+    });
+    openModal('addTask');
+  };
+
   return (
     <Container>
       {id ? (
         <Droppable droppableId={id.toString()}>
           {(provided) => (
             <TaskList {...provided.droppableProps} ref={provided.innerRef}>
-              {tasks?.map((task, index) => <TaskItem key={task.id} task={task} index={index} />)}
+              {tasks?.map((task, index) => (
+                // TODO: void 함수를 주는 것 외에 다른 방식을 생각해볼 필요가 있음
+                <TaskItem key={task.id} task={task} index={index} onRemoveTask={onRemoveTask || (() => {})} />
+              ))}
               {provided.placeholder}
             </TaskList>
           )}
@@ -176,7 +197,7 @@ export function TasksContainer({ id, tasks, onClickHandler }: ITaskContainerProp
         <TaskList />
       )}
       <Interactions>
-        <AddButton type="button" className="add" onClick={onClickHandler}>
+        <AddButton type="button" className="add" onClick={handleAddTask}>
           Add Item
         </AddButton>
         <TabDragBar type="button" draggable className="dnd-item" />
@@ -185,11 +206,11 @@ export function TasksContainer({ id, tasks, onClickHandler }: ITaskContainerProp
   );
 }
 
-export function Tab({ id, index, title, tasks, onDeleteTab, onClickHandler, onSaveTitle }: ITabProps) {
+export function Tab({ id, index, title, tasks, onDeleteTab, onSaveTitle, onAddTask, onRemoveTask }: ITabProps) {
   return (
     <Wrapper className="dnd-tab" data-index={index} data-id={id}>
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
-      <TasksContainer id={id} tasks={tasks} onClickHandler={onClickHandler} />
+      <TasksContainer id={id} tasks={tasks} onAddTask={onAddTask} onRemoveTask={onRemoveTask} />
     </Wrapper>
   );
 }

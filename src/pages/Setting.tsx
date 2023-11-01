@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 
+import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { ISelectOption } from 'types';
+import { INormalModal, ISelectOption } from 'types';
 
 import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
+import Modal from '@components/Modal';
 import SelectBox from '@components/SelectBox';
 import ToggleSwitch from '@components/ToggleSwitch';
+import useModal from '@hooks/useModal';
+import { modalDataState } from '@recoil/atoms';
 
 interface IPlanInfo {
   title: string;
@@ -185,6 +189,8 @@ function Setting() {
   const [deletedExistMemberIdList, setDeletedExistMemberIdList] = useState<number[]>([]);
   const [admin, setAdmin] = useState<ISelectOption>({ id: initialAdmin?.id, name: initialAdmin?.name });
   const [isPublic, setIsPublic] = useState<boolean>(planData.isPublic);
+  const setModalData = useSetRecoilState(modalDataState);
+  const { openModal } = useModal();
 
   const options = planData.members.map((member) => {
     return { id: member.id, name: member.name };
@@ -221,11 +227,19 @@ function Setting() {
   };
 
   const handleDeletePlan = () => {
-    // TODO: 서버에 플랜 삭제 요청
+    const requestAPI = () => {
+      // TODO: 서버에 플랜 삭제 요청
+    };
+    setModalData({ description: `플랜을 정말 삭제하시겠어요?`, requestAPI } as INormalModal);
+    openModal('normal');
   };
 
   const handleSavePlan = () => {
-    // TODO: 서버에 플랜 수정 요청
+    const requestAPI = () => {
+      // TODO: 서버에 플랜 수정 요청
+    };
+    setModalData({ description: `변경사항을 저장하시겠어요?`, requestAPI } as INormalModal);
+    openModal('normal');
   };
 
   return (
@@ -297,6 +311,7 @@ function Setting() {
           변경사항 저장
         </Button>
       </ButtonContainer>
+      <Modal />
     </Wrapper>
   );
 }
