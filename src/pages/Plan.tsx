@@ -30,6 +30,18 @@ interface IPlan {
   tasks: ITask[];
 }
 
+interface IDragDropResult {
+  source: {
+    droppableId: string;
+    index: number;
+  };
+  destination: {
+    droppableId: string;
+    index: number;
+  };
+  draggableId: string;
+}
+
 const Wrapper = styled.main`
   width: 100vw;
   min-height: 100vh;
@@ -328,18 +340,6 @@ function Plan() {
     // TODO : 서버로 planId, tabId, title로 title 수정 요청 날리기
     return title;
   };
-
-  interface IDragDropResult {
-    source: {
-      droppableId: string;
-      index: number;
-    };
-    destination: {
-      droppableId: string;
-      index: number;
-    };
-    draggableId: string;
-  }
 
   const onDragEnd = (result: IDragDropResult) => {
     const { destination, source } = result;
