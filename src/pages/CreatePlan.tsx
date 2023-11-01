@@ -7,20 +7,22 @@ import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
 import ToggleSwitch from '@components/ToggleSwitch';
 
-const Wrapper = styled.div`
+const Wrapper = styled.form`
   width: 100vw;
   min-height: 100vh;
   padding: 110px 70px 40px;
-`;
-
-const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 1.5rem;
 `;
 
+const Title = styled.h2`
+  font-size: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgb(216, 222, 228);
+`;
 const BottomContainer = styled.div`
-  width: calc(100vw - 140px);
+  width: 75rem;
   max-height: 450px;
   display: flex;
   align-items: flex-end;
@@ -31,7 +33,7 @@ const ImageContainer = styled.img`
   max-height: 340px;
 `;
 
-const InviteContainer = styled.div`
+const ManageTeamContainer = styled.div`
   width: 45%;
   height: 350px;
   display: flex;
@@ -47,12 +49,14 @@ const InviteContainer = styled.div`
 
 const Button = styled.button`
   align-self: center;
-  width: 216px;
-  height: 50px;
-  border-radius: 8px;
-  color: #fafafa;
+  width: 10rem;
+  font-size: 14px;
+  height: 2.4rem;
+  padding-inline: 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  color: #fff;
   background-color: #64d4ab;
-  font-weight: 700;
 `;
 
 const PublicContainer = styled.div`
@@ -107,62 +111,61 @@ function CreatePlan() {
   };
 
   return (
-    <Wrapper>
-      <FormContainer onSubmit={handleSubmit}>
-        <InputField>
-          <label htmlFor="title">
-            플랜 제목
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={planInfo.title}
-              onChange={changePlanInfo}
-              placeholder="플랜 이름을 알려주세요"
-            />
-          </label>
-        </InputField>
-        <InputField>
-          <label htmlFor="description">
-            플랜 설명
-            <input
-              type="text"
-              id="description"
-              name="description"
-              value={planInfo.description}
-              onChange={changePlanInfo}
-              placeholder="플랜을 설명해주세요"
-            />
-          </label>
-        </InputField>
+    <Wrapper onSubmit={handleSubmit}>
+      <Title>새로운 플랜</Title>
+      <InputField>
+        <label htmlFor="title">
+          플랜 제목
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={planInfo.title}
+            onChange={changePlanInfo}
+            placeholder="플랜 이름을 알려주세요"
+          />
+        </label>
+      </InputField>
+      <InputField>
+        <label htmlFor="description">
+          플랜 설명
+          <input
+            type="text"
+            id="description"
+            name="description"
+            value={planInfo.description}
+            onChange={changePlanInfo}
+            placeholder="플랜을 설명해주세요"
+          />
+        </label>
+      </InputField>
 
-        <BottomContainer>
-          <InviteContainer>
-            <InputField>
-              <label htmlFor="members">
-                팀원 초대
-                <input
-                  type="email"
-                  id="members"
-                  name="members"
-                  className="email"
-                  onKeyUp={addMember}
-                  placeholder="초대할 팀원의 이메일을 알려주세요"
-                />
-              </label>
-            </InputField>
-            <ManageTeam type="create" newMemberEmailList={memberEmailList} handleDeleteNewMember={deleteMember} />
-          </InviteContainer>
-          <ImageContainer src={boardIllust} alt="member-illust" />
-        </BottomContainer>
+      <BottomContainer>
+        <ManageTeamContainer>
+          <InputField>
+            <label htmlFor="members">
+              팀원 초대
+              <input
+                type="email"
+                id="members"
+                name="members"
+                className="email"
+                onKeyUp={addMember}
+                placeholder="초대할 팀원의 이메일을 알려주세요"
+              />
+            </label>
+          </InputField>
+          <ManageTeam type="create" newMemberEmailList={memberEmailList} handleDeleteNewMember={deleteMember} />
+        </ManageTeamContainer>
+        <ImageContainer src={boardIllust} alt="member-illust" />
+      </BottomContainer>
 
-        <PublicContainer>
-          <ToggleSwitch isPublic={isPublic} onChange={togglePublic} />
-          <p> {isPublic ? '플랜을 공개합니다.' : '플랜을 공개하지 않습니다.'}</p>
-        </PublicContainer>
+      <PublicContainer>
+        <ToggleSwitch isPublic={isPublic} onChange={togglePublic} />
+        <p> {isPublic ? '플랜을 공개합니다.' : '플랜을 공개하지 않습니다.'}</p>
+      </PublicContainer>
 
-        <Button type="submit">생성하기</Button>
-      </FormContainer>
+      <Button type="submit">생성하기</Button>
     </Wrapper>
   );
 }

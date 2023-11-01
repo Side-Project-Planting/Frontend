@@ -15,7 +15,8 @@ interface Props {
 }
 
 const Container = styled.div`
-  min-height: 15rem;
+  width: 600px;
+  min-height: 17.5rem;
   background-color: #fafafa;
   padding: 1rem;
   border: 1px solid rgb(208, 215, 222);
@@ -23,6 +24,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  overflow-y: auto;
 
   color: #939393;
   font-size: 14px;
