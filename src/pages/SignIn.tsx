@@ -57,10 +57,19 @@ const LoginPolicy = styled.div`
 `;
 
 export default function SignIn() {
-  const requestGoogleOAuth = async () => {
-    const { data } = await axios.get('/oauth/google/authorized-uri');
-    const oauthUrl = data.authorizedUri;
-    window.location.assign(oauthUrl);
+  const handleOAuthRedirect = async () => {
+    try {
+      const response = await axios.get('/oauth/google/authorized-uri');
+      const oauthUrl = response.data.authorizedUri;
+
+      if (oauthUrl) {
+        window.location.assign(oauthUrl);
+      } else {
+        throw Error('서버로부터 oauthUrl을 받아오지 못했습니다.');
+      }
+    } catch (error) {
+      // 에러 처리
+    }
   };
 
   return (
@@ -73,7 +82,7 @@ export default function SignIn() {
             혼자 혹은 동료와 새로운 <HighlightSpan>플랜</HighlightSpan>을 생성해보세요.
           </span>
         </Descripton>
-        <GoogleOAuthButton type="button" onClick={requestGoogleOAuth}>
+        <GoogleOAuthButton type="button" onClick={handleOAuthRedirect}>
           <ButtonContainer>
             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32" height="32" viewBox="0 0 48 48">
               <path
