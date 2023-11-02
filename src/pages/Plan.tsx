@@ -170,9 +170,9 @@ function Plan() {
   const [plan, setPlan] = useState<IPlan | null>(null);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
   const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
@@ -226,7 +226,7 @@ function Plan() {
 
   useEffect(() => {
     if (originalPlan) {
-      // 원래의 플랜 데이터를 기반으로 다시 필터링
+      // 원래 플랜 데이터를 기반으로 다시 필터링
       filterAndSetPlan(originalPlan, selectedLabels, selectedMembers);
     }
   }, [selectedLabels, selectedMembers, originalPlan]);
@@ -276,21 +276,24 @@ function Plan() {
     setIsAddingTab(true);
     setNewTabTitle('');
 
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0);
   };
 
   const handleAddTab = () => {
     if (newTabTitle.trim() === '') {
       setIsAddingTab(false);
     } else {
+      // TODO: 서버에 탭 추가 요청
+      // 서버에서 받아온 tabId를 newTab에 넣어줘야 한다.
       const newTab: ITab = {
         id: (plan?.tabs.length || 0) + 1,
         title: newTabTitle,
       };
 
-      // 서버에 탭 추가 요청
       setPlan((prev) => {
         if (!prev) {
           return prev;
@@ -308,10 +311,9 @@ function Plan() {
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && newTabTitle.trim() !== '') {
+    if (e.key === 'Enter') {
       handleAddTab();
     }
-    // TODO newTabTitle===""일떄 enter를 누르면 탭 추가 취소
   };
 
   const handleDeleteTask = (tabId: number, taskId: number) => {
@@ -442,7 +444,6 @@ function Plan() {
         <TopContainer>
           <MemberFilter selectedMember={selectedMembers} onClick={handleChangeMember} />
           <UtilContainer>
-            {/* TODO 클릭시 즐겨찾기 토글, 설정으로 이동 */}
             <div className="icon">
               <IoIosStarOutline size={25} />
             </div>
@@ -470,6 +471,7 @@ function Plan() {
                   />
                 );
               })}
+
               {isAddingTab && (
                 <TabWrapper>
                   <input
@@ -480,7 +482,6 @@ function Plan() {
                     onBlur={handleAddTab}
                     onKeyDown={handleInputKeyDown}
                   />
-                  {/* TODO 탭 추가하다 취소하는 버튼 추가 */}
                   <TasksContainer />
                 </TabWrapper>
               )}
