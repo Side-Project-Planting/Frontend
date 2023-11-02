@@ -71,16 +71,16 @@ const PublicContainer = styled.div`
 
 type PlanInfo = {
   title: string;
-  description: string;
+  intro: string;
 };
 
 function CreatePlan() {
   const [planInfo, setPlanInfo] = useState<PlanInfo>({
     title: '',
-    description: '',
+    intro: '',
   });
 
-  const [memberEmailList, setMemberEmailList] = useState<string[]>([]);
+  const [invitedEmails, setInvitedEmails] = useState<string[]>([]);
 
   const [isPublic, setIsPublic] = useState<boolean>(false);
 
@@ -106,19 +106,27 @@ function CreatePlan() {
         alert('유효한 이메일 주소를 입력하세요.');
         return;
       }
-      setMemberEmailList((prev) => [...prev, value]);
+      setInvitedEmails((prev) => [...prev, value]);
       e.currentTarget.value = '';
     }
   };
 
   const deleteMember = (deletedEmail: string) => {
-    const updatedMembers = memberEmailList.filter((email) => email !== deletedEmail);
-    setMemberEmailList(updatedMembers);
+    const updatedMembers = invitedEmails.filter((email) => email !== deletedEmail);
+    setInvitedEmails(updatedMembers);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // TODO: 백엔드로 POST 요청
+    const requestData = {
+      title: planInfo.title,
+      intro: planInfo.intro,
+      invitedEmails,
+      isPublic,
+    };
+
+    return requestData;
   };
 
   return (
@@ -138,13 +146,13 @@ function CreatePlan() {
         </label>
       </InputField>
       <InputField>
-        <label htmlFor="description">
+        <label htmlFor="intro">
           플랜 설명
           <input
             type="text"
-            id="description"
-            name="description"
-            value={planInfo.description}
+            id="intro"
+            name="intro"
+            value={planInfo.intro}
             onChange={changePlanInfo}
             placeholder="플랜을 설명해주세요"
           />
@@ -166,7 +174,7 @@ function CreatePlan() {
               />
             </label>
           </InputField>
-          <ManageTeam type="create" newMemberEmailList={memberEmailList} handleDeleteNewMember={deleteMember} />
+          <ManageTeam type="create" newMemberEmailList={invitedEmails} handleDeleteNewMember={deleteMember} />
         </ManageTeamContainer>
         <ImageContainer src={boardIllust} alt="member-illust" />
       </BottomContainer>

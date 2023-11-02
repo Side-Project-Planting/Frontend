@@ -65,13 +65,16 @@ const Header = styled.div`
 
 const EditableTitle = styled.input`
   height: 2rem;
-  padding-inline: 0.5rem;
-  border: 1.5px solid #64d4ab;
-  border-radius: 0.5rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
   background: none;
   font-size: 1rem;
   outline: none;
   width: 100%;
+
+  &:focus {
+    border: 3px solid #000000;
+  }
 `;
 
 const Container = styled.div`
@@ -129,9 +132,12 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
 
   const handleStartEditing = () => {
     setIsEditing(true);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0);
   };
 
   const handleSave = () => {
