@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 
+import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 import { styled } from 'styled-components';
 
 import defaultProfileImg from '@assets/images/defaultProfileImg.svg';
@@ -77,8 +79,13 @@ const SubmitButton = styled.button`
 `;
 
 export default function SignUp() {
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const location = useLocation();
+  const userData = location.state;
+  const [name, setName] = useState<string>('');
+  const [imagePreview, setImagePreview] = useState<string | null>(userData.profileUrl);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // console.log(userData);
 
   const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -94,9 +101,26 @@ export default function SignUp() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formData = new FormData();
+
+    if (inputRef.current && inputRef.current.files) {
+      formData.append('profileImage', inputRef.current.files[0]);
+    }
+
+    formData.append('name', name);
     // TODO: 서버에 회원가입 POST 요청
+    try {
+      const response = await axios.post('/api/auth/register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // 확인필요
+        },
+      });
+      return response;
+    } catch {
+      throw Error('회원가입에 실패했습니다.');
+    }
   };
 
   return (
@@ -111,8 +135,8 @@ export default function SignUp() {
           </AddImageButton>
         </ProfileImageContainer>
         <InputContainer>
-          <Input type="text" placeholder="이름" readOnly />
-          <Input type="text" placeholder="이메일" readOnly />
+          <Input type="text" placeholder="이름을 알려주세요" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input type="email" placeholder="이메일" value={userData.email} readOnly />
         </InputContainer>
         <SubmitButton type="submit">시작하기</SubmitButton>
       </Form>
