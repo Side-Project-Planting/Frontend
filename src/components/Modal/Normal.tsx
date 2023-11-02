@@ -3,7 +3,7 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { INormalModal } from 'types';
 
-import { ModalButton, ModalButtonContainer, ModalDescription } from '@components/Modal/CommonModalStyles';
+import { ModalButton, ModalButtonContainer, ModalInformation } from '@components/Modal/CommonModalStyles';
 import useModal from '@hooks/useModal';
 import { modalDataState } from '@recoil/atoms';
 
@@ -19,7 +19,7 @@ export default function NormalModal() {
 
   return (
     <>
-      <ModalDescription>{modalData.description}</ModalDescription>
+      <ModalInformation>{modalData.information}</ModalInformation>
       <ModalButtonContainer>
         <ModalButton type="button" onClick={onClickHandler}>
           예

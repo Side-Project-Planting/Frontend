@@ -309,11 +309,22 @@ function Plan() {
 
   const handleDeleteTask = (tabId: number, taskId: number) => {
     if (tasks) {
+      setTasks((prev) => {
+        const newTasks = { ...prev };
+        newTasks[tabId] = newTasks[tabId].filter((task) => task.id !== taskId);
+        return newTasks;
+      });
+    }
+  };
+
+  const handleEditTask = (tabId: number, taskId: number, editedTask: ITask) => {
+    if (tasks) {
       let idx = 0;
       while (tasks[tabId][idx] && tasks[tabId][idx].id !== taskId) idx += 1;
       setTasks((prev) => {
         const newTasks = { ...prev };
         newTasks[tabId].splice(idx, 1);
+        newTasks[tabId].splice(idx, 0, editedTask);
         return newTasks;
       });
     }
@@ -448,6 +459,7 @@ function Plan() {
                     onSaveTitle={handleSaveTabTitle}
                     onAddTask={setTasks}
                     onRemoveTask={handleDeleteTask}
+                    onEditTask={handleEditTask}
                   />
                 );
               })}

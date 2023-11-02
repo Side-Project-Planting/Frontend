@@ -33,6 +33,11 @@ export default createGlobalStyle`
     font-size: inherit;
   }
 
+  textarea {
+    border: none;
+    font-size: inherit;
+  }
+
   button {
     background: none;
     border: none;
@@ -41,7 +46,7 @@ export default createGlobalStyle`
     font-size: inherit;
     &:focus{
       outline: none;
-    } 
+    }
   }
 
   ul,li{

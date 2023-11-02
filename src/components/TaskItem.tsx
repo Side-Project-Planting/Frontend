@@ -7,15 +7,22 @@ import { IoClose, IoInfinite } from 'react-icons/io5';
 import { PiClockFill } from 'react-icons/pi';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { INormalModal, ITask } from 'types';
+import { IEditTaskModal, INormalModal, ITask } from 'types';
 
 import useModal from '@hooks/useModal';
 import { modalDataState } from '@recoil/atoms';
 import { filteredLabelsSelector, memberSelector } from '@recoil/selectors';
 import { hashStringToColor } from '@utils';
 
-const ItemContainer = styled.div`
+const ItemWrapper = styled.div`
   position: relative;
+  width: 100%;
+
+  &:hover .task-remove-button {
+    display: flex;
+  }
+`;
+const ItemContainer = styled.div`
   padding: 1rem;
   margin-bottom: 1rem;
   width: 99%;
@@ -31,23 +38,19 @@ const ItemContainer = styled.div`
     word-wrap: break-word;
   }
 
-  button {
-    display: none;
-    width: 1rem;
-    height: 1rem;
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    color: #f44336;
-  }
-
   &:hover {
     background-color: #ececec;
   }
+`;
 
-  &:hover button {
-    display: flex;
-  }
+const TaskRemoveButton = styled.button`
+  display: none;
+  width: 1rem;
+  height: 1rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: #f44336;
 `;
 
 const LabelField = styled.div`
@@ -89,9 +92,10 @@ interface Props {
   task: ITask;
   index: number;
   onRemoveTask: (tabId: number, taskId: number) => void;
+  onEditTask: (tabId: number, taskId: number, editedTask: ITask) => void;
 }
 
-export default function TaskItem({ task, index, onRemoveTask }: Props) {
+export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Props) {
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
   const assignee = useRecoilValue(memberSelector(task.assigneeId!));
   const setModalData = useSetRecoilState(modalDataState);
@@ -102,45 +106,61 @@ export default function TaskItem({ task, index, onRemoveTask }: Props) {
       // TODO: 서버에 태스크 삭제 요청
       onRemoveTask(task.tabId, task.id);
     };
-    setModalData({ description: `"${task.title}"을 삭제할까요?`, requestAPI } as INormalModal);
+    setModalData({ information: `"${task.title}"을 삭제할까요?`, requestAPI } as INormalModal);
     openModal('normal');
+  };
+
+  const editTaskHandler = () => {
+    const requestAPI = (editedTask: ITask) => {
+      onEditTask(task.tabId, task.id, editedTask);
+      // TODO: 서버에 태스크 업데이트 요청
+    };
+    setModalData({ task, taskOrder: index, requestAPI } as IEditTaskModal);
+    openModal('editTask');
   };
 
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
       {(provided) => (
-        <ItemContainer {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-          <button type="button" onClick={removeTaskHandler}>
-            <IoClose size={20} />
-          </button>
-          <p id="task-title">{task.title}</p>
-          <LabelField>
-            {filteredLabels.map((label) => (
-              <LabelItem key={label.id} color={hashStringToColor(label.value)}>
-                {label.value}
-              </LabelItem>
-            ))}
-          </LabelField>
-          <InfoField>
-            <DateField>
-              {task.dateRange ? (
-                <>
-                  <PiClockFill size={16} color="#64D4AB" />
-                  <div>
-                    {`${task.dateRange[0]}`}
-                    <br />
-                    {` ~ ${task.dateRange[1]}`}
+        <ItemWrapper>
+          <ItemContainer
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
+            onClick={editTaskHandler}
+          >
+            <p id="task-title">{task.title}</p>
+            <LabelField>
+              {filteredLabels.map((label) => (
+                <LabelItem key={label.id} color={hashStringToColor(label.value)}>
+                  {label.value}
+                </LabelItem>
+              ))}
+            </LabelField>
+            <InfoField>
+              <DateField>
+                {task.dateRange ? (
+                  <>
+                    <PiClockFill size={16} color="#64D4AB" />
+                    <div>
+                      {`${task.dateRange[0]}`}
+                      <br />
+                      {` ~ ${task.dateRange[1]}`}
+                    </div>
+                  </>
+                ) : (
+                  <div className="date-infinity">
+                    <IoInfinite size={24} color="#1C2A4B" />
                   </div>
-                </>
-              ) : (
-                <div className="date-infinity">
-                  <IoInfinite size={24} color="#1C2A4B" />
-                </div>
-              )}
-            </DateField>
-            <div>{assignee.name}</div>
-          </InfoField>
-        </ItemContainer>
+                )}
+              </DateField>
+              <div>{assignee.name}</div>
+            </InfoField>
+          </ItemContainer>
+          <TaskRemoveButton className="task-remove-button" type="button" onClick={removeTaskHandler}>
+            <IoClose size={20} />
+          </TaskRemoveButton>
+        </ItemWrapper>
       )}
     </Draggable>
   );

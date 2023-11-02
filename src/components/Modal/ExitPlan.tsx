@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { IExitPlanModal, ISelectOption } from 'types';
 
-import { ModalButton, ModalButtonContainer, ModalDescription } from '@components/Modal/CommonModalStyles';
+import { ModalButton, ModalButtonContainer, ModalInformation } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
 import useModal from '@hooks/useModal';
 import { membersState, modalDataState } from '@recoil/atoms';
@@ -33,7 +33,7 @@ export default function ExitPlanModal() {
 
   return (
     <>
-      <ModalDescription>{modalData.description}</ModalDescription>
+      <ModalInformation>{modalData.information}</ModalInformation>
       <SelectAdminContainer>
         <SelectAdminText>관리자 지정</SelectAdminText>
         <SelectBox options={options} setValue={setAdmin} />

@@ -230,7 +230,7 @@ function Setting() {
     const requestAPI = () => {
       // TODO: 서버에 플랜 삭제 요청
     };
-    setModalData({ description: `플랜을 정말 삭제하시겠어요?`, requestAPI } as INormalModal);
+    setModalData({ information: `플랜을 정말 삭제하시겠어요?`, requestAPI } as INormalModal);
     openModal('normal');
   };
 
@@ -238,7 +238,7 @@ function Setting() {
     const requestAPI = () => {
       // TODO: 서버에 플랜 수정 요청
     };
-    setModalData({ description: `변경사항을 저장하시겠어요?`, requestAPI } as INormalModal);
+    setModalData({ information: `변경사항을 저장하시겠어요?`, requestAPI } as INormalModal);
     openModal('normal');
   };
 
