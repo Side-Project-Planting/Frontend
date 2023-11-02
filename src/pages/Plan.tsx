@@ -20,6 +20,7 @@ import { labelsState, membersState } from '@recoil/atoms';
 import registDND, { IDropEvent } from '@utils/drag';
 
 interface IPlan {
+  id: number;
   title: string;
   description: string;
   isPublic: boolean;
@@ -241,13 +242,19 @@ function Plan() {
     newTabOrder.splice(draggedTabIndex, 1);
     newTabOrder.splice(targetTabIndex, 0, source.id);
 
-    // console.log(source.id, destination.id);
-
     setPlan((prev) => {
       if (!prev) return prev;
 
       return { ...prev, tabOrder: newTabOrder };
     });
+
+    // const prevIndex = newTabOrder.indexOf(source.id) - 1;
+    // const requestData = {
+    //   planId: plan.id,
+    //   targetId: source.id,
+    //   newPrevId: prevIndex === -1 ? null : newTabOrder[prevIndex],
+    // };
+    // TODO: 탭 순서 변경 요청 날리기
   };
 
   useEffect(() => {
