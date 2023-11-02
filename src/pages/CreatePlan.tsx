@@ -94,10 +94,21 @@ function CreatePlan() {
   };
 
   const addMember = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const value = e.currentTarget.value.trim();
-    if (e.key !== 'Enter' || !value) return;
-    setMemberEmailList((prev) => [...prev, value]);
-    e.currentTarget.value = '';
+    if (e.key === 'Enter') {
+      const value = e.currentTarget.value.trim();
+
+      if (!value) return;
+
+      const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+      if (!emailPattern.test(value)) {
+        // eslint-disable-next-line no-alert
+        alert('유효한 이메일 주소를 입력하세요.');
+        return;
+      }
+      setMemberEmailList((prev) => [...prev, value]);
+      e.currentTarget.value = '';
+    }
   };
 
   const deleteMember = (deletedEmail: string) => {
