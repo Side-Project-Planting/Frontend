@@ -309,11 +309,9 @@ function Plan() {
 
   const handleDeleteTask = (tabId: number, taskId: number) => {
     if (tasks) {
-      let idx = 0;
-      while (tasks[tabId][idx] && tasks[tabId][idx].id !== taskId) idx += 1;
       setTasks((prev) => {
         const newTasks = { ...prev };
-        newTasks[tabId].splice(idx, 1);
+        newTasks[tabId] = newTasks[tabId].filter((task) => task.id !== taskId);
         return newTasks;
       });
     }
