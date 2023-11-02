@@ -139,13 +139,18 @@ const TabWrapper = styled.li`
   height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   justify-content: space-between;
   position: relative;
 
   input {
+    height: 2rem;
     background: none;
-    border: 1px solid #000000;
-    padding-inline: 0.5rem;
+    padding: 0.2rem 0.5rem;
+
+    &:focus {
+      border: 2px solid #000000;
+    }
   }
 
   .cancelTab {
