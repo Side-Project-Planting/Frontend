@@ -19,3 +19,57 @@ export const ModalButton = styled.button`
   color: white;
   line-height: 10%;
 `;
+
+export const TaskModalWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+
+export const TaskFormContainer = styled.form`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+`;
+
+export const InputField = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: #76808e;
+  }
+
+  input {
+    height: 2.5rem;
+    padding: 1rem;
+    background-color: #fafafa;
+    border-radius: 8px;
+    font-size: 0.9rem;
+
+    &:focus {
+      outline: 1px solid #b8b8b84f;
+    }
+  }
+`;
+
+export const Fields = styled.div`
+  height: 4.5rem;
+  display: flex;
+  gap: 3rem;
+`;
+
+export const AssigneeField = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .assignee-label {
+    color: #76808e;
+  }
+`;

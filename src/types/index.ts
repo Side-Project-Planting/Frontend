@@ -22,6 +22,7 @@ export interface ITask {
   assigneeId: number | undefined;
   order: number;
   dateRange: null | string[];
+  description: string;
 }
 
 export interface IMember {
@@ -61,6 +62,12 @@ export interface IAddTaskModal {
   addTaskHandler: Dispatch<SetStateAction<Record<number, ITask[]>>>;
 }
 
+export interface IEditTaskModal {
+  task: ITask;
+  taskOrder: number;
+  requestAPI: (editedTask: ITask) => void;
+}
+
 export type TModalType = 'none' | 'normal' | 'exitPlan' | 'addTask' | 'editTask';
 
-export type TModalData = null | INormalModal | IExitPlanModal | IAddTaskModal;
+export type TModalData = null | INormalModal | IExitPlanModal | IAddTaskModal | IEditTaskModal;

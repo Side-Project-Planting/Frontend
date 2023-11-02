@@ -55,7 +55,8 @@
             "tabId": 3,
             "labels": [3],
             "assigneeId": 3,
-            "order": 0
+            "order": 0,
+            "description": ""
          },
          {
             "id": 2,
@@ -63,7 +64,8 @@
             "tabId": 1,
             "labels": [1],
             "assigneeId": 3,
-            "order": 0
+            "order": 0,
+            "description": ""
          },
          {
             "id": 3,
@@ -71,7 +73,8 @@
             "tabId": 2,
             "labels": [1],
             "assigneeId":4,
-            "order": 0
+            "order": 0,
+            "description": ""
          },
          {
             "id": 4,
@@ -79,7 +82,8 @@
             "tabId": 2,
             "labels": [2],
             "assigneeId": 1,
-            "order": 1
+            "order": 1,
+            "description": ""
          }
    ]
 }

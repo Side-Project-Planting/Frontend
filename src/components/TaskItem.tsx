@@ -7,7 +7,7 @@ import { IoClose, IoInfinite } from 'react-icons/io5';
 import { PiClockFill } from 'react-icons/pi';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { INormalModal, ITask } from 'types';
+import { IEditTaskModal, INormalModal, ITask } from 'types';
 
 import useModal from '@hooks/useModal';
 import { modalDataState } from '@recoil/atoms';
@@ -92,9 +92,10 @@ interface Props {
   task: ITask;
   index: number;
   onRemoveTask: (tabId: number, taskId: number) => void;
+  onEditTask: (tabId: number, taskId: number, editedTask: ITask) => void;
 }
 
-export default function TaskItem({ task, index, onRemoveTask }: Props) {
+export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Props) {
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
   const assignee = useRecoilValue(memberSelector(task.assigneeId!));
   const setModalData = useSetRecoilState(modalDataState);
@@ -109,11 +110,25 @@ export default function TaskItem({ task, index, onRemoveTask }: Props) {
     openModal('normal');
   };
 
+  const editTaskHandler = () => {
+    const requestAPI = (editedTask: ITask) => {
+      onEditTask(task.tabId, task.id, editedTask);
+      // TODO: 서버에 태스크 업데이트 요청
+    };
+    setModalData({ task, taskOrder: index, requestAPI } as IEditTaskModal);
+    openModal('editTask');
+  };
+
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
       {(provided) => (
         <ItemWrapper>
-          <ItemContainer {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+          <ItemContainer
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
+            onClick={editTaskHandler}
+          >
             <p id="task-title">{task.title}</p>
             <LabelField>
               {filteredLabels.map((label) => (

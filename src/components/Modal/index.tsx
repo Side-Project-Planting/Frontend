@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import AddTaskModal from '@components/Modal/AddTask';
+import EditTaskModal from '@components/Modal/EditTask';
 import ExitPlanModal from '@components/Modal/ExitPlan';
 import NormalModal from '@components/Modal/Normal';
 import ModalPortal from '@components/Modal/Portal';
@@ -78,6 +79,7 @@ export default function Modal() {
                 {type === 'normal' && <NormalModal />}
                 {type === 'exitPlan' && <ExitPlanModal />}
                 {type === 'addTask' && <AddTaskModal />}
+                {type === 'editTask' && <EditTaskModal />}
               </ModalContainer>
             </ModalWrapper>
           </ModalOverlay>
