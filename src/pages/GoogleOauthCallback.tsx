@@ -14,7 +14,7 @@ function GoogleOauthCallback() {
 
       if (authCode) {
         try {
-          const { data } = await axios.post('/oauth/google/login', {
+          const { data } = await axios.post('/api/oauth/google/login', {
             authCode,
           });
 

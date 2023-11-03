@@ -59,7 +59,7 @@ const LoginPolicy = styled.div`
 export default function SignIn() {
   const handleOAuthRedirect = async () => {
     try {
-      const response = await axios.get('/oauth/google/authorized-uri');
+      const response = await axios.get('/api/oauth/google/authorized-uri');
       const oauthUrl = response.data.authorizedUri;
 
       if (oauthUrl) {
