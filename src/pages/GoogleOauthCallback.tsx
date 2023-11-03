@@ -1,27 +1,42 @@
 import React, { useEffect } from 'react';
 
 import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function GoogleOauthCallback() {
-  const url = window.location.href;
-  const urlParams = new URLSearchParams(url);
-  const authCode = urlParams.get('code');
-
-  const getUserData = async () => {
-    const data = await axios.post('/oauth/google/login', { authCode });
-    return data;
-  };
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const requestLogin = async () => {
-      const response = await getUserData();
-      // TODO: 회원가입시 받아온 데이터(토근, 이메일 등)를 함께 넘겨줌
-      window.location.assign(response.data.old ? '/' : '/signup');
-    };
-    requestLogin();
-  }, []);
+    const handleLogin = async () => {
+      const queryParams = new URLSearchParams(location.search);
+      const authCode = queryParams.get('code');
 
-  return <div>loading..</div>;
+      if (authCode) {
+        try {
+          const { data } = await axios.post('/oauth/google/login', {
+            authCode,
+          });
+
+          // 서버로부터 받아온 데이터(profileUrl, accessToken, refreshToken, old 등을 저장한다.)
+          if (data.old) {
+            localStorage.setItem('accessToken', data.accessToken);
+            navigate('/');
+          } else {
+            navigate('/signup', { state: data });
+          }
+        } catch (error) {
+          throw Error('서버로부터 유저 정보를 받아오는데 실패했습니다.');
+        }
+      } else {
+        throw Error('인가 코드가 유효하지 않습니다.');
+      }
+    };
+
+    handleLogin();
+  }, [location, navigate]);
+
+  return <div>로그인 중...</div>;
 }
 
 export default GoogleOauthCallback;
