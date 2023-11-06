@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
 import { ImCompass2 } from 'react-icons/im';
-import { LuCalendarPlus } from 'react-icons/lu';
-import { MdHome, MdCalendarMonth } from 'react-icons/md';
+import { LuCalendarPlus, LuCalendarDays } from 'react-icons/lu';
+import { MdHome } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { styled } from 'styled-components';
 
@@ -68,7 +68,7 @@ const NavLink = styled(Link)<{ selected: boolean }>`
 const navMenu = [
   { id: 1, value: 'home', icon: MdHome, link: '/' },
   { id: 2, value: 'createPlan', icon: LuCalendarPlus, link: '/create-plan' },
-  { id: 3, value: 'plan', icon: MdCalendarMonth, link: '/plan' },
+  { id: 3, value: 'plan', icon: LuCalendarDays, link: '/plan' },
   { id: 4, value: 'explore', icon: ImCompass2, link: '/#' },
 ];
 
