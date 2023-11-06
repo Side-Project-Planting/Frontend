@@ -28,7 +28,7 @@ const Plans = styled.div`
   overflow-x: scroll;
 `;
 
-const MyPlanTap = styled.div`
+const MyPlanTab = styled.div`
   padding-right: 1rem;
   margin-right: 1rem;
   display: flex;
@@ -37,7 +37,7 @@ const MyPlanTap = styled.div`
   border-right: 2px solid rgba(173, 173, 173, 0.5);
 `;
 
-const TeamPlanTaps = styled.div`
+const TeamPlanTabs = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -130,7 +130,7 @@ function Main() {
     <Wrapper>
       <Container>
         <Plans>
-          <MyPlanTap>
+          <MyPlanTab>
             <BriefPlan
               key={individualPlan.id}
               planName={individualPlan.name}
@@ -138,8 +138,8 @@ function Main() {
               tabName={tabName}
               tasks={individualPlan.tasks}
             />
-          </MyPlanTap>
-          <TeamPlanTaps>
+          </MyPlanTab>
+          <TeamPlanTabs>
             {teamPlans.length === 0 ? (
               <EmptyTeamPlanFrame>
                 <div>
@@ -158,7 +158,7 @@ function Main() {
                 );
               })
             )}
-          </TeamPlanTaps>
+          </TeamPlanTabs>
         </Plans>
       </Container>
     </Wrapper>

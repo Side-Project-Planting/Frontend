@@ -7,7 +7,7 @@ import React, { useState, useRef, Dispatch, SetStateAction } from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { ITask } from 'types';
+import { INormalModal, ITask } from 'types';
 
 import Dropdown from '@components/Dropdown';
 import TaskItem from '@components/TaskItem';
@@ -129,6 +129,8 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
   const [title, setTitle] = useState(initialTitle);
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const { openModal } = useModal();
+  const setModalData = useSetRecoilState(modalDataState);
 
   const handleStartEditing = () => {
     setIsEditing(true);
@@ -146,6 +148,14 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
       setTitle(initialTitle);
     }
     onSaveTitle(title);
+  };
+
+  const handleDeleteTab = () => {
+    setModalData({
+      information: '해당 탭을 정말 삭제하시겠어요?',
+      requestAPI: onDeleteTab,
+    } as INormalModal);
+    openModal('normal');
   };
 
   return (
@@ -168,7 +178,7 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
           {title}
         </div>
       )}
-      <Dropdown type="tab" options={tabEditOptions} onClick={onDeleteTab} />
+      <Dropdown type="tab" options={tabEditOptions} onClick={handleDeleteTab} />
     </Header>
   );
 }
