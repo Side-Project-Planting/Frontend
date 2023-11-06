@@ -129,7 +129,7 @@ const TabContainer = styled.div`
   overflow-x: auto;
 `;
 
-const AddTapButton = styled.button`
+const AddTabButton = styled.button`
   height: 100%;
   background: none;
   margin-left: 5rem;
@@ -492,9 +492,9 @@ function Plan() {
               )}
             </TabContainer>
           </DragDropContext>
-          <AddTapButton>
+          <AddTabButton>
             <SlPlus size={35} color="#8993A1" onClick={handleStartAddingTab} />
-          </AddTapButton>
+          </AddTabButton>
         </TabGroup>
       </MainContainer>
       <Modal />
