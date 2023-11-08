@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import axios from 'axios';
 import styled from 'styled-components';
 
 import boardIllust from '@assets/images/boardIllust.svg';
@@ -95,6 +96,7 @@ function CreatePlan() {
 
   const addMember = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       const value = e.currentTarget.value.trim();
 
       if (!value) return;
@@ -116,7 +118,7 @@ function CreatePlan() {
     setInvitedEmails(updatedMembers);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // TODO: 백엔드로 POST 요청
     const requestData = {
@@ -125,6 +127,15 @@ function CreatePlan() {
       invitedEmails,
       isPublic,
     };
+    // console.log(requestData);
+
+    try {
+      const { data } = await axios.post('/api/plans', requestData);
+      // console.log(data);
+      return data;
+    } catch (error) {
+      // console.log(error);
+    }
 
     return requestData;
   };

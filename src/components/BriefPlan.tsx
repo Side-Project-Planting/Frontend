@@ -158,7 +158,7 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
   };
 
   return (
-    <CustomLink to="/">
+    <CustomLink to="/main">
       <Wrapper>
         <PlanName>
           <div>

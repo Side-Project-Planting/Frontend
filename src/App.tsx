@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
 import Header from '@components/Header';
@@ -14,11 +14,15 @@ import SignUp from '@pages/SignUp';
 import GlobalFonts from '@styles/GlobalFont';
 import GlobalStyle from '@styles/GlobalStyle';
 
-function Layout() {
+interface Props {
+  children: React.ReactNode;
+}
+
+function Layout({ children }: Props) {
   return (
     <>
       <Header />
-      <Outlet />
+      {children}
     </>
   );
 }
@@ -26,30 +30,6 @@ function Layout() {
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
-    children: [
-      // 헤더를 포함한 페이지는 children 안에 경로를 지정해주세요.
-      {
-        path: '/',
-        element: <Main />,
-      },
-      {
-        path: '/create-plan',
-        element: <CreatePlan />,
-      },
-      {
-        path: '/plan',
-        element: <Plan />,
-      },
-      {
-        path: '/setting',
-        element: <Setting />,
-      },
-    ],
-  },
-  // 헤더를 포함하지 않은 페이지는 children 밖에 놓아주세요.
-  {
-    path: '/signin',
     element: <SignIn />,
   },
   {
@@ -60,7 +40,40 @@ const router = createBrowserRouter([
     path: '/login/oauth2/code/google?',
     element: <GoogleOauthCallback />,
   },
+  {
+    path: '/main',
+    element: (
+      <Layout>
+        <Main />,
+      </Layout>
+    ),
+  },
+  {
+    path: '/create-plan',
+    element: (
+      <Layout>
+        <CreatePlan />,
+      </Layout>
+    ),
+  },
+  {
+    path: '/plan',
+    element: (
+      <Layout>
+        <Plan />,
+      </Layout>
+    ),
+  },
+  {
+    path: '/setting',
+    element: (
+      <Layout>
+        <Setting />,
+      </Layout>
+    ),
+  },
 ]);
+
 function App() {
   return (
     <>

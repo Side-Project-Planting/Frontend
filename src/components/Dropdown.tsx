@@ -74,6 +74,7 @@ const DropdownItem = styled.li`
 function Dropdown({ type, options, onClick }: DropdownProp) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const profileUrl = localStorage.getItem('profileUrl');
 
   const toggleDropdown = () => {
     setIsOpen((prev) => !prev);
@@ -100,7 +101,9 @@ function Dropdown({ type, options, onClick }: DropdownProp) {
 
   return (
     <Container ref={dropdownRef} type={type}>
-      {type === 'header' && <ProfileImg src={defaultProfileImg} alt="profile-img" onClick={toggleDropdown} />}
+      {type === 'header' && (
+        <ProfileImg src={profileUrl || defaultProfileImg} alt="profile-img" onClick={toggleDropdown} />
+      )}
       {type === 'tab' && (
         <EditButton onClick={toggleDropdown}>
           <IoIosMore size="24" />
