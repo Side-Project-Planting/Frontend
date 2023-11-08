@@ -66,7 +66,7 @@ const NavLink = styled(Link)<{ selected: boolean }>`
 
 // TODO: navMenu link 수정
 const navMenu = [
-  { id: 1, value: 'home', icon: MdHome, link: '/' },
+  { id: 1, value: 'home', icon: MdHome, link: '/main' },
   { id: 2, value: 'createPlan', icon: LuCalendarPlus, link: '/create-plan' },
   { id: 3, value: 'plan', icon: LuCalendarDays, link: '/plan' },
   { id: 4, value: 'explore', icon: ImCompass2, link: '/#' },

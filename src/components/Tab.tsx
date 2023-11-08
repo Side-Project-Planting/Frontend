@@ -188,7 +188,7 @@ export function TasksContainer({ id, tasks, onAddTask, onRemoveTask, onEditTask 
   const setModalData = useSetRecoilState(modalDataState);
 
   const handleAddTask = () => {
-    if (!tasks || !id || !onAddTask) return;
+    if (!id || !onAddTask) return;
     setModalData({
       tabId: id,
       taskOrder: tasks ? tasks.length : 0,
