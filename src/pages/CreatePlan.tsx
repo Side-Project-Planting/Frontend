@@ -127,13 +127,14 @@ function CreatePlan() {
       invitedEmails,
       isPublic,
     };
-    console.log(requestData);
+    // console.log(requestData);
 
     try {
       const { data } = await axios.post('/api/plans', requestData);
-      console.log(data);
+      // console.log(data);
+      return data;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
 
     return requestData;
