@@ -19,9 +19,12 @@ function GoogleOauthCallback() {
           });
 
           // 서버로부터 받아온 데이터(profileUrl, accessToken, refreshToken, old 등을 저장한다.)
-          if (data.old) {
+          if (data.registered) {
+            axios.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;
             localStorage.setItem('accessToken', data.accessToken);
-            navigate('/');
+            localStorage.setItem('refreshToken', data.refreshToken);
+            localStorage.setItem('profileUrl', data.profileUrl);
+            navigate('/main');
           } else {
             navigate('/signup', { state: data });
           }

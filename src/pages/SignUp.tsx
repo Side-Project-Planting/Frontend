@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { styled } from 'styled-components';
 
 import defaultProfileImg from '@assets/images/defaultProfileImg.svg';
@@ -85,7 +85,7 @@ export default function SignUp() {
   const [imagePreview, setImagePreview] = useState<string | null>(userData.profileUrl);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // console.log(userData);
+  const navigate = useNavigate();
 
   const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -103,21 +103,34 @@ export default function SignUp() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
 
-    if (inputRef.current && inputRef.current.files) {
-      formData.append('profileImage', inputRef.current.files[0]);
-    }
+    const requestData = {
+      profileUrl: userData.profileUrl,
+      name,
+      authId: userData.authId,
+      authorizedToken: userData.authorizedToken,
+    };
 
-    formData.append('name', name);
+    // if (inputRef.current && inputRef.current.files) {
+    //   requestData.profileImage = inputRef.current.files[0];
+    // } else {
+    //   requestData.profileUrl = userData.profileUrl;
+    // }
+
     // TODO: 서버에 회원가입 POST 요청
     try {
-      const response = await axios.post('/api/auth/register', formData, {
+      const { data } = await axios.post('/api/auth/register', requestData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // 확인필요
+          'Content-Type': 'application/json',
         },
       });
-      return response;
+
+      // TODO: 이후 보안을 생각해서 방식을 변경해야 함
+      axios.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem('profileUrl', data.profileUrl);
+      navigate('/main');
     } catch {
       throw Error('회원가입에 실패했습니다.');
     }
