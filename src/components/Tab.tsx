@@ -131,6 +131,7 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { openModal } = useModal();
   const setModalData = useSetRecoilState(modalDataState);
+  // const currentPlanId = useRecoilValue(currentPlanIdState);
 
   const handleStartEditing = () => {
     setIsEditing(true);
@@ -147,6 +148,10 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
     if (title.trim() === '') {
       setTitle(initialTitle);
     }
+    // const requestBody = {
+    //   planId: currentPlanId,
+    //   name: title,
+    // };
     onSaveTitle(title);
   };
 

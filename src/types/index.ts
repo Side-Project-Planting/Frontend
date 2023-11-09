@@ -39,6 +39,11 @@ export interface ITab {
   tasks?: ITask[];
 }
 
+export interface IPlanTitle {
+  id: number;
+  title: string;
+}
+
 export interface ISelectOption {
   id: number | undefined;
   name: string | undefined;

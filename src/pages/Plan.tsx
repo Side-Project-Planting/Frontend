@@ -6,8 +6,8 @@ import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
-import { useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { ITask, ITab, IMember, ILabel } from 'types';
 
@@ -16,7 +16,7 @@ import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import Modal from '@components/Modal';
 import { Tab, TasksContainer } from '@components/Tab';
-import { labelsState, membersState } from '@recoil/atoms';
+import { currentPlanIdState, labelsState, membersState, planTitlesState } from '@recoil/atoms';
 import registDND, { IDropEvent } from '@utils/drag';
 
 interface IPlan {
@@ -164,17 +164,18 @@ const TabWrapper = styled.li`
 `;
 
 const planNameList = [
-  { id: 1, name: 'My Plan' },
-  { id: 2, name: 'Team Plan1' },
-  { id: 3, name: 'Team Plan2' },
-  { id: 4, name: 'Team Plan3' },
+  { id: 1, title: 'My Plan' },
+  { id: 2, title: 'Team Plan1' },
+  { id: 3, title: 'Team Plan2' },
+  { id: 4, title: 'Team Plan3' },
 ];
 
 function Plan() {
+  const params = useParams();
+  const planId = Number(params.planId) || planNameList[0].id;
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [plan, setPlan] = useState<IPlan | null>(null);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
-  const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
@@ -183,6 +184,8 @@ function Plan() {
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
+  const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
+  const setCurrentPlanId = useSetRecoilState(currentPlanIdState);
 
   const navigate = useNavigate();
 
@@ -227,7 +230,7 @@ function Plan() {
     };
 
     fetchData();
-  }, []);
+  }, [planId]);
 
   useEffect(() => {
     if (originalPlan) {
@@ -294,6 +297,11 @@ function Plan() {
     } else {
       // TODO: 서버에 탭 추가 요청
       // 서버에서 받아온 tabId를 newTab에 넣어줘야 한다.
+
+      // const requestBody = {
+      //   planId,
+      //   name: newTabTitle,
+      // };
       const newTab: ITab = {
         id: (plan?.tabs.length || 0) + 1,
         title: newTabTitle,
@@ -425,21 +433,26 @@ function Plan() {
     });
   };
 
+  useEffect(() => {
+    // TODO: dummy -> API 변경 필요
+    setPlanTitles(planNameList);
+    setCurrentPlanId(planId);
+  }, []);
+
   return (
     <Wrapper>
       <SideContainer>
         <PlanCategory>
-          {planNameList.map((item) => (
+          {planTitles.map((item) => (
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
             <li
-              className={`${selectedPlanName === item.name && 'isSelected'}`}
+              className={`${planId === item.id && 'isSelected'}`}
               key={item.id}
               onClick={() => {
-                setSelectedPlanName(item.name);
-                // TODO 서버에 planId로 플랜 정보 요청
+                navigate(`/plan/${item.id}`);
               }}
             >
-              {item.name}
+              {item.title}
             </li>
           ))}
         </PlanCategory>

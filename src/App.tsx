@@ -57,6 +57,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/plan/:planId',
+    element: (
+      <Layout>
+        <Plan />,
+      </Layout>
+    ),
+  },
+  {
     path: '/plan',
     element: (
       <Layout>

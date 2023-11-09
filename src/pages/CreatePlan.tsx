@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import boardIllust from '@assets/images/boardIllust.svg';
@@ -81,10 +82,9 @@ function CreatePlan() {
     title: '',
     intro: '',
   });
-
   const [invitedEmails, setInvitedEmails] = useState<string[]>([]);
-
   const [isPublic, setIsPublic] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const changePlanInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -130,11 +130,15 @@ function CreatePlan() {
     // console.log(requestData);
 
     try {
-      const { data } = await axios.post('/api/plans', requestData);
-      // console.log(data);
-      return data;
+      const { status, data } = await axios.post('/api/plans', requestData);
+      if (status === 201) {
+        navigate(`/plan/${data.id}`);
+      } else {
+        throw new Error();
+      }
     } catch (error) {
-      // console.log(error);
+      // eslint-disable-next-line
+      alert('플랜이 정상적으로 만들어지지 않았어요 :(');
     }
 
     return requestData;
