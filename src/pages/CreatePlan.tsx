@@ -58,6 +58,7 @@ const Button = styled.button`
   border-radius: 0.5rem;
   color: #fff;
   background-color: #64d4ab;
+  margin-top: 2rem;
 `;
 
 const PublicContainer = styled.div`
@@ -118,8 +119,7 @@ function CreatePlan() {
     setInvitedEmails(updatedMembers);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     // TODO: 백엔드로 POST 요청
     const requestData = {
       title: planInfo.title,
@@ -141,7 +141,7 @@ function CreatePlan() {
   };
 
   return (
-    <Wrapper onSubmit={handleSubmit}>
+    <Wrapper>
       <Title>새로운 플랜</Title>
       <InputField>
         <label htmlFor="title">
@@ -195,7 +195,9 @@ function CreatePlan() {
         <p> {isPublic ? '플랜을 공개합니다.' : '플랜을 공개하지 않습니다.'}</p>
       </PublicContainer>
 
-      <Button type="submit">생성하기</Button>
+      <Button type="button" onClick={handleSubmit}>
+        생성하기
+      </Button>
     </Wrapper>
   );
 }
