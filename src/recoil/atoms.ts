@@ -1,5 +1,15 @@
 import { atom } from 'recoil';
-import { ILabel, IMember, IModalInfo, TModalData } from 'types';
+import { ILabel, IMember, IModalInfo, IPlanTitle, TModalData } from 'types';
+
+export const currentPlanIdState = atom<number>({
+  key: 'planId',
+  default: -1,
+});
+
+export const planTitlesState = atom<IPlanTitle[]>({
+  key: 'planTitles',
+  default: [],
+});
 
 export const membersState = atom<IMember[]>({
   key: 'members',

@@ -16,7 +16,7 @@ import {
 } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
 import useModal from '@hooks/useModal';
-import { membersState, modalDataState } from '@recoil/atoms';
+import { currentPlanIdState, membersState, modalDataState } from '@recoil/atoms';
 
 export default function AddTaskModal() {
   const members = useRecoilValue(membersState);
@@ -25,6 +25,7 @@ export default function AddTaskModal() {
   const [dateRange, setDateRange] = useState<string[] | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<ILabel[]>([]);
   const modalData = useRecoilValue(modalDataState) as IAddTaskModal;
+  const currentPlanId = useRecoilValue(currentPlanIdState);
   const { closeModal } = useModal();
 
   const options = members.map((member) => {
@@ -37,7 +38,7 @@ export default function AddTaskModal() {
     const startDate = dateRange ? dateRange[0] : null;
     const endDate = dateRange ? dateRange[1] : null;
     const requestBody = {
-      planId: modalData.planId,
+      planId: currentPlanId,
       tabId: modalData.tabId,
       managerId: assignee.id,
       name: taskName,
@@ -50,6 +51,7 @@ export default function AddTaskModal() {
     // TODO: 할일 추가 요청
     try {
       const response = await axios.post('/api/tasks', requestBody);
+      // eslint-disable-next-line
       console.log(response);
     } catch (error) {
       // eslint-disable-next-line

@@ -39,6 +39,11 @@ export interface ITab {
   tasks?: ITask[];
 }
 
+export interface IPlanTitle {
+  id: number;
+  title: string;
+}
+
 export interface ISelectOption {
   id: number | undefined;
   name: string | undefined;
@@ -57,7 +62,6 @@ export interface INormalModal {
 export interface IExitPlanModal extends INormalModal {}
 
 export interface IAddTaskModal {
-  planId: number;
   tabId: number;
   taskOrder: number;
   addTaskHandler: Dispatch<SetStateAction<Record<number, ITask[]>>>;
