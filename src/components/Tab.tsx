@@ -15,6 +15,7 @@ import useModal from '@hooks/useModal';
 import { modalDataState } from '@recoil/atoms';
 
 interface ITabProps {
+  planId: number;
   id: number;
   index: number;
   title: string;
@@ -34,6 +35,7 @@ interface ITabHeaderProps {
 }
 
 interface ITaskContainerProps {
+  planId: number;
   id?: number;
   tasks?: ITask[];
   onAddTask?: Dispatch<SetStateAction<Record<number, ITask[]>>>;
@@ -183,13 +185,14 @@ function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) 
   );
 }
 
-export function TasksContainer({ id, tasks, onAddTask, onRemoveTask, onEditTask }: ITaskContainerProps) {
+export function TasksContainer({ planId, id, tasks, onAddTask, onRemoveTask, onEditTask }: ITaskContainerProps) {
   const { openModal } = useModal();
   const setModalData = useSetRecoilState(modalDataState);
 
   const handleAddTask = () => {
     if (!id || !onAddTask) return;
     setModalData({
+      planId,
       tabId: id,
       taskOrder: tasks ? tasks.length : 0,
       addTaskHandler: onAddTask,
@@ -231,6 +234,7 @@ export function TasksContainer({ id, tasks, onAddTask, onRemoveTask, onEditTask 
 }
 
 export function Tab({
+  planId,
   id,
   index,
   title,
@@ -244,7 +248,14 @@ export function Tab({
   return (
     <Wrapper className="dnd-tab" data-index={index} data-id={id}>
       <TabHeader initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
-      <TasksContainer id={id} tasks={tasks} onAddTask={onAddTask} onRemoveTask={onRemoveTask} onEditTask={onEditTask} />
+      <TasksContainer
+        planId={planId}
+        id={id}
+        tasks={tasks}
+        onAddTask={onAddTask}
+        onRemoveTask={onRemoveTask}
+        onEditTask={onEditTask}
+      />
     </Wrapper>
   );
 }

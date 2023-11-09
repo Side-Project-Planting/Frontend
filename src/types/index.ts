@@ -57,6 +57,7 @@ export interface INormalModal {
 export interface IExitPlanModal extends INormalModal {}
 
 export interface IAddTaskModal {
+  planId: number;
   tabId: number;
   taskOrder: number;
   addTaskHandler: Dispatch<SetStateAction<Record<number, ITask[]>>>;

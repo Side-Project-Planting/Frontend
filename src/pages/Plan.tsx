@@ -6,7 +6,7 @@ import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { ITask, ITab, IMember, ILabel } from 'types';
@@ -171,10 +171,11 @@ const planNameList = [
 ];
 
 function Plan() {
+  const params = useParams();
+  const planId = Number(params.planId) || planNameList[0].id;
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [plan, setPlan] = useState<IPlan | null>(null);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
-  const [selectedPlanName, setSelectedPlanName] = useState<string>('My Plan');
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
@@ -227,7 +228,7 @@ function Plan() {
     };
 
     fetchData();
-  }, []);
+  }, [planId]);
 
   useEffect(() => {
     if (originalPlan) {
@@ -432,11 +433,10 @@ function Plan() {
           {planNameList.map((item) => (
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
             <li
-              className={`${selectedPlanName === item.name && 'isSelected'}`}
+              className={`${planId === item.id && 'isSelected'}`}
               key={item.id}
               onClick={() => {
-                setSelectedPlanName(item.name);
-                // TODO 서버에 planId로 플랜 정보 요청
+                navigate(`/plan/${item.id}`);
               }}
             >
               {item.name}
@@ -463,6 +463,7 @@ function Plan() {
               {sortedTabs.map((item, index) => {
                 return (
                   <Tab
+                    planId={plan.id}
                     id={item.id}
                     key={item.id}
                     index={index}
@@ -487,7 +488,7 @@ function Plan() {
                     onBlur={handleAddTab}
                     onKeyDown={handleInputKeyDown}
                   />
-                  <TasksContainer />
+                  <TasksContainer planId={plan.id} />
                 </TabWrapper>
               )}
             </TabContainer>
