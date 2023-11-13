@@ -44,7 +44,7 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
   };
 
   return (
-    <CustomLink to="/main">
+    <CustomLink to={`/plan/${planId}`}>
       <Wrapper>
         <PlanName>
           <div>
