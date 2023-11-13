@@ -8,8 +8,20 @@ import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import styled from 'styled-components';
 import { ITask, ITab, IMember, ILabel } from 'types';
+
+import {
+  Wrapper,
+  SideContainer,
+  PlanCategory,
+  MainContainer,
+  TopContainer,
+  UtilContainer,
+  TabGroup,
+  TabWrapper,
+  AddTabButton,
+  TabContainer,
+} from './styles';
 
 import { getPlanInfo } from '@apis';
 import LabelFilter from '@components/LabelFilter';
@@ -42,126 +54,6 @@ interface IDragDropResult {
   };
   draggableId: string;
 }
-
-const Wrapper = styled.main`
-  width: 100vw;
-  min-height: 100vh;
-  padding: 110px 70px 40px;
-  display: flex;
-  gap: 2rem;
-  background-color: #f5f5f7;
-`;
-
-const SideContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 2rem;
-`;
-
-const PlanCategory = styled.ul`
-  width: 11rem;
-  height: 50%;
-  border-radius: 1rem;
-  padding: 2.5rem 1rem;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  overflow: auto;
-  background-color: #ffffff;
-
-  li {
-    height: 3rem;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #8993a1;
-    cursor: pointer;
-
-    &.isSelected {
-      background-color: #64d4ab;
-      border-radius: 0.6rem;
-      color: #ffffff;
-    }
-  }
-`;
-
-const MainContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const TopContainer = styled.div`
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const UtilContainer = styled.div`
-  display: flex;
-  gap: 0.8rem;
-
-  .icon {
-    background-color: #ffffff;
-    width: 2.8rem;
-    height: 2.8rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-`;
-
-const TabGroup = styled.ul`
-  width: calc(100vw - 22rem);
-  height: calc(100% - 4rem);
-  display: flex;
-`;
-
-const TabContainer = styled.div`
-  display: flex;
-  gap: 1.5rem;
-  overflow-x: auto;
-`;
-
-const AddTabButton = styled.button`
-  height: 100%;
-  background: none;
-  margin-left: 5rem;
-`;
-
-const TabWrapper = styled.li`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  justify-content: space-between;
-  position: relative;
-
-  input {
-    height: 2rem;
-    background: none;
-    padding: 0.2rem 0.5rem;
-
-    &:focus {
-      border: 2px solid #000000;
-    }
-  }
-
-  .cancelTab {
-    width: 100px;
-    background-color: yellow;
-    position: absolute;
-    top: 4rem;
-    left: 4rem;
-    z-index: 10;
-  }
-`;
 
 const planNameList = [
   { id: 1, title: 'My Plan' },

@@ -2,75 +2,21 @@ import React, { useState } from 'react';
 
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+
+import {
+  Wrapper,
+  Title,
+  BottomContainer,
+  ManageTeamContainer,
+  ImageContainer,
+  PublicContainer,
+  Button,
+} from './styles';
 
 import boardIllust from '@assets/images/boardIllust.svg';
 import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
 import ToggleSwitch from '@components/ToggleSwitch';
-
-const Wrapper = styled.form`
-  width: 100vw;
-  min-height: 100vh;
-  padding: 110px 70px 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
-
-const Title = styled.h2`
-  font-size: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgb(216, 222, 228);
-`;
-const BottomContainer = styled.div`
-  width: 75rem;
-  max-height: 450px;
-  display: flex;
-  align-items: flex-end;
-`;
-
-const ImageContainer = styled.img`
-  width: 45%;
-  max-height: 340px;
-`;
-
-const ManageTeamContainer = styled.div`
-  width: 45%;
-  height: 350px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-right: 48px;
-
-  p.label {
-    font-size: 18px;
-    font-weight: bold;
-  }
-`;
-
-const Button = styled.button`
-  align-self: center;
-  width: 10rem;
-  font-size: 14px;
-  height: 2.4rem;
-  padding-inline: 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  color: #fff;
-  background-color: #64d4ab;
-  margin-top: 2rem;
-`;
-
-const PublicContainer = styled.div`
-  display: flex;
-  align-items: center;
-
-  p {
-    margin-left: 1rem;
-    color: gray;
-  }
-`;
 
 type PlanInfo = {
   title: string;

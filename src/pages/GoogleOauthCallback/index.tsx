@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { Wrapper } from './styles';
+
 function GoogleOauthCallback() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,7 +41,7 @@ function GoogleOauthCallback() {
     handleLogin();
   }, [location, navigate]);
 
-  return <div>로그인 중...</div>;
+  return <Wrapper>로그인 중...</Wrapper>;
 }
 
 export default GoogleOauthCallback;

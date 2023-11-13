@@ -1,60 +1,19 @@
 import React from 'react';
 
 import axios from 'axios';
-import { styled } from 'styled-components';
+
+import {
+  MainWrapper,
+  MainContainer,
+  Descripton,
+  HighlightSpan,
+  GoogleOAuthButton,
+  ButtonContainer,
+  LoginPolicy,
+} from './styles';
 
 import { ReactComponent as HomeIllust } from '@assets/images/homeIllust.svg';
 import Logo from '@components/Logo/Logo';
-
-const MainWrapper = styled.div`
-  min-height: 100dvh;
-  padding-block: 3rem;
-  display: flex;
-  gap: 4rem;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
-const MainContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Descripton = styled.div`
-  font-size: 2rem;
-`;
-
-const HighlightSpan = styled.span`
-  color: #64d4ab;
-`;
-
-const GoogleOAuthButton = styled.button`
-  width: 19rem;
-  height: 3.5rem;
-  background-color: #ffffff;
-  border: 1px solid #dde2e8;
-  border-radius: 8px;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-`;
-
-const LoginPolicy = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.8rem;
-  color: #8993a1;
-`;
 
 export default function SignIn() {
   const handleOAuthRedirect = async () => {
