@@ -1,12 +1,6 @@
-import React from 'react';
-
 import styled from 'styled-components';
 
-interface Props {
-  children: React.ReactNode;
-}
-
-const Container = styled.div`
+export const Container = styled.div`
   label {
     font-weight: 600;
   }
@@ -37,9 +31,3 @@ const Container = styled.div`
     }
   }
 `;
-
-function InputField({ children }: Props) {
-  return <Container>{children}</Container>;
-}
-
-export default InputField;

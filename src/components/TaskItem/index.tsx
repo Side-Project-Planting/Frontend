@@ -6,87 +6,14 @@ import { Draggable } from 'react-beautiful-dnd';
 import { IoClose, IoInfinite } from 'react-icons/io5';
 import { PiClockFill } from 'react-icons/pi';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import styled from 'styled-components';
 import { IEditTaskModal, INormalModal, ITask } from 'types';
+
+import { ItemWrapper, ItemContainer, LabelField, LabelItem, InfoField, DateField, TaskRemoveButton } from './styles';
 
 import useModal from '@hooks/useModal';
 import { modalDataState } from '@recoil/atoms';
 import { filteredLabelsSelector, memberSelector } from '@recoil/selectors';
 import { hashStringToColor } from '@utils';
-
-const ItemWrapper = styled.div`
-  position: relative;
-  width: 100%;
-
-  &:hover .task-remove-button {
-    display: flex;
-  }
-`;
-const ItemContainer = styled.div`
-  padding: 1rem;
-  margin-bottom: 1rem;
-  width: 99%;
-  min-height: 8rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: #fdfdfd;
-  border-radius: 10px;
-  box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.1);
-
-  #task-title {
-    word-wrap: break-word;
-  }
-
-  &:hover {
-    background-color: #ececec;
-  }
-`;
-
-const TaskRemoveButton = styled.button`
-  display: none;
-  width: 1rem;
-  height: 1rem;
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  color: #f44336;
-`;
-
-const LabelField = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-`;
-
-const LabelItem = styled.div<{ color: string }>`
-  padding: 0.1rem 0.5rem;
-  border-radius: 5px;
-  color: white;
-  font-size: 0.7rem;
-  text-align: center;
-  background-color: ${(prop) => prop.color};
-`;
-
-const InfoField = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const DateField = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  line-height: 110%;
-
-  .date-infinity {
-    width: 2rem;
-    display: flex;
-    justify-content: center;
-  }
-`;
 
 interface Props {
   task: ITask;

@@ -1,64 +1,10 @@
 /* eslint-disable react/require-default-props */
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
-import styled from 'styled-components';
 import { ISelectOption } from 'types';
 
-const SelectBoxContainer = styled.div`
-  position: relative;
-  width: 6rem;
-  height: 2rem;
-  display: flex;
-  border-radius: 8px;
-  background-color: #fafafa;
-  align-items: center;
-  justify-content: space-between;
+import { SelectBoxContainer, SelectOptions, Selected, Option, SelectBoxArrowContainer, SelectBoxArrow } from './styles';
 
-  cursor: pointer;
-`;
-
-const Selected = styled.label`
-  font-size: 14px;
-  margin-left: 4px;
-  width: 4rem;
-  text-align: center;
-`;
-
-const SelectOptions = styled.ul`
-  position: absolute;
-  list-style: none;
-  top: 2rem;
-  left: 0;
-  width: 100%;
-  overflow: hidden;
-  padding: 0;
-  border-radius: 8px;
-  background-color: #fafafa;
-  z-index: 100;
-`;
-
-const Option = styled.li`
-  font-size: 14px;
-  padding: 6px 8px;
-  text-align: center;
-  transition: background-color 0.2s ease-in;
-  &:hover {
-    background-color: #64d4ab;
-  }
-`;
-
-const SelectBoxArrowContainer = styled.div`
-  width: 25px;
-  height: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const SelectBoxArrow = styled.svg<{ $showOptions: boolean }>`
-  transition-duration: 0.3s;
-  transform: rotate(${(props) => (props.$showOptions ? '180deg' : 0)});
-`;
 interface Props {
   options: ISelectOption[];
   value?: ISelectOption;

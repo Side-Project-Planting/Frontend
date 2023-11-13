@@ -4,7 +4,7 @@ import axios from 'axios';
 import { styled } from 'styled-components';
 
 import { ReactComponent as HomeIllust } from '@assets/images/homeIllust.svg';
-import Logo from '@components/Logo';
+import Logo from '@components/Logo/Logo';
 
 const MainWrapper = styled.div`
   min-height: 100dvh;

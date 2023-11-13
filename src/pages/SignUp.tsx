@@ -6,7 +6,7 @@ import { styled } from 'styled-components';
 
 import defaultProfileImg from '@assets/images/defaultProfileImg.svg';
 import plus from '@assets/images/plus.svg';
-import Logo from '@components/Logo';
+import Logo from '@components/Logo/Logo';
 
 const MainWrapper = styled.div`
   min-height: 100dvh;

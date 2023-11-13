@@ -1,44 +1,9 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 
-import styled from 'styled-components';
+import { DeadlineField } from './styles';
 
 import { ReactComponent as DeadlineDate } from '@assets/images/deadlineCheck.svg';
 import { ReactComponent as StartDate } from '@assets/images/startDate.svg';
-
-const DeadlineField = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  .deadline-label {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-
-    .label-name {
-      color: #76808e;
-    }
-  }
-
-  .deadline-prop {
-    padding-left: 0.5rem;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    justify-content: center;
-
-    .prop-name-container {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      justify-content: center;
-
-      .prop-name {
-        font-size: 0.8rem;
-      }
-    }
-  }
-`;
 
 interface IProps {
   setDateRange: Dispatch<SetStateAction<string[] | null>>;

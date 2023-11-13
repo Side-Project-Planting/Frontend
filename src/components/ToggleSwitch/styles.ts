@@ -1,13 +1,6 @@
-import React from 'react';
-
 import styled from 'styled-components';
 
-type ToggleSwitchProps = {
-  isPublic: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
-
-const ToggleSwitchContainer = styled.label`
+export const ToggleSwitchContainer = styled.label`
   cursor: pointer;
   width: 64px;
   height: 30px;
@@ -38,7 +31,7 @@ const ToggleSwitchContainer = styled.label`
   }
 `;
 
-const ToggleCheckbox = styled.input`
+export const ToggleCheckbox = styled.input`
   height: 0;
   width: 0;
   visibility: hidden;
@@ -52,16 +45,3 @@ const ToggleCheckbox = styled.input`
     }
   }
 `;
-
-function ToggleSwitch({ isPublic, onChange }: ToggleSwitchProps) {
-  return (
-    <>
-      <ToggleCheckbox type="checkbox" id="switch" name="isPublic" checked={isPublic} onChange={onChange} />
-      <ToggleSwitchContainer htmlFor="switch">
-        <span className="hidden">toggle switch</span>
-      </ToggleSwitchContainer>
-    </>
-  );
-}
-
-export default ToggleSwitch;
