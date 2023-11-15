@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useSetRecoilState, useRecoilState } from 'recoil';
 import { IMember, INormalModal, ISelectOption } from 'types';
 
 import { Wrapper, Title, ManageTeamContainer, ImportantSetting, SettingItem, ButtonContainer, Button } from './styles';
@@ -14,7 +14,7 @@ import Modal from '@components/Modal';
 import SelectBox from '@components/SelectBox';
 import ToggleSwitch from '@components/ToggleSwitch';
 import useModal from '@hooks/useModal';
-import { modalDataState } from '@recoil/atoms';
+import { modalDataState, planTitlesState } from '@recoil/atoms';
 
 interface IPlanInfo {
   title: string;
@@ -34,6 +34,7 @@ function Setting() {
   const [isPublic, setIsPublic] = useState<boolean>(state.isPublic);
   const setModalData = useSetRecoilState(modalDataState);
   const { openModal } = useModal();
+  const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
 
   const options = state.members.map((member: IMember) => {
     return { id: member.id, name: member.name };
@@ -89,6 +90,7 @@ function Setting() {
         if (response.status === 204) {
           // eslint-disable-next-line no-alert
           window.alert(`플랜이 삭제되었습니다.`);
+          setPlanTitles(planTitles.filter((item) => item.id !== state.id));
           // TODO: 플랜 페이지로 이동
         }
       } catch (error) {
