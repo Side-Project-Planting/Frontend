@@ -39,7 +39,7 @@ interface ITaskContainerProps {
   tasks?: ITask[];
   onAddTask?: Dispatch<SetStateAction<Record<number, ITask[]>>>;
   onRemoveTask?: (tabId: number, taskId: number) => void;
-  onEditTask?: (tabId: number, taskId: number, editedTask: ITask) => void;
+  onEditTask?: (tabId: number, taskId: number, editedTask: ITask) => void; // TODO: ITask 타입 통일 필요
 }
 
 function TabHeader({ initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) {

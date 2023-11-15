@@ -49,7 +49,6 @@ export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Prop
   const editTaskHandler = () => {
     const requestAPI = (editedTask: ITask) => {
       onEditTask(task.tabId, task.id, editedTask);
-      // TODO: 서버에 태스크 업데이트 요청
     };
     setModalData({ task, taskOrder: index, requestAPI } as IEditTaskModal);
     openModal('editTask');

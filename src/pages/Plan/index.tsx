@@ -191,17 +191,24 @@ function Plan() {
     }, 0);
   };
 
-  const handleAddTab = () => {
+  const handleAddTab = async () => {
     if (newTabTitle.trim() === '') {
       setIsAddingTab(false);
     } else {
       // TODO: 서버에 탭 추가 요청
       // 서버에서 받아온 tabId를 newTab에 넣어줘야 한다.
-
       // const requestBody = {
-      //   planId,
+      //   planId: currentPlanId,
       //   name: newTabTitle,
       // };
+
+      // try {
+      //   const { data } = await axios.post('/api/tabs', requestBody);
+      //   console.log(data);
+      // } catch (error) {
+      //   // eslint-disable-next-line
+      //   console.log(error);
+      // }
       const newTab: ITab = {
         id: (plan?.tabs.length || 0) + 1,
         title: newTabTitle,
