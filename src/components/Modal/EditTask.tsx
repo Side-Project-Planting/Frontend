@@ -104,8 +104,10 @@ function EditTaskModal() {
     try {
       const response = await axios.put(`/api/tasks/${task.id}`, editedTask);
       requestAPI(tempTask);
+      // eslint-disable-next-line
       console.log(response);
     } catch (error) {
+      // eslint-disable-next-line
       console.log(error);
     }
 

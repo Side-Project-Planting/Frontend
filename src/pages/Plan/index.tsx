@@ -119,7 +119,6 @@ function Plan() {
       if (currentPlanId === -1) return;
       try {
         const data = await getPlanInfo(currentPlanId);
-        console.log(data);
         setMembers(data.members);
         setLabels(data.labels);
         setOriginalPlan(data); // 원래의 플랜 데이터 저장
