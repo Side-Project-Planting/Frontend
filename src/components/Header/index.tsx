@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { AiOutlineHome } from 'react-icons/ai';
 import { ImCompass2 } from 'react-icons/im';
 import { LuCalendarPlus, LuCalendarDays } from 'react-icons/lu';
+import { useLocation } from 'react-router-dom';
 
 import { Container, Nav, NavItem, NavLink } from './styles';
 
@@ -11,8 +12,8 @@ import Logo from '@components/Logo/Logo';
 
 // TODO: navMenu link 수정
 const navMenu = [
-  { id: 1, value: 'home', icon: AiOutlineHome, link: '/main' },
-  { id: 2, value: 'createPlan', icon: LuCalendarPlus, link: '/create-plan' },
+  { id: 1, value: 'main', icon: AiOutlineHome, link: '/main' },
+  { id: 2, value: 'create-plan', icon: LuCalendarPlus, link: '/create-plan' },
   { id: 3, value: 'plan', icon: LuCalendarDays, link: '/plan' },
   { id: 4, value: 'explore', icon: ImCompass2, link: '/#' },
 ];
@@ -23,7 +24,15 @@ const dropdownOptions = [
 ];
 
 function Header() {
-  const [selectedMenu, setSelectedMenu] = useState<string>('home');
+  const [selectedMenu, setSelectedMenu] = useState<string>('main');
+  const location = useLocation();
+
+  useEffect(() => {
+    const pathSegments = location.pathname.split('/');
+    const currentPath = pathSegments[1];
+
+    setSelectedMenu(currentPath);
+  }, [location]);
 
   const isSelected = (value: string): boolean => {
     if (selectedMenu === value) return true;
