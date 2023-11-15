@@ -36,7 +36,7 @@ interface IPlan {
   id: number;
   title: string;
   description: string;
-  isPublic: boolean;
+  public: boolean;
   members: IMember[];
   tabOrder: number[];
   tabs: ITab[];
@@ -339,6 +339,8 @@ function Plan() {
     });
   };
 
+  // console.log(plan);
+
   return (
     <Wrapper>
       <SideContainer>
@@ -368,7 +370,20 @@ function Plan() {
             <div className="icon">
               <IoIosStarOutline size={25} />
             </div>
-            <div className="icon" onClick={() => navigate('/setting')}>
+            <div
+              className="icon"
+              onClick={() =>
+                navigate('/setting', {
+                  state: {
+                    id: plan.id,
+                    title: plan.title,
+                    intro: plan.description,
+                    isPublic: plan.public,
+                    members: plan.members,
+                  },
+                })
+              }
+            >
               <CiSettings size={28} />
             </div>
           </UtilContainer>
