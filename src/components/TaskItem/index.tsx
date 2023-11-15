@@ -28,6 +28,8 @@ export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Prop
   const setModalData = useSetRecoilState(modalDataState);
   const { openModal } = useModal();
 
+  if (!task.assigneeId) return null;
+
   const removeTaskHandler = () => {
     const requestAPI = () => {
       // TODO: 서버에 태스크 삭제 요청

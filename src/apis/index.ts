@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-export const getPlanInfo = async () => {
-  const { data } = await axios.get('/dummy/planInfo-1.json');
+export const getPlanInfo = async (planId: number) => {
+  // const { data } = await axios.get('/dummy/planInfo-1.json');
+  console.log('getPlanInfo');
+  const { data } = await axios.get(`/api/plans/${planId}`);
   return data;
 };
 
