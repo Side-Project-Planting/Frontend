@@ -7,7 +7,7 @@ import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { ITask, ITab, IMember, ILabel } from 'types';
 
@@ -57,9 +57,7 @@ interface IDragDropResult {
 }
 
 function Plan() {
-  const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
-  setCurrentPlanId(planId ? +planId : -1);
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [plan, setPlan] = useState<IPlan | null>(null);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
@@ -121,6 +119,7 @@ function Plan() {
       if (currentPlanId === -1) return;
       try {
         const data = await getPlanInfo(currentPlanId);
+        console.log(data);
         setMembers(data.members);
         setLabels(data.labels);
         setOriginalPlan(data); // 원래의 플랜 데이터 저장
@@ -347,6 +346,7 @@ function Plan() {
               key={item.id}
               onClick={() => {
                 navigate(`/plan/${item.id}`);
+                setCurrentPlanId(item.id);
               }}
             >
               {item.title}

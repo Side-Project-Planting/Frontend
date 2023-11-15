@@ -35,12 +35,13 @@ export default function AddTaskModal() {
   const submitAddTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    console.log(assignee.id);
     const startDate = dateRange ? dateRange[0] : null;
     const endDate = dateRange ? dateRange[1] : null;
     const requestBody = {
       planId: currentPlanId,
       tabId: modalData.tabId,
-      managerId: assignee.id,
+      assigneeId: assignee.id,
       name: taskName,
       description: '',
       startDate,
