@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState } from 'react';
 
 import axios from 'axios';
@@ -91,7 +92,6 @@ function Setting() {
           // TODO: 플랜 페이지로 이동
         }
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Error deleting plan:', error);
         throw error;
       }
@@ -101,20 +101,62 @@ function Setting() {
   };
 
   const handleSavePlan = () => {
-    const requestBody = {
-      ...planInfo,
-      isPublic,
-      ownerId: admin.id,
-    };
-    const requestAPI = async () => {
-      // TODO: 서버에 플랜 수정 요청
-      // TODO: 초대 및 강퇴
-      // console.log(deletedExistMemberIdList, newMemberEmailList);
+    const updatePlan = async () => {
+      const requestBody = {
+        ...planInfo,
+        isPublic,
+        ownerId: admin.id,
+      };
+
       try {
         const response = await axios.put(`/api/plans/${state.id}`, requestBody);
         return response;
       } catch (error) {
-        return error;
+        console.log(error);
+        throw error;
+      }
+    };
+
+    const inviteMembers = async () => {
+      try {
+        const response = await axios.put(`api/plans/invite/${state.id}`, newMemberEmailList);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    };
+
+    const deleteMembers = async () => {
+      const requestBody = {
+        kickingMemberIds: deletedExistMemberIdList,
+      };
+      try {
+        const response = await axios.put(`api/plans/kick/${state.id}`, requestBody);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    };
+
+    const requestAPI = async () => {
+      try {
+        const [updateResponse, inviteResponse, deleteResponse] = await Promise.all([
+          updatePlan(),
+          inviteMembers(),
+          deleteMembers(),
+        ]);
+
+        // TODO: 뭔가 한 번에 수정하는게 에러 처리하기 쉬울 듯 하다.
+        // 화면과도 로직이 어울리지 않는다.
+        // 멤버 초대, 강퇴는 204로 잘 온다.
+        console.log('Update Response:', updateResponse);
+        console.log('Invite Response:', inviteResponse);
+        console.log('Delete Response:', deleteResponse);
+      } catch (error) {
+        console.error('Error during API requests:', error);
+        throw error;
       }
     };
 
