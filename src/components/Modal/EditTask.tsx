@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import axios from 'axios';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { IEditTaskModal, ILabel, ISelectOption, ITask } from 'types';
@@ -16,7 +17,7 @@ import {
 } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
 import useModal from '@hooks/useModal';
-import { membersState, modalDataState } from '@recoil/atoms';
+import { currentPlanIdState, membersState, modalDataState } from '@recoil/atoms';
 import { filteredLabelsSelector, memberSelector } from '@recoil/selectors';
 
 const DescriptionField = styled.div`
@@ -56,6 +57,7 @@ function EditTaskModal() {
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
   const members = useRecoilValue(membersState);
   const filteredMember = task.assigneeId ? useRecoilValue(memberSelector(task.assigneeId)) : null;
+  const currentPlanId = useRecoilValue(currentPlanIdState);
 
   const [taskName, setTaskName] = useState<string>(task.title);
   const [assignee, setAssignee] = useState<ISelectOption>(
@@ -70,10 +72,23 @@ function EditTaskModal() {
     return { id: member.id, name: member.name };
   });
 
-  const submitEditTask = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitEditTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const editedTask: ITask = {
+    const startDate = dateRange ? dateRange[0] : null;
+    const endDate = dateRange ? dateRange[1] : null;
+    const editedTask = {
+      planId: currentPlanId,
+      tabId: task.tabId,
+      assigneeId: assignee.id!,
+      name: taskName,
+      description: taskDescription,
+      startDate,
+      endDate,
+      labels: selectedLabels.map((label) => label.id),
+    };
+
+    const tempTask: ITask = {
       // TODO: 백엔드로 할 일 수정 요청
       id: task.id,
       title: taskName,
@@ -86,7 +101,15 @@ function EditTaskModal() {
       description: taskDescription,
     };
 
-    requestAPI(editedTask);
+    try {
+      const response = await axios.put(`/api/tasks/${task.id}`, editedTask);
+      requestAPI(tempTask);
+      // eslint-disable-next-line
+      console.log(response);
+    } catch (error) {
+      // eslint-disable-next-line
+      console.log(error);
+    }
 
     // TODO: 수정된 할 일을 Plan 페이지의 상태에 저장해야 함
     closeModal();

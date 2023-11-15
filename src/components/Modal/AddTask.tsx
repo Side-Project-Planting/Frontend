@@ -40,7 +40,7 @@ export default function AddTaskModal() {
     const requestBody = {
       planId: currentPlanId,
       tabId: modalData.tabId,
-      managerId: assignee.id,
+      assigneeId: assignee.id,
       name: taskName,
       description: '',
       startDate,

@@ -2,11 +2,12 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useState, useRef } from 'react';
 
+import axios from 'axios';
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { ITask, ITab, IMember, ILabel } from 'types';
 
@@ -55,16 +56,8 @@ interface IDragDropResult {
   draggableId: string;
 }
 
-const planNameList = [
-  { id: 1, title: 'My Plan' },
-  { id: 2, title: 'Team Plan1' },
-  { id: 3, title: 'Team Plan2' },
-  { id: 4, title: 'Team Plan3' },
-];
-
 function Plan() {
-  const params = useParams();
-  const planId = Number(params.planId) || planNameList[0].id;
+  const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [plan, setPlan] = useState<IPlan | null>(null);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
@@ -77,7 +70,6 @@ function Plan() {
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
   const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
-  const setCurrentPlanId = useSetRecoilState(currentPlanIdState);
 
   const navigate = useNavigate();
 
@@ -109,9 +101,24 @@ function Plan() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const getPlanTitles = async () => {
       try {
-        const data = await getPlanInfo();
+        const { data } = await axios.get('/api/plans/all');
+        setPlanTitles(data);
+        if (currentPlanId === -1) setCurrentPlanId(data[0].id);
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log(error);
+      }
+    };
+    getPlanTitles();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (currentPlanId === -1) return;
+      try {
+        const data = await getPlanInfo(currentPlanId);
         setMembers(data.members);
         setLabels(data.labels);
         setOriginalPlan(data); // 원래의 플랜 데이터 저장
@@ -122,7 +129,7 @@ function Plan() {
     };
 
     fetchData();
-  }, [planId]);
+  }, [currentPlanId]);
 
   useEffect(() => {
     if (originalPlan) {
@@ -183,17 +190,24 @@ function Plan() {
     }, 0);
   };
 
-  const handleAddTab = () => {
+  const handleAddTab = async () => {
     if (newTabTitle.trim() === '') {
       setIsAddingTab(false);
     } else {
       // TODO: 서버에 탭 추가 요청
       // 서버에서 받아온 tabId를 newTab에 넣어줘야 한다.
-
       // const requestBody = {
-      //   planId,
+      //   planId: currentPlanId,
       //   name: newTabTitle,
       // };
+
+      // try {
+      //   const { data } = await axios.post('/api/tabs', requestBody);
+      //   console.log(data);
+      // } catch (error) {
+      //   // eslint-disable-next-line
+      //   console.log(error);
+      // }
       const newTab: ITab = {
         id: (plan?.tabs.length || 0) + 1,
         title: newTabTitle,
@@ -325,23 +339,20 @@ function Plan() {
     });
   };
 
-  useEffect(() => {
-    // TODO: dummy -> API 변경 필요
-    setPlanTitles(planNameList);
-    setCurrentPlanId(planId);
-  }, []);
-
   return (
     <Wrapper>
       <SideContainer>
         <PlanCategory>
-          {planTitles.map((item) => (
+          {planTitles.map((item, idx) => (
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
             <li
-              className={`${planId === item.id && 'isSelected'}`}
+              className={
+                currentPlanId === -1 ? `${idx === 0 && 'isSelected'}` : `${currentPlanId === item.id && 'isSelected'}`
+              }
               key={item.id}
               onClick={() => {
                 navigate(`/plan/${item.id}`);
+                setCurrentPlanId(item.id);
               }}
             >
               {item.title}

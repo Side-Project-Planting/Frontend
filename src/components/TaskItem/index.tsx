@@ -2,6 +2,7 @@
 
 import React from 'react';
 
+import axios from 'axios';
 import { Draggable } from 'react-beautiful-dnd';
 import { IoClose, IoInfinite } from 'react-icons/io5';
 import { PiClockFill } from 'react-icons/pi';
@@ -28,9 +29,17 @@ export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Prop
   const setModalData = useSetRecoilState(modalDataState);
   const { openModal } = useModal();
 
+  if (!task.assigneeId) return null;
+
   const removeTaskHandler = () => {
-    const requestAPI = () => {
+    const requestAPI = async () => {
       // TODO: 서버에 태스크 삭제 요청
+      try {
+        await axios.delete(`/api/tasks/${task.id}`);
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log(error);
+      }
       onRemoveTask(task.tabId, task.id);
     };
     setModalData({ information: `"${task.title}"을 삭제할까요?`, requestAPI } as INormalModal);
@@ -40,7 +49,6 @@ export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Prop
   const editTaskHandler = () => {
     const requestAPI = (editedTask: ITask) => {
       onEditTask(task.tabId, task.id, editedTask);
-      // TODO: 서버에 태스크 업데이트 요청
     };
     setModalData({ task, taskOrder: index, requestAPI } as IEditTaskModal);
     openModal('editTask');

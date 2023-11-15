@@ -1,13 +1,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { ILabel } from 'types';
 
 import { LabelsWrapper, LabelsContainer, SearchedLabel } from './styles';
 
 import { createLabel } from '@apis';
 import LabelItem from '@components/LabelItem';
-import { labelsState } from '@recoil/atoms';
+import { currentPlanIdState, labelsState } from '@recoil/atoms';
 
 interface Props {
   alreadySelected: ILabel[];
@@ -24,13 +24,14 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
   const [selected, setSelected] = useState<ILabel[]>(alreadySelected);
   const [searchedIdx, setSearchedIdx] = useState<number>(-1);
   const [showSearchLabel, setShowSearchLabel] = useState<boolean>(false);
+  const currentPlanId = useRecoilValue(currentPlanIdState);
 
   const findLabelByValue = (labelValue: string) => {
     return labelsClone.find((label) => label.value === labelValue);
   };
 
   const createNewLabel = async (labelValue: string) => {
-    const { id: newId } = await createLabel(-1, labelValue);
+    const newId = await createLabel(currentPlanId, labelValue);
     const newLabel: ILabel = { id: newId, value: labelValue };
     setLabels([...labelsClone, newLabel]);
     labelsClone = [...labelsClone, newLabel];
