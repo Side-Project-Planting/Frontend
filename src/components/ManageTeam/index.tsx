@@ -46,7 +46,7 @@ function ManageTeam({
               <Item key={item.id}>
                 <div className="memberInfo">
                   <span className="name">{item.name}</span>
-                  <span>{item.email}</span>
+                  <span>{item.mail}</span>
                 </div>
                 <div className="delete">
                   {deletedExistMemberIdList?.includes(item.id) && <span className="pending">삭제 예정</span>}

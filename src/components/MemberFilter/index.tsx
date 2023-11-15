@@ -21,7 +21,7 @@ export default function MemberFilter({ selectedMember, onClick }: IMmeberFilterP
       {memberList.map((item) => (
         <MemberItem key={item.id} onClick={() => onClick(item.id)}>
           <MemberImg
-            src={item.imgUrl}
+            src={item.imgSrc}
             alt="profile-img"
             className={`${selectedMember.includes(item.id) && 'selected'}`}
           />
