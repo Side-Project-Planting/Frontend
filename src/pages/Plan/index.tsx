@@ -140,7 +140,8 @@ function Plan() {
     };
 
     fetchData();
-  }, [planId]);
+    // 의존성에 planTitles를 넣어줘야 플랜이 없다가 생성했을때 플랜페이지로 돌아와서 plan정보를 받아옴
+  }, [planId, planTitles]);
 
   useEffect(() => {
     if (originalPlan) {
@@ -374,7 +375,7 @@ function Plan() {
       </SideContainer>
       <MainContainer>
         {/* TODO: planTitles가 빈 배열인 경우 비어있는 UI 만들어야함 */}
-        {planTitles.length === 0 && <div>loading</div>}
+        {planTitles.length === 0 && <div>플랜이 없습니다.</div>}
         <TopContainer>
           <MemberFilter selectedMember={selectedMembers} onClick={handleChangeMember} />
           <UtilContainer>

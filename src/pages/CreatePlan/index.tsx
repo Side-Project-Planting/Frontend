@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 
 import {
   Wrapper,
@@ -17,6 +18,7 @@ import boardIllust from '@assets/images/boardIllust.svg';
 import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
 import ToggleSwitch from '@components/ToggleSwitch';
+import { currentPlanIdState } from '@recoil/atoms';
 
 type PlanInfo = {
   title: string;
@@ -31,6 +33,7 @@ function CreatePlan() {
   const [invitedEmails, setInvitedEmails] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState<boolean>(false);
   const navigate = useNavigate();
+  const setCurrentPlanId = useSetRecoilState(currentPlanIdState);
 
   const changePlanInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -78,6 +81,13 @@ function CreatePlan() {
     try {
       const { status, data } = await axios.post('/api/plans', requestData);
       if (status === 201) {
+        // setCurrentPlanId를 변경하지 않고 plan/data.id로 가는경우
+        // 경로에 있는 data.id를 사용해서 데이터를 불러오지 않고
+        // recoil에 이미 저장되어 있는 id의 플랜 정보를 불러온다.
+        // 즉 플랜이 없다가 만들어진 경우
+        // 이전 recoil에 currentPlanId가 없기 때문에
+        // plan 페이지로 넘어갔을 떄 데이터를 받아오지 않는다.
+        setCurrentPlanId(data.id);
         navigate(`/plan/${data.id}`);
       } else {
         throw new Error();
