@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSetRecoilState, useRecoilState } from 'recoil';
 import { IMember, INormalModal, ISelectOption } from 'types';
 
@@ -35,6 +35,8 @@ function Setting() {
   const setModalData = useSetRecoilState(modalDataState);
   const { openModal } = useModal();
   const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
+
+  const navigate = useNavigate();
 
   const options = state.members.map((member: IMember) => {
     return { id: member.id, name: member.name };
@@ -92,6 +94,7 @@ function Setting() {
           window.alert(`플랜이 삭제되었습니다.`);
           setPlanTitles(planTitles.filter((item) => item.id !== state.id));
           // TODO: 플랜 페이지로 이동
+          navigate('/plan');
         }
       } catch (error) {
         console.error('Error deleting plan:', error);
