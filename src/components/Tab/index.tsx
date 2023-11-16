@@ -71,10 +71,10 @@ function TabHeader({ id, initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderPro
     // api 요청을 onSaveTitle에서 해야하는지 handleSave에서 해도 되는지 확실하지 않음
     const requestBody = {
       planId: currentPlanId,
-      name: title,
+      title,
     };
     try {
-      const response = await axios.patch(`/api/tabs/${id}/name`, requestBody);
+      const response = await axios.patch(`/api/tabs/${id}/title`, requestBody);
       // eslint-disable-next-line no-console
       console.log(response);
     } catch (error) {
