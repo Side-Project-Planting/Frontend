@@ -7,7 +7,7 @@ import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { ITask, ITab, IMember, ILabel } from 'types';
 
@@ -36,7 +36,7 @@ interface IPlan {
   id: number;
   title: string;
   description: string;
-  isPublic: boolean;
+  public: boolean;
   members: IMember[];
   tabOrder: number[];
   tabs: ITab[];
@@ -57,6 +57,7 @@ interface IDragDropResult {
 }
 
 function Plan() {
+  const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [plan, setPlan] = useState<IPlan | null>(null);
@@ -105,7 +106,7 @@ function Plan() {
       try {
         const { data } = await axios.get('/api/plans/all');
         setPlanTitles(data);
-        if (currentPlanId === -1) setCurrentPlanId(data[0].id);
+        if (currentPlanId === -1 && data.length > 0) setCurrentPlanId(data[0].id);
       } catch (error) {
         // eslint-disable-next-line
         console.log(error);
@@ -115,10 +116,20 @@ function Plan() {
   }, []);
 
   useEffect(() => {
+    // 플랜 4가 삭제되어도 recoil은 4를 갖고 있어서 fetch할때 에러가 난다.
+    // setting에서 플랜 삭제시 planTitles에서 4를 없앤다.
+    // setting에서 플랜 삭제시 바로 currentPlanId를 planTitles의 0로 바꾸고 싶었지만
+    // 0번째를 삭제한 경우 planTitle이 변화가 없기 떄문에 currentPlanId가 삭제된 id와 동일해서 못 받아온다.
+    if (planId === undefined && planTitles.length > 0) {
+      setCurrentPlanId(planTitles[0].id);
+    }
+
     const fetchData = async () => {
-      if (currentPlanId === -1) return;
+      // planTitles가 빈 배열인 경우 데이터를 가져올 데이터가 없다.
+      if (currentPlanId === -1 || planTitles.length === 0) return;
+
       try {
-        const data = await getPlanInfo(currentPlanId);
+        const data = await getPlanInfo(planId === undefined ? planTitles[0].id : currentPlanId);
         setMembers(data.members);
         setLabels(data.labels);
         setOriginalPlan(data); // 원래의 플랜 데이터 저장
@@ -129,7 +140,8 @@ function Plan() {
     };
 
     fetchData();
-  }, [currentPlanId]);
+    // 의존성에 planTitles를 넣어줘야 플랜이 없다가 생성했을때 플랜페이지로 돌아와서 plan정보를 받아옴
+  }, [planId, planTitles]);
 
   useEffect(() => {
     if (originalPlan) {
@@ -362,13 +374,28 @@ function Plan() {
         <LabelFilter selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
+        {/* TODO: planTitles가 빈 배열인 경우 비어있는 UI 만들어야함 */}
+        {planTitles.length === 0 && <div>플랜이 없습니다.</div>}
         <TopContainer>
           <MemberFilter selectedMember={selectedMembers} onClick={handleChangeMember} />
           <UtilContainer>
             <div className="icon">
               <IoIosStarOutline size={25} />
             </div>
-            <div className="icon" onClick={() => navigate('/setting')}>
+            <div
+              className="icon"
+              onClick={() =>
+                navigate('/setting', {
+                  state: {
+                    id: plan.id,
+                    title: plan.title,
+                    intro: plan.description,
+                    isPublic: plan.public,
+                    members: plan.members,
+                  },
+                })
+              }
+            >
               <CiSettings size={28} />
             </div>
           </UtilContainer>

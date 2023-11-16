@@ -1,7 +1,10 @@
+/* eslint-disable no-console */
 import React, { useState } from 'react';
 
-import { useSetRecoilState } from 'recoil';
-import { INormalModal, ISelectOption } from 'types';
+import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useSetRecoilState, useRecoilState } from 'recoil';
+import { IMember, INormalModal, ISelectOption } from 'types';
 
 import { Wrapper, Title, ManageTeamContainer, ImportantSetting, SettingItem, ButtonContainer, Button } from './styles';
 
@@ -11,121 +14,31 @@ import Modal from '@components/Modal';
 import SelectBox from '@components/SelectBox';
 import ToggleSwitch from '@components/ToggleSwitch';
 import useModal from '@hooks/useModal';
-import { modalDataState } from '@recoil/atoms';
+import { modalDataState, planTitlesState } from '@recoil/atoms';
 
 interface IPlanInfo {
   title: string;
-  description: string;
+  intro: string;
 }
 
-const planData = {
-  title: 'planting',
-  description: '안녕하세요 저희는 일정 공유 관리 서비스를 개발하고 있는 플랜팅입니다.',
-  isPublic: true,
-  members: [
-    {
-      id: 1,
-      name: '신우성',
-      imgUrl:
-        'https://images.unsplash.com/photo-1466112928291-0903b80a9466?auto=format&fit=crop&q=80&w=873&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      isAdmin: true,
-      email: 'cys@gmail.com',
-    },
-    {
-      id: 2,
-      name: '김태훈',
-      imgUrl:
-        'https://images.unsplash.com/photo-1466112928291-0903b80a9466?auto=format&fit=crop&q=80&w=873&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      isAdmin: false,
-      email: 'kth@gmail.com',
-    },
-    {
-      id: 3,
-      name: '허준영',
-      imgUrl:
-        'https://images.unsplash.com/photo-1466112928291-0903b80a9466?auto=format&fit=crop&q=80&w=873&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      isAdmin: false,
-      email: 'hjy@gmail.com',
-    },
-    {
-      id: 4,
-      name: '한현',
-      imgUrl:
-        'https://images.unsplash.com/photo-1466112928291-0903b80a9466?auto=format&fit=crop&q=80&w=873&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      isAdmin: false,
-      email: 'hh@gmail.com',
-    },
-  ],
-  tabOrder: [2, 1, 3],
-  tabs: [
-    {
-      id: 3,
-      title: 'Done',
-    },
-    {
-      id: 1,
-      title: 'To do',
-    },
-    {
-      id: 2,
-      title: 'In Progress',
-    },
-  ],
-  labels: [
-    { id: 1, value: '개발도서' },
-    { id: 2, value: '코테' },
-    { id: 3, value: '이력서' },
-  ],
-  tasks: [
-    {
-      id: 1,
-      title: 'NC SOFT 서류 제출',
-      tabId: 3,
-      labels: [3],
-      assigneeId: 3,
-      order: 0,
-    },
-    {
-      id: 2,
-      title: '이펙티브 완독',
-      tabId: 1,
-      labels: [1],
-      assigneeId: 3,
-      order: 0,
-    },
-    {
-      id: 3,
-      title: '타입스크립트 Chap1',
-      tabId: 2,
-      labels: [1],
-      assigneeId: 4,
-      order: 0,
-    },
-    {
-      id: 4,
-      title: '백준 삼성 기출',
-      tabId: 2,
-      labels: [2],
-      assigneeId: 1,
-      order: 1,
-    },
-  ],
-};
-
 function Setting() {
+  const { state } = useLocation();
   const [planInfo, setPlanInfo] = useState<IPlanInfo>({
-    title: planData.title,
-    description: planData.description,
+    title: state.title,
+    intro: state.intro,
   });
   const [newMemberEmailList, setNewMemberEmailList] = useState<string[]>([]);
-  const initialAdmin = planData.members.find((item) => item.isAdmin === true);
   const [deletedExistMemberIdList, setDeletedExistMemberIdList] = useState<number[]>([]);
+  const initialAdmin = state.members.find((item: IMember) => item.admin === true);
   const [admin, setAdmin] = useState<ISelectOption>({ id: initialAdmin?.id, name: initialAdmin?.name });
-  const [isPublic, setIsPublic] = useState<boolean>(planData.isPublic);
+  const [isPublic, setIsPublic] = useState<boolean>(state.isPublic);
   const setModalData = useSetRecoilState(modalDataState);
   const { openModal } = useModal();
+  const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
 
-  const options = planData.members.map((member) => {
+  const navigate = useNavigate();
+
+  const options = state.members.map((member: IMember) => {
     return { id: member.id, name: member.name };
   });
 
@@ -172,17 +85,86 @@ function Setting() {
   };
 
   const handleDeletePlan = () => {
-    const requestAPI = () => {
-      // TODO: 서버에 플랜 삭제 요청
+    const requestAPI = async () => {
+      try {
+        const response = await axios.delete(`/api/plans/${state.id}`);
+
+        if (response.status === 204) {
+          // eslint-disable-next-line no-alert
+          window.alert(`플랜이 삭제되었습니다.`);
+          setPlanTitles(planTitles.filter((item) => item.id !== state.id));
+          // TODO: 플랜 페이지로 이동
+          navigate('/plan');
+        }
+      } catch (error) {
+        console.error('Error deleting plan:', error);
+        throw error;
+      }
     };
     setModalData({ information: `플랜을 정말 삭제하시겠어요?`, requestAPI } as INormalModal);
     openModal('normal');
   };
 
   const handleSavePlan = () => {
-    const requestAPI = () => {
-      // TODO: 서버에 플랜 수정 요청
+    const updatePlan = async () => {
+      const requestBody = {
+        ...planInfo,
+        isPublic,
+        ownerId: admin.id,
+      };
+
+      try {
+        const response = await axios.put(`/api/plans/${state.id}`, requestBody);
+        return response;
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
     };
+
+    const inviteMembers = async () => {
+      try {
+        const response = await axios.put(`api/plans/invite/${state.id}`, newMemberEmailList);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    };
+
+    const deleteMembers = async () => {
+      const requestBody = {
+        kickingMemberIds: deletedExistMemberIdList,
+      };
+      try {
+        const response = await axios.put(`api/plans/kick/${state.id}`, requestBody);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    };
+
+    const requestAPI = async () => {
+      try {
+        const [updateResponse, inviteResponse, deleteResponse] = await Promise.all([
+          updatePlan(),
+          inviteMembers(),
+          deleteMembers(),
+        ]);
+
+        // TODO: 뭔가 한 번에 수정하는게 에러 처리하기 쉬울 듯 하다.
+        // 화면과도 로직이 어울리지 않는다.
+        // 멤버 초대, 강퇴는 204로 잘 온다.
+        console.log('Update Response:', updateResponse);
+        console.log('Invite Response:', inviteResponse);
+        console.log('Delete Response:', deleteResponse);
+      } catch (error) {
+        console.error('Error during API requests:', error);
+        throw error;
+      }
+    };
+
     setModalData({ information: `변경사항을 저장하시겠어요?`, requestAPI } as INormalModal);
     openModal('normal');
   };
@@ -204,13 +186,13 @@ function Setting() {
         </label>
       </InputField>
       <InputField>
-        <label htmlFor="description">
+        <label htmlFor="intro">
           플랜 설명
           <input
             type="text"
-            id="description"
-            name="description"
-            value={planInfo.description}
+            id="intro"
+            name="intro"
+            value={planInfo.intro}
             onChange={changePlanInfo}
             placeholder="플랜을 설명해주세요"
           />
@@ -231,7 +213,7 @@ function Setting() {
         <ManageTeam
           type="setting"
           newMemberEmailList={newMemberEmailList}
-          existingMembers={planData.members}
+          existingMembers={state.members}
           deletedExistMemberIdList={deletedExistMemberIdList}
           handleDeleteNewMember={handleDeleteNewMember}
           handleDeleteExistMember={handleDeleteExistMember}

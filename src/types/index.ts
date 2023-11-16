@@ -28,9 +28,9 @@ export interface ITask {
 export interface IMember {
   id: number;
   name: string;
-  imgUrl?: string;
-  isAdmin: boolean;
-  email?: string;
+  imgSrc?: string;
+  admin: boolean;
+  mail?: string;
 }
 
 export interface ITab {
