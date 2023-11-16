@@ -53,13 +53,13 @@ const ButtonContainer = styled.div`
 `;
 
 function EditTaskModal() {
-  const { task, taskOrder, requestAPI } = useRecoilValue(modalDataState) as IEditTaskModal;
+  const { task, requestAPI } = useRecoilValue(modalDataState) as IEditTaskModal;
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
   const members = useRecoilValue(membersState);
   const filteredMember = task.assigneeId ? useRecoilValue(memberSelector(task.assigneeId)) : null;
   const currentPlanId = useRecoilValue(currentPlanIdState);
 
-  const [taskName, setTaskName] = useState<string>(task.title);
+  const [taskTitle, setTaskTitle] = useState<string>(task.title);
   const [assignee, setAssignee] = useState<ISelectOption>(
     filteredMember ? { id: task.assigneeId, name: filteredMember.name } : { id: -1, name: '' },
   );
@@ -77,33 +77,21 @@ function EditTaskModal() {
 
     const startDate = dateRange ? dateRange[0] : null;
     const endDate = dateRange ? dateRange[1] : null;
-    const editedTask = {
+    const requestBody = {
       planId: currentPlanId,
       tabId: task.tabId,
       assigneeId: assignee.id!,
-      name: taskName,
+      title: taskTitle,
       description: taskDescription,
       startDate,
       endDate,
       labels: selectedLabels.map((label) => label.id),
     };
 
-    const tempTask: ITask = {
-      // TODO: 백엔드로 할 일 수정 요청
-      id: task.id,
-      title: taskName,
-      tabId: task.tabId,
-      labels: selectedLabels.map((label) => label.id),
-      assignee: assignee.name,
-      assigneeId: assignee.id,
-      order: taskOrder,
-      dateRange: dateRange || null,
-      description: taskDescription,
-    };
-
     try {
-      const response = await axios.put(`/api/tasks/${task.id}`, editedTask);
-      requestAPI(tempTask);
+      const response = await axios.put(`/api/tasks/${task.id}`, requestBody);
+      const updatedTask: ITask = { ...requestBody, id: task.id };
+      requestAPI(updatedTask);
       // eslint-disable-next-line
       console.log(response);
     } catch (error) {
@@ -125,8 +113,8 @@ function EditTaskModal() {
               type="text"
               id="task-name"
               name="task-name"
-              value={taskName}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTaskName(e.target.value)}
+              value={taskTitle}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTaskTitle(e.target.value)}
               placeholder="할 일이 무엇인지 적어주세요."
             />
           </label>

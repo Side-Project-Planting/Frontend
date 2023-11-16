@@ -130,6 +130,7 @@ function Plan() {
 
       try {
         const data = await getPlanInfo(planId === undefined ? planTitles[0].id : currentPlanId);
+        // console.log(data);
         setMembers(data.members);
         setLabels(data.labels);
         setOriginalPlan(data); // 원래의 플랜 데이터 저장
@@ -330,16 +331,9 @@ function Plan() {
     updatedTask.tabId = +destination.droppableId;
     finish.splice(destination.index, 0, updatedTask);
 
-    const newStart = [...start].map((item, index) => {
-      const newItem = { ...item };
-      newItem.order = index;
-      return item;
-    });
-    const newFinish = [...finish].map((item, index) => {
-      const newItem = { ...item };
-      newItem.order = index;
-      return item;
-    });
+    // TODO: order가 추가될 수 있음
+    const newStart = [...start];
+    const newFinish = [...finish];
 
     setTasks((prev) => {
       const newTasks = {

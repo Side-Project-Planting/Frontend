@@ -74,13 +74,13 @@ export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Prop
             </LabelField>
             <InfoField>
               <DateField>
-                {task.dateRange ? (
+                {task.startDate && task.endDate ? (
                   <>
                     <PiClockFill size={16} color="#64D4AB" />
                     <div>
-                      {`${task.dateRange[0]}`}
+                      {`${task.startDate}`}
                       <br />
-                      {` ~ ${task.dateRange[1]}`}
+                      {` ~ ${task.endDate}`}
                     </div>
                   </>
                 ) : (

@@ -20,7 +20,7 @@ import { currentPlanIdState, membersState, modalDataState } from '@recoil/atoms'
 
 export default function AddTaskModal() {
   const members = useRecoilValue(membersState);
-  const [taskName, setTaskName] = useState<string>('');
+  const [taskTitle, setTaskTitle] = useState<string>('');
   const [assignee, setAssignee] = useState<ISelectOption>({ id: -1, name: '' });
   const [dateRange, setDateRange] = useState<string[] | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<ILabel[]>([]);
@@ -35,22 +35,24 @@ export default function AddTaskModal() {
   const submitAddTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    let newTaskId: number = -1;
     const startDate = dateRange ? dateRange[0] : null;
     const endDate = dateRange ? dateRange[1] : null;
     const requestBody = {
       planId: currentPlanId,
       tabId: modalData.tabId,
       assigneeId: assignee.id,
-      name: taskName,
+      title: taskTitle,
       description: '',
       startDate,
       endDate,
       labels: selectedLabels.map((label) => label.id),
     };
 
-    // TODO: 할일 추가 요청
     try {
       const response = await axios.post('/api/tasks', requestBody);
+      const splitLocation = response.headers.location.split('/');
+      newTaskId = +splitLocation[splitLocation.length - 1];
       // eslint-disable-next-line
       console.log(response);
     } catch (error) {
@@ -59,16 +61,8 @@ export default function AddTaskModal() {
     }
 
     const newTask: ITask = {
-      // TODO: 백엔드로 할 일 추가 요청 후 id 받아와야 함
-      id: Math.floor(Math.random() * 1000) + 5,
-      title: taskName,
-      tabId: modalData.tabId,
-      labels: selectedLabels.map((label) => label.id),
-      assignee: assignee.name,
-      assigneeId: assignee.id,
-      order: modalData.taskOrder,
-      dateRange: dateRange || null,
-      description: '',
+      ...requestBody,
+      id: newTaskId,
     };
     // Plan 페이지 tasks 상태에 반영
     modalData.addTaskHandler((prev) => {
@@ -92,8 +86,8 @@ export default function AddTaskModal() {
               type="text"
               id="task-name"
               name="task-name"
-              value={taskName}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTaskName(e.target.value)}
+              value={taskTitle}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTaskTitle(e.target.value)}
               placeholder="할 일이 무엇인지 적어주세요."
             />
           </label>
