@@ -211,14 +211,6 @@ function Plan() {
       //   planId: currentPlanId,
       //   name: newTabTitle,
       // };
-
-      // try {
-      //   const { data } = await axios.post('/api/tabs', requestBody);
-      //   console.log(data);
-      // } catch (error) {
-      //   // eslint-disable-next-line
-      //   console.log(error);
-      // }
       const newTab: ITab = {
         id: (plan?.tabs.length || 0) + 1,
         title: newTabTitle,
