@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useState, useRef } from 'react';
 
+import axios from 'axios';
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
@@ -207,10 +208,20 @@ function Plan() {
     } else {
       // TODO: 서버에 탭 추가 요청
       // 서버에서 받아온 tabId를 newTab에 넣어줘야 한다.
-      // const requestBody = {
-      //   planId: currentPlanId,
-      //   name: newTabTitle,
-      // };
+      const requestBody = {
+        planId: currentPlanId,
+        name: newTabTitle,
+      };
+
+      try {
+        const response = await axios.post('/api/tabs', requestBody);
+        // eslint-disable-next-line
+        console.log(response);
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log(error);
+      }
+
       const newTab: ITab = {
         id: (plan?.tabs.length || 0) + 1,
         title: newTabTitle,
@@ -261,12 +272,23 @@ function Plan() {
     }
   };
 
-  const handleDeleteTab = (tabId: number) => {
+  const handleDeleteTab = async (tabId: number) => {
     if (plan) {
       const updatedTabOrder = plan.tabOrder.filter((item) => item !== tabId);
       const updatedPlan = { ...plan, tabOrder: updatedTabOrder, tabs: plan.tabs.filter((tab) => tab.id !== tabId) };
       setPlan(updatedPlan);
       // TODO: 서버에 tabId로 삭제 요청
+      try {
+        const response = await axios.delete(`/api/tabs/${tabId}?planId=${currentPlanId}`);
+
+        if (response.status === 204) {
+          // eslint-disable-next-line no-alert
+          window.alert('탭이 삭제되었습니다.');
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(error, '탭이 삭제가 되지 않았습니다.');
+      }
     }
   };
 
@@ -289,8 +311,7 @@ function Plan() {
     });
   };
 
-  const handleSaveTabTitle = (title: string) => {
-    // TODO : 서버로 planId, tabId, title로 title 수정 요청 날리기
+  const handleSaveTabTitle = async (title: string) => {
     return title;
   };
 
