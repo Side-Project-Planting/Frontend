@@ -2,7 +2,6 @@
 
 import React from 'react';
 
-import axios from 'axios';
 import { Draggable } from 'react-beautiful-dnd';
 import { IoClose, IoInfinite } from 'react-icons/io5';
 import { PiClockFill } from 'react-icons/pi';
@@ -11,6 +10,7 @@ import { IEditTaskModal, INormalModal, ITask } from 'types';
 
 import { ItemWrapper, ItemContainer, LabelField, LabelItem, InfoField, DateField, TaskRemoveButton } from './styles';
 
+import { deleteTask } from '@apis';
 import useModal from '@hooks/useModal';
 import { modalDataState } from '@recoil/atoms';
 import { filteredLabelsSelector, memberSelector } from '@recoil/selectors';
@@ -35,7 +35,9 @@ export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Prop
     const requestAPI = async () => {
       // TODO: 서버에 태스크 삭제 요청
       try {
-        await axios.delete(`/api/tasks/${task.id}`);
+        const response = await deleteTask(task.id);
+        // eslint-disable-next-line
+        console.log(response);
       } catch (error) {
         // eslint-disable-next-line
         console.log(error);
@@ -74,13 +76,13 @@ export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Prop
             </LabelField>
             <InfoField>
               <DateField>
-                {task.dateRange ? (
+                {task.startDate && task.endDate ? (
                   <>
                     <PiClockFill size={16} color="#64D4AB" />
                     <div>
-                      {`${task.dateRange[0]}`}
+                      {`${task.startDate}`}
                       <br />
-                      {` ~ ${task.dateRange[1]}`}
+                      {` ~ ${task.endDate}`}
                     </div>
                   </>
                 ) : (

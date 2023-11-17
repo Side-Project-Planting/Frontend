@@ -14,6 +14,7 @@ import {
   SubmitButton,
 } from './styles';
 
+import { registerUser } from '@apis';
 import defaultProfileImg from '@assets/images/defaultProfileImg.svg';
 import plus from '@assets/images/plus.svg';
 import Logo from '@components/Logo/Logo';
@@ -44,7 +45,7 @@ export default function SignUp() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const requestData = {
+    const requestBody = {
       profileUrl: userData.profileUrl,
       name,
       authId: userData.authId,
@@ -57,13 +58,8 @@ export default function SignUp() {
     //   requestData.profileUrl = userData.profileUrl;
     // }
 
-    // TODO: 서버에 회원가입 POST 요청
     try {
-      const { data } = await axios.post('/api/auth/register', requestData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const { data } = await registerUser(requestBody);
 
       // TODO: 이후 보안을 생각해서 방식을 변경해야 함
       axios.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;

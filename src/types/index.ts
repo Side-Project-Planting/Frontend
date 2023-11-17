@@ -18,10 +18,9 @@ export interface ITask {
   title: string;
   tabId: number;
   labels: number[];
-  assignee: string | undefined;
   assigneeId: number | undefined;
-  order: number;
-  dateRange: null | string[];
+  startDate: string | null;
+  endDate: string | null;
   description: string;
 }
 

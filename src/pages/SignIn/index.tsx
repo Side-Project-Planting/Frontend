@@ -1,7 +1,5 @@
 import React from 'react';
 
-import axios from 'axios';
-
 import {
   MainWrapper,
   MainContainer,
@@ -12,13 +10,14 @@ import {
   LoginPolicy,
 } from './styles';
 
+import { getAuthorizedUri } from '@apis';
 import { ReactComponent as HomeIllust } from '@assets/images/homeIllust.svg';
 import Logo from '@components/Logo/Logo';
 
 export default function SignIn() {
   const handleOAuthRedirect = async () => {
     try {
-      const response = await axios.get('/api/oauth/google/authorized-uri');
+      const response = await getAuthorizedUri();
       const oauthUrl = response.data.authorizedUri;
 
       if (oauthUrl) {

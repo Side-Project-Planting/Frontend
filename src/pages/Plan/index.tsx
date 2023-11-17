@@ -24,7 +24,7 @@ import {
   TabContainer,
 } from './styles';
 
-import { getPlanInfo } from '@apis';
+import { getAllPlanTitles, getPlanInfo } from '@apis';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import Modal from '@components/Modal';
@@ -104,7 +104,7 @@ function Plan() {
   useEffect(() => {
     const getPlanTitles = async () => {
       try {
-        const { data } = await axios.get('/api/plans/all');
+        const { data } = await getAllPlanTitles();
         setPlanTitles(data);
         if (currentPlanId === -1 && data.length > 0) setCurrentPlanId(data[0].id);
       } catch (error) {
@@ -221,6 +221,7 @@ function Plan() {
         // eslint-disable-next-line
         console.log(error);
       }
+
       const newTab: ITab = {
         id: (plan?.tabs.length || 0) + 1,
         title: newTabTitle,
@@ -341,16 +342,9 @@ function Plan() {
     updatedTask.tabId = +destination.droppableId;
     finish.splice(destination.index, 0, updatedTask);
 
-    const newStart = [...start].map((item, index) => {
-      const newItem = { ...item };
-      newItem.order = index;
-      return item;
-    });
-    const newFinish = [...finish].map((item, index) => {
-      const newItem = { ...item };
-      newItem.order = index;
-      return item;
-    });
+    // TODO: order가 추가될 수 있음
+    const newStart = [...start];
+    const newFinish = [...finish];
 
     setTasks((prev) => {
       const newTasks = {
