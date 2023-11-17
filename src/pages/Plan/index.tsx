@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useState, useRef } from 'react';
 
-import axios from 'axios';
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
@@ -24,7 +23,7 @@ import {
   TabContainer,
 } from './styles';
 
-import { getPlanInfo } from '@apis';
+import { getAllPlanTitles, getPlanInfo } from '@apis';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import Modal from '@components/Modal';
@@ -104,7 +103,7 @@ function Plan() {
   useEffect(() => {
     const getPlanTitles = async () => {
       try {
-        const { data } = await axios.get('/api/plans/all');
+        const { data } = await getAllPlanTitles();
         setPlanTitles(data);
         if (currentPlanId === -1 && data.length > 0) setCurrentPlanId(data[0].id);
       } catch (error) {

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-import axios from 'axios';
 import { useRecoilValue } from 'recoil';
 import { IAddTaskModal, ILabel, ISelectOption, ITask } from 'types';
 
+import { createTask } from '@apis';
 import DateRange from '@components/DateRange';
 import LabelInput from '@components/LabelInput';
 import {
@@ -50,7 +50,7 @@ export default function AddTaskModal() {
     };
 
     try {
-      const response = await axios.post('/api/tasks', requestBody);
+      const response = await createTask(requestBody);
       const splitLocation = response.headers.location.split('/');
       newTaskId = +splitLocation[splitLocation.length - 1];
       // eslint-disable-next-line

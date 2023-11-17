@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-import axios from 'axios';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { IEditTaskModal, ILabel, ISelectOption, ITask } from 'types';
 
+import { updateTask } from '@apis';
 import DateRange from '@components/DateRange';
 import LabelInput from '@components/LabelInput';
 import {
@@ -89,7 +89,7 @@ function EditTaskModal() {
     };
 
     try {
-      const response = await axios.put(`/api/tasks/${task.id}`, requestBody);
+      const response = await updateTask(task.id, requestBody);
       const updatedTask: ITask = { ...requestBody, id: task.id };
       requestAPI(updatedTask);
       // eslint-disable-next-line

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 
@@ -14,6 +13,7 @@ import {
   Button,
 } from './styles';
 
+import { createPlan } from '@apis';
 import boardIllust from '@assets/images/boardIllust.svg';
 import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
@@ -70,16 +70,15 @@ function CreatePlan() {
 
   const handleSubmit = async () => {
     // TODO: 백엔드로 POST 요청
-    const requestData = {
+    const requestBody = {
       title: planInfo.title,
       intro: planInfo.intro,
       invitedEmails,
       isPublic,
     };
-    // console.log(requestData);
 
     try {
-      const { status, data } = await axios.post('/api/plans', requestData);
+      const { status, data } = await createPlan(requestBody);
       if (status === 201) {
         // setCurrentPlanId를 변경하지 않고 plan/data.id로 가는경우
         // 경로에 있는 data.id를 사용해서 데이터를 불러오지 않고
@@ -97,7 +96,7 @@ function CreatePlan() {
       alert('플랜이 정상적으로 만들어지지 않았어요 :(');
     }
 
-    return requestData;
+    return requestBody;
   };
 
   return (
