@@ -30,6 +30,7 @@ import MemberFilter from '@components/MemberFilter';
 import Modal from '@components/Modal';
 import { Tab, TasksContainer } from '@components/Tab';
 import { currentPlanIdState, labelsState, membersState, planTitlesState } from '@recoil/atoms';
+import { authenticate } from '@utils/auth';
 import registDND, { IDropEvent } from '@utils/drag';
 
 interface IPlan {
@@ -57,6 +58,9 @@ interface IDragDropResult {
 }
 
 function Plan() {
+  useEffect(() => {
+    authenticate();
+  }, []);
   const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
