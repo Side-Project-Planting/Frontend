@@ -5,8 +5,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Wrapper } from './styles';
 
-let accessToken: string | null = null;
-
 function GoogleOauthCallback() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -24,8 +22,7 @@ function GoogleOauthCallback() {
 
           // 서버로부터 받아온 데이터(profileUrl, accessToken, refreshToken, old 등을 저장한다.)
           if (data.registered) {
-            accessToken = data.accessToken;
-            axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+            axios.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;
             localStorage.setItem('profileUrl', data.profileUrl);
             navigate('/main');
           } else {
