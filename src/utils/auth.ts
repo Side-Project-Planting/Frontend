@@ -13,7 +13,7 @@ const refreshAccessToken = async () => {
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error refreshing access token:', error);
-    // window.location.href = 'http://localhost:3000';
+    window.location.href = 'http://localhost:3000';
   }
 };
 
@@ -28,14 +28,16 @@ const isAccessTokenExpired = () => {
   return expirationTime < currentTime;
 };
 
-// Function to handle authentication logic
-export const authenticate = async () => {
+// 엑세스 토큰이 없거나 토큰이 만료되면 리프레시 토큰으로 엑세스 토큰 발행 및 api요청
+export const authenticate = async (apiRequest: () => Promise<void>) => {
   if (!accessToken || isAccessTokenExpired()) {
-    console.log(accessToken, 'hello');
     await refreshAccessToken();
   }
 
   axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+  // TODO: 엑세스 토큰 다시 발급하고 항상 api 요청을 날리지 않을 수도 있다.
+  //  api 요청 필요 없는 경우를 분리
+  apiRequest();
 };
 
 export { accessToken };

@@ -58,9 +58,6 @@ interface IDragDropResult {
 }
 
 function Plan() {
-  useEffect(() => {
-    authenticate();
-  }, []);
   const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
@@ -116,7 +113,7 @@ function Plan() {
         console.log(error);
       }
     };
-    getPlanTitles();
+    authenticate(getPlanTitles);
   }, []);
 
   useEffect(() => {
