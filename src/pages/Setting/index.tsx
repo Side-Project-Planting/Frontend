@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ import SelectBox from '@components/SelectBox';
 import ToggleSwitch from '@components/ToggleSwitch';
 import useModal from '@hooks/useModal';
 import { modalDataState, planTitlesState } from '@recoil/atoms';
+import { authenticate } from '@utils/auth';
 
 interface IPlanInfo {
   title: string;
@@ -126,6 +127,10 @@ function Setting() {
     setModalData({ information: `변경사항을 저장하시겠어요?`, requestAPI } as INormalModal);
     openModal('normal');
   };
+
+  useEffect(() => {
+    authenticate();
+  }, []);
 
   return (
     <Wrapper>

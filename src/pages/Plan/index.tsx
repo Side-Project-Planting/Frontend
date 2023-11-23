@@ -30,6 +30,7 @@ import MemberFilter from '@components/MemberFilter';
 import Modal from '@components/Modal';
 import { Tab, TasksContainer } from '@components/Tab';
 import { currentPlanIdState, labelsState, membersState, planTitlesState } from '@recoil/atoms';
+import { authenticate } from '@utils/auth';
 import registDND, { IDropEvent } from '@utils/drag';
 
 interface IPlan {
@@ -112,7 +113,7 @@ function Plan() {
         console.log(error);
       }
     };
-    getPlanTitles();
+    authenticate(getPlanTitles);
   }, []);
 
   useEffect(() => {

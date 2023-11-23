@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
@@ -19,6 +19,7 @@ import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
 import ToggleSwitch from '@components/ToggleSwitch';
 import { currentPlanIdState } from '@recoil/atoms';
+import { authenticate } from '@utils/auth';
 
 type PlanInfo = {
   title: string;
@@ -98,6 +99,10 @@ function CreatePlan() {
 
     return requestBody;
   };
+
+  useEffect(() => {
+    authenticate();
+  }, []);
 
   return (
     <Wrapper>
