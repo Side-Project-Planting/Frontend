@@ -1,5 +1,7 @@
 {
   "name": "frontend",
+  "homepage": "https://plant-ing.netlify.app/",
+  "proxy": "http://115.85.183.173:8080",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
