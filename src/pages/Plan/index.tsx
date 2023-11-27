@@ -26,7 +26,7 @@ import {
   EmptyPlanContents,
 } from './styles';
 
-import { PROXY, getAllPlanTitles, getPlanInfo } from '@apis';
+import { getAllPlanTitles, getPlanInfo } from '@apis';
 import { ReactComponent as EmptyPlan } from '@assets/images/emptyPlan.svg';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
@@ -236,7 +236,7 @@ function Plan() {
       };
 
       try {
-        const response = await axios.post(`${PROXY}/api/tabs`, requestBody);
+        const response = await axios.post('/api/tabs', requestBody);
         // eslint-disable-next-line
         console.log(response);
       } catch (error) {
@@ -301,7 +301,7 @@ function Plan() {
       setPlan(updatedPlan);
       // TODO: 서버에 tabId로 삭제 요청
       try {
-        const response = await axios.delete(`${PROXY}/api/tabs/${tabId}?planId=${currentPlanId}`);
+        const response = await axios.delete(`/api/tabs/${tabId}?planId=${currentPlanId}`);
 
         if (response.status === 204) {
           // eslint-disable-next-line no-alert
