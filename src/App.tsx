@@ -13,6 +13,8 @@ import SignIn from '@pages/SignIn';
 import SignUp from '@pages/SignUp';
 import GlobalFonts from '@styles/GlobalFont';
 import GlobalStyle from '@styles/GlobalStyle';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 interface Props {
   children: React.ReactNode;
@@ -83,12 +85,17 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const queryClient = new QueryClient();
+
   return (
     <>
       <GlobalStyle />
       <GlobalFonts />
       <RecoilRoot>
-        <RouterProvider router={router} />
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
       </RecoilRoot>
     </>
   );

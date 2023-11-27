@@ -22,12 +22,16 @@ import {
   TabWrapper,
   AddTabButton,
   TabContainer,
+  EmptyPlanContainer,
+  EmptyPlanContents,
 } from './styles';
 
 import { getAllPlanTitles, getPlanInfo } from '@apis';
+import { ReactComponent as EmptyPlan } from '@assets/images/emptyPlan.svg';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import Modal from '@components/Modal';
+import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { Tab, TasksContainer } from '@components/Tab';
 import { currentPlanIdState, labelsState, membersState, planTitlesState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
@@ -183,7 +187,24 @@ function Plan() {
   }, [plan]);
 
   if (!plan) {
-    return <div>Loading...</div>;
+    return (
+      <Wrapper>
+        <EmptyPlanContainer>
+          <EmptyPlanContents>
+            <p>만들어진 플랜이 없어요 😵‍💫</p>
+            <EmptyPlan />
+            <ModalButton
+              type="button"
+              onClick={() => {
+                navigate('/create-plan');
+              }}
+            >
+              새 플랜 만들기
+            </ModalButton>
+          </EmptyPlanContents>
+        </EmptyPlanContainer>
+      </Wrapper>
+    );
   }
 
   const tabById: Record<number, ITab> = {};
