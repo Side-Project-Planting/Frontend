@@ -9,6 +9,31 @@ export const Wrapper = styled.main`
   background-color: #f5f5f7;
 `;
 
+export const EmptyPlanContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const EmptyPlanContents = styled.div`
+  margin-top: 3rem;
+  width: 610px;
+  height: 630px;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background-color: #fdfdfd;
+
+  p {
+    font-size: 1.2rem;
+  }
+`;
+
 export const SideContainer = styled.div`
   display: flex;
   flex-direction: column;
