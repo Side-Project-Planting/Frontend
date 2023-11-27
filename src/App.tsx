@@ -14,6 +14,7 @@ import SignUp from '@pages/SignUp';
 import GlobalFonts from '@styles/GlobalFont';
 import GlobalStyle from '@styles/GlobalStyle';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 interface Props {
   children: React.ReactNode;
@@ -93,6 +94,7 @@ function App() {
       <RecoilRoot>
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </RecoilRoot>
     </>
