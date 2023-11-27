@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
+import { PROXY } from '@apis';
+
 // eslint-disable-next-line import/no-mutable-exports
 let accessToken: string | null = null;
 
 const refreshAccessToken = async () => {
   try {
-    const { data } = await axios.post('/api/auth/refresh-token');
+    const { data } = await axios.post(`${PROXY}/api/auth/refresh-token`);
     accessToken = data.accessToken;
   } catch (error) {
     // eslint-disable-next-line no-console

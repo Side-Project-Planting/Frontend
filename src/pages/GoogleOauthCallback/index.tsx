@@ -5,6 +5,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Wrapper } from './styles';
 
+import { PROXY } from '@apis';
+
 function GoogleOauthCallback() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ function GoogleOauthCallback() {
 
       if (authCode) {
         try {
-          const { data } = await axios.post('/api/oauth/google/login', {
+          const { data } = await axios.post(`${PROXY}/api/oauth/google/login`, {
             authCode,
           });
 
