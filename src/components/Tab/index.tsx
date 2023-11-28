@@ -4,13 +4,13 @@
 
 import React, { useState, useRef, Dispatch, SetStateAction } from 'react';
 
-import axios from 'axios';
 import { Droppable } from 'react-beautiful-dnd';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { INormalModal, ITask } from 'types';
 
 import { Wrapper, Header, EditableTitle, Container, TaskList, Interactions, AddButton, TabDragBar } from './styles';
 
+import { updateTabTitle } from '@apis';
 import Dropdown from '@components/Dropdown';
 import TaskItem from '@components/TaskItem';
 import useModal from '@hooks/useModal';
@@ -74,7 +74,7 @@ function TabHeader({ id, initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderPro
       title,
     };
     try {
-      const response = await axios.patch(`/api/tabs/${id}/title`, requestBody);
+      const response = await updateTabTitle(id, requestBody);
       // eslint-disable-next-line no-console
       console.log(response);
     } catch (error) {
