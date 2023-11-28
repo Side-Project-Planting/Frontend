@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 
-import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Wrapper } from './styles';
+
+import { requestLogin, setAuthorizationHeader } from '@apis';
 
 function GoogleOauthCallback() {
   const location = useLocation();
@@ -16,13 +17,11 @@ function GoogleOauthCallback() {
 
       if (authCode) {
         try {
-          const { data } = await axios.post('/api/oauth/google/login', {
-            authCode,
-          });
+          const data = await requestLogin(authCode);
 
           // 서버로부터 받아온 데이터(profileUrl, accessToken, refreshToken, old 등을 저장한다.)
           if (data.registered) {
-            axios.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;
+            setAuthorizationHeader(data.accessToken);
             localStorage.setItem('profileUrl', data.profileUrl);
             navigate('/main');
           } else {

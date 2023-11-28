@@ -1,12 +1,13 @@
-import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+
+import { requestNewToken, setAuthorizationHeader } from '@apis';
 
 // eslint-disable-next-line import/no-mutable-exports
 let accessToken: string | null = null;
 
 const refreshAccessToken = async () => {
   try {
-    const { data } = await axios.post('/api/auth/refresh-token');
+    const data = await requestNewToken();
     accessToken = data.accessToken;
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -32,7 +33,8 @@ export const authenticate = async (apiRequest?: () => Promise<void>) => {
     await refreshAccessToken();
   }
 
-  axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+  if (accessToken) setAuthorizationHeader(accessToken);
+
   // refresh token 발급 직후 api 요청을 날려야 하는 경우 순서 보장을 위해 필요함
   //  api 요청 필요 없는 경우를 분리
   if (apiRequest) {

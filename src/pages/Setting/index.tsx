@@ -1,13 +1,13 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 
-import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSetRecoilState, useRecoilState } from 'recoil';
 import { IMember, INormalModal, ISelectOption } from 'types';
 
 import { Wrapper, Title, ManageTeamContainer, ImportantSetting, SettingItem, ButtonContainer, Button } from './styles';
 
+import { deletePlan, updatePlan } from '@apis';
 import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
 import Modal from '@components/Modal';
@@ -88,7 +88,7 @@ function Setting() {
   const handleDeletePlan = () => {
     const requestAPI = async () => {
       try {
-        const response = await axios.delete(`/api/plans/${state.id}`);
+        const response = await deletePlan(state.id);
 
         if (response.status === 204) {
           // eslint-disable-next-line no-alert
@@ -116,7 +116,7 @@ function Setting() {
         kickingMemberIds: deletedExistMemberIdList,
       };
       try {
-        const response = await axios.put(`/api/plans/update/${state.id}`, requestBody);
+        const response = await updatePlan(state.id, requestBody);
         return response;
       } catch (error) {
         console.log(error);

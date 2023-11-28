@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useState, useRef } from 'react';
 
-import axios from 'axios';
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
@@ -26,7 +25,7 @@ import {
   EmptyPlanContents,
 } from './styles';
 
-import { getAllPlanTitles, getPlanInfo } from '@apis';
+import { createNewTab, deleteTab, getAllPlanTitles, getPlanInfo } from '@apis';
 import { ReactComponent as EmptyPlan } from '@assets/images/emptyPlan.svg';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
@@ -236,7 +235,7 @@ function Plan() {
       };
 
       try {
-        const response = await axios.post('/api/tabs', requestBody);
+        const response = await createNewTab(requestBody);
         // eslint-disable-next-line
         console.log(response);
       } catch (error) {
@@ -301,7 +300,7 @@ function Plan() {
       setPlan(updatedPlan);
       // TODO: 서버에 tabId로 삭제 요청
       try {
-        const response = await axios.delete(`/api/tabs/${tabId}?planId=${currentPlanId}`);
+        const response = await deleteTab(tabId, currentPlanId);
 
         if (response.status === 204) {
           // eslint-disable-next-line no-alert

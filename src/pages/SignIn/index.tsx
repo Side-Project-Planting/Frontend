@@ -18,6 +18,7 @@ export default function SignIn() {
   const handleOAuthRedirect = async () => {
     try {
       const response = await getAuthorizedUri();
+      // console.log(response);
       const oauthUrl = response.data.authorizedUri;
 
       if (oauthUrl) {
