@@ -59,12 +59,8 @@ export default function SignUp() {
 
     try {
       const { data } = await registerUser(requestBody);
-
       // TODO: 이후 보안을 생각해서 방식을 변경해야 함
       setAuthorizationHeader(data.accessToken);
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      localStorage.setItem('profileUrl', data.profileUrl);
       navigate('/main');
     } catch {
       throw Error('회원가입에 실패했습니다.');

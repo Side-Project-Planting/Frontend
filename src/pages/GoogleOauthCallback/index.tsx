@@ -25,6 +25,7 @@ function GoogleOauthCallback() {
             localStorage.setItem('profileUrl', data.profileUrl);
             navigate('/main');
           } else {
+            localStorage.setItem('profileUrl', data.profileUrl);
             navigate('/signup', { state: data });
           }
         } catch (error) {
