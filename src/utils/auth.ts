@@ -8,7 +8,6 @@ let accessToken: string | null = null;
 const refreshAccessToken = async () => {
   try {
     const data = await requestNewToken();
-    console.log(data);
     accessToken = data.accessToken;
   } catch (error) {
     // eslint-disable-next-line no-console
