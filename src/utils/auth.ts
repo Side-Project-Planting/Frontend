@@ -8,11 +8,12 @@ let accessToken: string | null = null;
 const refreshAccessToken = async () => {
   try {
     const data = await requestNewToken();
+    console.log(data);
     accessToken = data.accessToken;
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error refreshing access token:', error);
-    window.location.href = 'http://localhost:3000';
+    // window.location.href = 'http://localhost:3000';
   }
 };
 
