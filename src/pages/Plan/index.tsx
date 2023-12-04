@@ -8,7 +8,6 @@ import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import planReducer, { PlanAction, initialState } from 'reducers/planReducer';
 import { ITask, ITab, IMember, ILabel } from 'types';
 
 import {
@@ -34,8 +33,9 @@ import Modal from '@components/Modal';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { Tab, TasksContainer } from '@components/Tab';
 import { currentPlanIdState, labelsState, membersState, planTitlesState } from '@recoil/atoms';
-// import { authenticate } from '@utils/auth';
 import registDND, { IDropEvent } from '@utils/drag';
+import planReducer, { PlanAction, initialState } from '@utils/planReducer';
+// import { authenticate } from '@utils/auth';
 
 interface IPlan {
   id: number;
