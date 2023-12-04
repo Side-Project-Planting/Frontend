@@ -173,7 +173,7 @@ function Plan() {
     return () => clear();
   }, [state]);
 
-  if (!state) {
+  if (state === initialState) {
     return (
       <Wrapper>
         <EmptyPlanContainer>

@@ -30,3 +30,8 @@ export const modalDataState = atom<TModalData>({
   key: 'modalData',
   default: null,
 });
+
+export const accessTokenState = atom<string | null>({
+  key: 'accessToken',
+  default: null,
+});

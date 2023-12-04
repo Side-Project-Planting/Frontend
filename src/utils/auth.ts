@@ -2,13 +2,11 @@ import { jwtDecode } from 'jwt-decode';
 
 import { requestNewToken, setAuthorizationHeader } from '@apis';
 
-// eslint-disable-next-line import/no-mutable-exports
-let accessToken: string | null = null;
-
-const refreshAccessToken = async () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const refreshAccessToken = async (setAccessToken: any) => {
   try {
     const data = await requestNewToken();
-    accessToken = data.accessToken;
+    setAccessToken(data.accessToken);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error refreshing access token:', error);
@@ -21,16 +19,20 @@ export const getTokenExpirationTime = (token: string) => {
   return decoded.exp || 0;
 };
 
-const isAccessTokenExpired = () => {
+const isAccessTokenExpired = (accessToken: string) => {
   const expirationTime = getTokenExpirationTime(accessToken || '');
   const currentTime = Math.floor(Date.now() / 1000);
-  return expirationTime < currentTime;
+  return expirationTime - 1 <= currentTime;
 };
 
 // 엑세스 토큰이 없거나 토큰이 만료되면 리프레시 토큰으로 엑세스 토큰 발행 및 api요청
-export const authenticate = async (apiRequest?: () => Promise<void>) => {
-  if (!accessToken || isAccessTokenExpired()) {
-    await refreshAccessToken();
+export const authenticate = async (
+  accessToken: string | null,
+  setAccessToken: unknown,
+  apiRequest?: () => Promise<void>,
+) => {
+  if (!accessToken || isAccessTokenExpired(accessToken)) {
+    await refreshAccessToken(setAccessToken);
   }
 
   if (accessToken) setAuthorizationHeader(accessToken);
@@ -41,5 +43,3 @@ export const authenticate = async (apiRequest?: () => Promise<void>) => {
     await apiRequest();
   }
 };
-
-export { accessToken };
