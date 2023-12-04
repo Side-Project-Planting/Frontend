@@ -1,5 +1,17 @@
 import { Dispatch, SetStateAction } from 'react';
 
+export interface IPlan {
+  id: number;
+  title: string;
+  description: string;
+  public: boolean;
+  members: IMember[];
+  tabOrder: number[];
+  tabs: ITab[];
+  labels: ILabel[];
+  tasks: ITask[];
+}
+
 export interface ITaskInfo {
   name: string;
   id: string;
