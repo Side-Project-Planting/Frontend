@@ -3,7 +3,7 @@ import { IPlan, ITab } from 'types';
 import { IDropEvent } from '@utils/drag';
 
 export const initialState: IPlan = {
-  id: -1,
+  id: 0,
   title: '',
   description: '',
   public: false,
@@ -24,16 +24,15 @@ export type PlanAction =
 const planReducer = (state: IPlan, action: PlanAction) => {
   switch (action.type) {
     case 'SET_PLAN':
-      return action.payload;
+      return { ...action.payload };
     case 'FILTER': {
       const { labels, members } = action.payload;
-      const filteredTasks =
-        state?.tasks.filter((task) => {
-          const labelFilter = labels.length === 0 || task.labels.some((label) => labels.includes(label));
-          const memberFilter = members.length === 0 || members.includes(task.assigneeId!);
+      const filteredTasks = state?.tasks.filter((task) => {
+        const labelFilter = labels.length === 0 || task.labels.some((label) => labels.includes(label));
+        const memberFilter = members.length === 0 || members.includes(task.assigneeId!);
 
-          return labelFilter && memberFilter;
-        }) || [];
+        return labelFilter && memberFilter;
+      });
 
       return { ...state, tasks: filteredTasks };
     }
