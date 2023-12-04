@@ -32,10 +32,10 @@ import MemberFilter from '@components/MemberFilter';
 import Modal from '@components/Modal';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { Tab, TasksContainer } from '@components/Tab';
-import { currentPlanIdState, labelsState, membersState, planTitlesState } from '@recoil/atoms';
+import { currentPlanIdState, labelsState, membersState, planTitlesState, accessTokenState } from '@recoil/atoms';
+import { authenticate } from '@utils/auth';
 import registDND, { IDropEvent } from '@utils/drag';
 import planReducer, { PlanAction, initialState } from '@utils/planReducer';
-// import { authenticate } from '@utils/auth';
 
 interface IPlan {
   id: number;
@@ -62,6 +62,7 @@ interface IDragDropResult {
 }
 
 function Plan() {
+  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
@@ -117,8 +118,8 @@ function Plan() {
         console.log(error);
       }
     };
-    getPlanTitles();
-    // authenticate(getPlanTitles);
+
+    authenticate(accessToken, setAccessToken, getPlanTitles);
   }, []);
 
   useEffect(() => {
@@ -172,27 +173,6 @@ function Plan() {
     const clear = registDND(handleDrag);
     return () => clear();
   }, [state]);
-
-  if (state === initialState) {
-    return (
-      <Wrapper>
-        <EmptyPlanContainer>
-          <EmptyPlanContents>
-            <p>만들어진 플랜이 없어요 😵‍💫</p>
-            <EmptyPlan />
-            <ModalButton
-              type="button"
-              onClick={() => {
-                navigate('/create-plan');
-              }}
-            >
-              새 플랜 만들기
-            </ModalButton>
-          </EmptyPlanContents>
-        </EmptyPlanContainer>
-      </Wrapper>
-    );
-  }
 
   const tabById: Record<number, ITab> = {};
   state.tabs.forEach((tab) => {
@@ -387,8 +367,24 @@ function Plan() {
         <LabelFilter selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
-        {/* TODO: planTitles가 빈 배열인 경우 비어있는 UI 만들어야함 */}
-        {planTitles.length === 0 && <div>플랜이 없습니다.</div>}
+        {state === initialState && (
+          <Wrapper>
+            <EmptyPlanContainer>
+              <EmptyPlanContents>
+                <p>만들어진 플랜이 없어요 😵‍💫</p>
+                <EmptyPlan />
+                <ModalButton
+                  type="button"
+                  onClick={() => {
+                    navigate('/create-plan');
+                  }}
+                >
+                  새 플랜 만들기
+                </ModalButton>
+              </EmptyPlanContents>
+            </EmptyPlanContainer>
+          </Wrapper>
+        )}
         <TopContainer>
           <MemberFilter selectedMember={selectedMembers} onClick={handleChangeMember} />
           <UtilContainer>

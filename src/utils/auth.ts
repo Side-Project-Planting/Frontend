@@ -10,7 +10,8 @@ const refreshAccessToken = async (setAccessToken: any) => {
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error refreshing access token:', error);
-    // window.location.href = 'http://localhost:3000';
+    // TODO: 배포 URL로 수정
+    window.location.href = 'http://localhost:3000';
   }
 };
 
