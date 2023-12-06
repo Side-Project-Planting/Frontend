@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 
 import { Wrapper } from './styles';
 
 import { requestLogin, setAuthorizationHeader } from '@apis';
+import { accessTokenState } from '@recoil/atoms';
 
 function GoogleOauthCallback() {
+  const setAccessToken = useSetRecoilState(accessTokenState);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -21,6 +24,7 @@ function GoogleOauthCallback() {
 
           // 서버로부터 받아온 데이터(profileUrl, accessToken, refreshToken, old 등을 저장한다.)
           if (data.registered) {
+            setAccessToken(data.accessToken);
             setAuthorizationHeader(data.accessToken);
             localStorage.setItem('profileUrl', data.profileUrl);
             navigate('/main');

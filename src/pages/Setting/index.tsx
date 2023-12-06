@@ -14,7 +14,7 @@ import Modal from '@components/Modal';
 import SelectBox from '@components/SelectBox';
 import ToggleSwitch from '@components/ToggleSwitch';
 import useModal from '@hooks/useModal';
-import { modalDataState, planTitlesState } from '@recoil/atoms';
+import { modalDataState, planTitlesState, accessTokenState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
 
 interface IPlanInfo {
@@ -23,6 +23,7 @@ interface IPlanInfo {
 }
 
 function Setting() {
+  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const { state } = useLocation();
   const [planInfo, setPlanInfo] = useState<IPlanInfo>({
     title: state.title,
@@ -129,7 +130,7 @@ function Setting() {
   };
 
   useEffect(() => {
-    authenticate();
+    authenticate(accessToken, setAccessToken);
   }, []);
 
   return (

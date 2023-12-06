@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 
 import {
   MainWrapper,
@@ -17,6 +18,7 @@ import { registerUser, setAuthorizationHeader } from '@apis';
 import defaultProfileImg from '@assets/images/defaultProfileImg.svg';
 import plus from '@assets/images/plus.svg';
 import Logo from '@components/Logo/Logo';
+import { accessTokenState } from '@recoil/atoms';
 
 export default function SignUp() {
   const location = useLocation();
@@ -24,6 +26,7 @@ export default function SignUp() {
   const [name, setName] = useState<string>('');
   const [imagePreview, setImagePreview] = useState<string | null>(userData.profileUrl);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const setAccessToken = useSetRecoilState(accessTokenState);
 
   const navigate = useNavigate();
 
@@ -59,7 +62,7 @@ export default function SignUp() {
 
     try {
       const { data } = await registerUser(requestBody);
-      // TODO: 이후 보안을 생각해서 방식을 변경해야 함
+      setAccessToken(data.accessToken);
       setAuthorizationHeader(data.accessToken);
       navigate('/main');
     } catch {

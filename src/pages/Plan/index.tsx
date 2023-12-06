@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useReducer } from 'react';
 
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
@@ -32,9 +32,10 @@ import MemberFilter from '@components/MemberFilter';
 import Modal from '@components/Modal';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { Tab, TasksContainer } from '@components/Tab';
-import { currentPlanIdState, labelsState, membersState, planTitlesState } from '@recoil/atoms';
+import { currentPlanIdState, labelsState, membersState, planTitlesState, accessTokenState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
 import registDND, { IDropEvent } from '@utils/drag';
+import planReducer, { PlanAction, initialState } from '@utils/planReducer';
 
 interface IPlan {
   id: number;
@@ -61,10 +62,10 @@ interface IDragDropResult {
 }
 
 function Plan() {
+  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
   const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
-  const [plan, setPlan] = useState<IPlan | null>(null);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
@@ -75,6 +76,7 @@ function Plan() {
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
   const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
+  const [state, dispatch] = useReducer<React.Reducer<IPlan, PlanAction>>(planReducer, initialState);
 
   const navigate = useNavigate();
 
@@ -93,10 +95,10 @@ function Plan() {
     });
 
     const filteredPlan = { ...data, tasks: filteredTasks };
-    setPlan(filteredPlan);
+    dispatch({ type: 'SET_PLAN', payload: filteredPlan });
 
     const tasksByTab: Record<number, ITask[]> = {};
-    filteredTasks.forEach((task) => {
+    state.tasks.forEach((task) => {
       if (!tasksByTab[task.tabId]) {
         tasksByTab[task.tabId] = [];
       }
@@ -116,7 +118,8 @@ function Plan() {
         console.log(error);
       }
     };
-    authenticate(getPlanTitles);
+
+    authenticate(accessToken, setAccessToken, getPlanTitles);
   }, []);
 
   useEffect(() => {
@@ -155,21 +158,7 @@ function Plan() {
   }, [selectedLabels, selectedMembers, originalPlan]);
 
   const handleDrag = ({ source, destination }: IDropEvent) => {
-    if (!destination) return;
-    if (source.index === destination.index) return;
-
-    if (!plan) return;
-    const newTabOrder = [...plan.tabOrder];
-    const draggedTabIndex = newTabOrder.indexOf(source.id);
-    const targetTabIndex = newTabOrder.indexOf(destination.id);
-    newTabOrder.splice(draggedTabIndex, 1);
-    newTabOrder.splice(targetTabIndex, 0, source.id);
-
-    setPlan((prev) => {
-      if (!prev) return prev;
-
-      return { ...prev, tabOrder: newTabOrder };
-    });
+    dispatch({ type: 'TAB_DRAG_AND_DROP', payload: { source, destination } });
 
     // const prevIndex = newTabOrder.indexOf(source.id) - 1;
     // const requestData = {
@@ -183,34 +172,13 @@ function Plan() {
   useEffect(() => {
     const clear = registDND(handleDrag);
     return () => clear();
-  }, [plan]);
-
-  if (!plan) {
-    return (
-      <Wrapper>
-        <EmptyPlanContainer>
-          <EmptyPlanContents>
-            <p>만들어진 플랜이 없어요 😵‍💫</p>
-            <EmptyPlan />
-            <ModalButton
-              type="button"
-              onClick={() => {
-                navigate('/create-plan');
-              }}
-            >
-              새 플랜 만들기
-            </ModalButton>
-          </EmptyPlanContents>
-        </EmptyPlanContainer>
-      </Wrapper>
-    );
-  }
+  }, [state]);
 
   const tabById: Record<number, ITab> = {};
-  plan.tabs.forEach((tab) => {
+  state.tabs.forEach((tab) => {
     tabById[tab.id] = tab;
   });
-  const sortedTabs = plan.tabOrder.map((tabId) => tabById[tabId]);
+  const sortedTabs = state.tabOrder.map((tabId) => tabById[tabId]);
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -243,20 +211,24 @@ function Plan() {
         console.log(error);
       }
 
-      const newTab: ITab = {
-        id: (plan?.tabs.length || 0) + 1,
-        title: newTabTitle,
-      };
+      // const newTab: ITab = {
+      //   id: (plan?.tabs.length || 0) + 1,
+      //   title: newTabTitle,
+      // };
 
-      setPlan((prev) => {
-        if (!prev) {
-          return prev;
-        }
-        return { ...plan, tabs: [...plan.tabs, newTab], tabOrder: [...plan.tabOrder, newTab.id] };
-      });
+      // setPlan((prev) => {
+      //   if (!prev) {
+      //     return prev;
+      //   }
+      //   return { ...plan, tabs: [...plan.tabs, newTab], tabOrder: [...plan.tabOrder, newTab.id] };
+      // });
+
+      // TODO: 서버에서 받아온 id로 변환해야함
+      const newTabId = state?.tabs.length || 0 + 1;
+      dispatch({ type: 'ADD_TAB', payload: { newTabTitle, newTabId } });
       setTasks((prev) => {
         const newTasks = { ...prev };
-        newTasks[newTab.id] = [];
+        newTasks[newTabId] = [];
         return newTasks;
       });
 
@@ -294,22 +266,17 @@ function Plan() {
   };
 
   const handleDeleteTab = async (tabId: number) => {
-    if (plan) {
-      const updatedTabOrder = plan.tabOrder.filter((item) => item !== tabId);
-      const updatedPlan = { ...plan, tabOrder: updatedTabOrder, tabs: plan.tabs.filter((tab) => tab.id !== tabId) };
-      setPlan(updatedPlan);
-      // TODO: 서버에 tabId로 삭제 요청
-      try {
-        const response = await deleteTab(tabId, currentPlanId);
+    dispatch({ type: 'DELETE_TAB', payload: { tabId } });
+    try {
+      const response = await deleteTab(tabId, currentPlanId);
 
-        if (response.status === 204) {
-          // eslint-disable-next-line no-alert
-          window.alert('탭이 삭제되었습니다.');
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error, '탭이 삭제가 되지 않았습니다.');
+      if (response.status === 204) {
+        // eslint-disable-next-line no-alert
+        window.alert('탭이 삭제되었습니다.');
       }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error, '탭이 삭제가 되지 않았습니다.');
     }
   };
 
@@ -400,8 +367,24 @@ function Plan() {
         <LabelFilter selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
-        {/* TODO: planTitles가 빈 배열인 경우 비어있는 UI 만들어야함 */}
-        {planTitles.length === 0 && <div>플랜이 없습니다.</div>}
+        {state === initialState && (
+          <Wrapper>
+            <EmptyPlanContainer>
+              <EmptyPlanContents>
+                <p>만들어진 플랜이 없어요 😵‍💫</p>
+                <EmptyPlan />
+                <ModalButton
+                  type="button"
+                  onClick={() => {
+                    navigate('/create-plan');
+                  }}
+                >
+                  새 플랜 만들기
+                </ModalButton>
+              </EmptyPlanContents>
+            </EmptyPlanContainer>
+          </Wrapper>
+        )}
         <TopContainer>
           <MemberFilter selectedMember={selectedMembers} onClick={handleChangeMember} />
           <UtilContainer>
@@ -413,11 +396,11 @@ function Plan() {
               onClick={() =>
                 navigate('/setting', {
                   state: {
-                    id: plan.id,
-                    title: plan.title,
-                    intro: plan.description,
-                    isPublic: plan.public,
-                    members: plan.members,
+                    id: state.id,
+                    title: state.title,
+                    intro: state.description,
+                    isPublic: state.public,
+                    members: state.members,
                   },
                 })
               }
