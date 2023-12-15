@@ -1,14 +1,15 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useEffect, useState, useRef, useReducer } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { ITask, ITab, IMember, ILabel } from 'types';
+import { useRecoilState } from 'recoil';
+// import { ITask, ITab, IMember, ILabel } from 'types';
+import { ITask, ITab } from 'types';
 
 import {
   Wrapper,
@@ -25,29 +26,30 @@ import {
   EmptyPlanContents,
 } from './styles';
 
-import { createNewTab, deleteTab, getAllPlanTitles, getPlanInfo } from '@apis';
+import { createNewTab, deleteTab, getAllPlanTitles } from '@apis';
 import { ReactComponent as EmptyPlan } from '@assets/images/emptyPlan.svg';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
 import Modal from '@components/Modal';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { Tab, TasksContainer } from '@components/Tab';
-import { currentPlanIdState, labelsState, membersState, planTitlesState, accessTokenState } from '@recoil/atoms';
+import { usePlan } from '@hooks/usePlan';
+// import { currentPlanIdState, labelsState, membersState, planTitlesState, accessTokenState } from '@recoil/atoms';
+import { currentPlanIdState, planTitlesState, accessTokenState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
 import registDND, { IDropEvent } from '@utils/drag';
-import planReducer, { PlanAction, initialState } from '@utils/planReducer';
 
-interface IPlan {
-  id: number;
-  title: string;
-  description: string;
-  public: boolean;
-  members: IMember[];
-  tabOrder: number[];
-  tabs: ITab[];
-  labels: ILabel[];
-  tasks: ITask[];
-}
+// interface IPlan {
+//   id: number;
+//   title: string;
+//   description: string;
+//   public: boolean;
+//   members: IMember[];
+//   tabOrder: number[];
+//   tabs: ITab[];
+//   labels: ILabel[];
+//   tasks: ITask[];
+// }
 
 interface IDragDropResult {
   source: {
@@ -62,10 +64,21 @@ interface IDragDropResult {
 }
 
 function Plan() {
+  const initialState = {
+    id: 0,
+    title: '',
+    description: '',
+    public: false,
+    members: [],
+    tabOrder: [],
+    tabs: [],
+    labels: [],
+    tasks: [],
+  };
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
-  const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
+  // const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
@@ -73,39 +86,13 @@ function Plan() {
 
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
-  const setMembers = useSetRecoilState(membersState);
-  const setLabels = useSetRecoilState(labelsState);
+  // const setMembers = useSetRecoilState(membersState);
+  // const setLabels = useSetRecoilState(labelsState);
   const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
-  const [state, dispatch] = useReducer<React.Reducer<IPlan, PlanAction>>(planReducer, initialState);
 
   const navigate = useNavigate();
-
-  const filterAndSetPlan = (data: IPlan, labels: number[], members: number[]) => {
-    if (!data) {
-      return;
-    }
-
-    const filteredTasks = data.tasks.filter((task) => {
-      // 라벨 배열의 길이가 0보다 클때만 라벨 필터링
-      const labelFilter = labels.length === 0 || task.labels.some((label) => labels.includes(label));
-      // 멤버 필터링
-      const memberFilter = members.length === 0 || members.includes(task.assigneeId!);
-
-      return labelFilter && memberFilter;
-    });
-
-    const filteredPlan = { ...data, tasks: filteredTasks };
-    dispatch({ type: 'SET_PLAN', payload: filteredPlan });
-
-    const tasksByTab: Record<number, ITask[]> = {};
-    state.tasks.forEach((task) => {
-      if (!tasksByTab[task.tabId]) {
-        tasksByTab[task.tabId] = [];
-      }
-      tasksByTab[task.tabId].push(task);
-    });
-    setTasks(tasksByTab);
-  };
+  console.log(planTitles);
+  const { plan, tasksByTab } = usePlan(currentPlanId, selectedLabels, selectedMembers);
 
   useEffect(() => {
     const getPlanTitles = async () => {
@@ -130,35 +117,46 @@ function Plan() {
     if (planId === undefined && planTitles.length > 0) {
       setCurrentPlanId(planTitles[0].id);
     }
-
-    const fetchData = async () => {
-      // planTitles가 빈 배열인 경우 데이터를 가져올 데이터가 없다.
-      if (currentPlanId === -1 || planTitles.length === 0) return;
-
-      try {
-        const data = await getPlanInfo(planId === undefined ? planTitles[0].id : currentPlanId);
-        setMembers(data.members);
-        setLabels(data.labels);
-        setOriginalPlan(data); // 원래의 플랜 데이터 저장
-        filterAndSetPlan(data, selectedLabels, selectedMembers);
-      } catch (error) {
-        throw new Error('플랜 정보를 가져오는데 실패했습니다.');
-      }
-    };
-
-    fetchData();
+    // const fetchData = async () => {
+    //   // planTitles가 빈 배열인 경우 데이터를 가져올 데이터가 없다.
+    //   if (currentPlanId === -1 || planTitles.length === 0) return;
+    //   try {
+    //     const data = await getPlanInfo(planId === undefined ? planTitles[0].id : currentPlanId);
+    //     setMembers(data.members);
+    //     setLabels(data.labels);
+    //     // setOriginalPlan(data); // 원래의 플랜 데이터 저장
+    //     // filterAndSetPlan(data, selectedLabels, selectedMembers);
+    //   } catch (error) {
+    //     throw new Error('플랜 정보를 가져오는데 실패했습니다.');
+    //   }
+    // };
+    // fetchData();
     // 의존성에 planTitles를 넣어줘야 플랜이 없다가 생성했을때 플랜페이지로 돌아와서 plan정보를 받아옴
   }, [planId, planTitles]);
 
-  useEffect(() => {
-    if (originalPlan) {
-      // 원래 플랜 데이터를 기반으로 다시 필터링
-      filterAndSetPlan(originalPlan, selectedLabels, selectedMembers);
-    }
-  }, [selectedLabels, selectedMembers, originalPlan]);
+  // useEffect(() => {
+  //   if (originalPlan) {
+  //     // 원래 플랜 데이터를 기반으로 다시 필터링
+  //     // filterAndSetPlan(originalPlan, selectedLabels, selectedMembers);
+  //   }
+  // }, [selectedLabels, selectedMembers, originalPlan]);
 
   const handleDrag = ({ source, destination }: IDropEvent) => {
-    dispatch({ type: 'TAB_DRAG_AND_DROP', payload: { source, destination } });
+    if (!destination) return;
+    if (source.index === destination.index) return;
+
+    if (!plan) return;
+    const newTabOrder = [...plan.tabOrder];
+    const draggedTabIndex = newTabOrder.indexOf(source.id);
+    const targetTabIndex = newTabOrder.indexOf(destination.id);
+    newTabOrder.splice(draggedTabIndex, 1);
+    newTabOrder.splice(targetTabIndex, 0, source.id);
+
+    // setPlan((prev) => {
+    //   if (!prev) return prev;
+
+    //   return { ...prev, tabOrder: newTabOrder };
+    // });
 
     // const prevIndex = newTabOrder.indexOf(source.id) - 1;
     // const requestData = {
@@ -169,16 +167,21 @@ function Plan() {
     // TODO: 탭 순서 변경 요청 날리기
   };
 
+  // useEffect(() => {
+  //   const clear = registDND(handleDrag);
+  //   return () => clear();
+  // }, [plan]);
+
   useEffect(() => {
     const clear = registDND(handleDrag);
     return () => clear();
-  }, [state]);
+  }, [tasksByTab]); // Adjust the dependencies based on your use case
 
   const tabById: Record<number, ITab> = {};
-  state.tabs.forEach((tab) => {
+  plan.tabs.forEach((tab) => {
     tabById[tab.id] = tab;
   });
-  const sortedTabs = state.tabOrder.map((tabId) => tabById[tabId]);
+  const sortedTabs = plan.tabOrder.map((tabId) => tabById[tabId]);
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -224,8 +227,7 @@ function Plan() {
       // });
 
       // TODO: 서버에서 받아온 id로 변환해야함
-      const newTabId = state?.tabs.length || 0 + 1;
-      dispatch({ type: 'ADD_TAB', payload: { newTabTitle, newTabId } });
+      const newTabId = plan?.tabs.length || 0 + 1;
       setTasks((prev) => {
         const newTasks = { ...prev };
         newTasks[newTabId] = [];
@@ -266,7 +268,6 @@ function Plan() {
   };
 
   const handleDeleteTab = async (tabId: number) => {
-    dispatch({ type: 'DELETE_TAB', payload: { tabId } });
     try {
       const response = await deleteTab(tabId, currentPlanId);
 
@@ -367,7 +368,7 @@ function Plan() {
         <LabelFilter selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
-        {state === initialState && (
+        {plan === initialState && (
           <Wrapper>
             <EmptyPlanContainer>
               <EmptyPlanContents>
@@ -396,11 +397,11 @@ function Plan() {
               onClick={() =>
                 navigate('/setting', {
                   state: {
-                    id: state.id,
-                    title: state.title,
-                    intro: state.description,
-                    isPublic: state.public,
-                    members: state.members,
+                    id: plan.id,
+                    title: plan.title,
+                    intro: plan.description,
+                    isPublic: plan.public,
+                    members: plan.members,
                   },
                 })
               }
@@ -420,7 +421,7 @@ function Plan() {
                     index={index}
                     title={item.title}
                     onDeleteTab={() => handleDeleteTab(item.id)}
-                    tasks={tasks[item.id]}
+                    tasks={tasksByTab[item.id]}
                     onSaveTitle={handleSaveTabTitle}
                     onAddTask={setTasks}
                     onRemoveTask={handleDeleteTask}
@@ -454,4 +455,4 @@ function Plan() {
   );
 }
 
-export default Plan;
+export default React.memo(Plan);
