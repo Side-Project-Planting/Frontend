@@ -8,7 +8,6 @@ import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-// import { ITask, ITab, IMember, ILabel } from 'types';
 import { ITask, ITab } from 'types';
 
 import {
@@ -34,22 +33,9 @@ import Modal from '@components/Modal';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { Tab, TasksContainer } from '@components/Tab';
 import { usePlan } from '@hooks/usePlan';
-// import { currentPlanIdState, labelsState, membersState, planTitlesState, accessTokenState } from '@recoil/atoms';
 import { currentPlanIdState, planTitlesState, accessTokenState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
 import registDND, { IDropEvent } from '@utils/drag';
-
-// interface IPlan {
-//   id: number;
-//   title: string;
-//   description: string;
-//   public: boolean;
-//   members: IMember[];
-//   tabOrder: number[];
-//   tabs: ITab[];
-//   labels: ILabel[];
-//   tasks: ITask[];
-// }
 
 interface IDragDropResult {
   source: {
@@ -78,7 +64,6 @@ function Plan() {
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
-  // const [originalPlan, setOriginalPlan] = useState<IPlan | null>(null);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
@@ -86,12 +71,10 @@ function Plan() {
 
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
-  // const setMembers = useSetRecoilState(membersState);
-  // const setLabels = useSetRecoilState(labelsState);
   const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
 
   const navigate = useNavigate();
-  console.log(planTitles);
+
   const { plan, tasksByTab } = usePlan(currentPlanId, selectedLabels, selectedMembers);
 
   useEffect(() => {
@@ -110,36 +93,10 @@ function Plan() {
   }, []);
 
   useEffect(() => {
-    // 플랜 4가 삭제되어도 recoil은 4를 갖고 있어서 fetch할때 에러가 난다.
-    // setting에서 플랜 삭제시 planTitles에서 4를 없앤다.
-    // setting에서 플랜 삭제시 바로 currentPlanId를 planTitles의 0로 바꾸고 싶었지만
-    // 0번째를 삭제한 경우 planTitle이 변화가 없기 떄문에 currentPlanId가 삭제된 id와 동일해서 못 받아온다.
     if (planId === undefined && planTitles.length > 0) {
       setCurrentPlanId(planTitles[0].id);
     }
-    // const fetchData = async () => {
-    //   // planTitles가 빈 배열인 경우 데이터를 가져올 데이터가 없다.
-    //   if (currentPlanId === -1 || planTitles.length === 0) return;
-    //   try {
-    //     const data = await getPlanInfo(planId === undefined ? planTitles[0].id : currentPlanId);
-    //     setMembers(data.members);
-    //     setLabels(data.labels);
-    //     // setOriginalPlan(data); // 원래의 플랜 데이터 저장
-    //     // filterAndSetPlan(data, selectedLabels, selectedMembers);
-    //   } catch (error) {
-    //     throw new Error('플랜 정보를 가져오는데 실패했습니다.');
-    //   }
-    // };
-    // fetchData();
-    // 의존성에 planTitles를 넣어줘야 플랜이 없다가 생성했을때 플랜페이지로 돌아와서 plan정보를 받아옴
   }, [planId, planTitles]);
-
-  // useEffect(() => {
-  //   if (originalPlan) {
-  //     // 원래 플랜 데이터를 기반으로 다시 필터링
-  //     // filterAndSetPlan(originalPlan, selectedLabels, selectedMembers);
-  //   }
-  // }, [selectedLabels, selectedMembers, originalPlan]);
 
   const handleDrag = ({ source, destination }: IDropEvent) => {
     if (!destination) return;
