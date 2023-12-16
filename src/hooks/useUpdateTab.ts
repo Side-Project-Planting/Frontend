@@ -1,3 +1,5 @@
+import useToast from './useToast';
+
 import { api } from '@apis';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -39,12 +41,14 @@ export const dragTab = async (params: { planId: number; targetId: number; newPre
 
 export function useUpdateTab(planId: number) {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   const { mutate: createTabMutate } = useMutation({
     mutationFn: (data: PlanInfo) => createNewTab(data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plan', planId] });
+      showToast('탭이 추가되었습니다.', { type: 'success' });
     },
   });
 
@@ -53,6 +57,7 @@ export function useUpdateTab(planId: number) {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plan', planId] });
+      showToast('탭 이름이 변경되었습니다.', { type: 'success' });
     },
   });
 
@@ -61,6 +66,7 @@ export function useUpdateTab(planId: number) {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plan', planId] });
+      showToast('탭이 삭제되었습니다.', { type: 'success' });
     },
   });
 
@@ -69,6 +75,7 @@ export function useUpdateTab(planId: number) {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plan', planId] });
+      showToast('탭 순서가 변경되었습니다.', { type: 'success' });
     },
   });
 
