@@ -25,7 +25,7 @@ import {
   EmptyPlanContents,
 } from './styles';
 
-import { createNewTab, deleteTab, getAllPlanTitles } from '@apis';
+import { getAllPlanTitles } from '@apis';
 import { ReactComponent as EmptyPlan } from '@assets/images/emptyPlan.svg';
 import LabelFilter from '@components/LabelFilter';
 import MemberFilter from '@components/MemberFilter';
@@ -33,6 +33,7 @@ import Modal from '@components/Modal';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { Tab, TasksContainer } from '@components/Tab';
 import { usePlan } from '@hooks/usePlan';
+import { useUpdateTab } from '@hooks/useUpdateTab';
 import { currentPlanIdState, planTitlesState, accessTokenState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
 import registDND, { IDropEvent } from '@utils/drag';
@@ -72,6 +73,10 @@ function Plan() {
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
+  const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(
+    // TODO: planId 리팩토링 필요
+    planId === undefined ? -1 : Number(planId),
+  );
 
   const navigate = useNavigate();
 
@@ -109,25 +114,15 @@ function Plan() {
     newTabOrder.splice(draggedTabIndex, 1);
     newTabOrder.splice(targetTabIndex, 0, source.id);
 
-    // setPlan((prev) => {
-    //   if (!prev) return prev;
+    const prevIndex = newTabOrder.indexOf(source.id) - 1;
+    const requestData = {
+      planId: plan.id,
+      targetId: source.id,
+      newPrevId: prevIndex === -1 ? null : newTabOrder[prevIndex],
+    };
 
-    //   return { ...prev, tabOrder: newTabOrder };
-    // });
-
-    // const prevIndex = newTabOrder.indexOf(source.id) - 1;
-    // const requestData = {
-    //   planId: plan.id,
-    //   targetId: source.id,
-    //   newPrevId: prevIndex === -1 ? null : newTabOrder[prevIndex],
-    // };
-    // TODO: 탭 순서 변경 요청 날리기
+    dragTabMutate(requestData);
   };
-
-  // useEffect(() => {
-  //   const clear = registDND(handleDrag);
-  //   return () => clear();
-  // }, [plan]);
 
   useEffect(() => {
     const clear = registDND(handleDrag);
@@ -155,33 +150,12 @@ function Plan() {
     if (newTabTitle.trim() === '') {
       setIsAddingTab(false);
     } else {
-      // TODO: 서버에 탭 추가 요청
-      // 서버에서 받아온 tabId를 newTab에 넣어줘야 한다.
       const requestBody = {
         planId: currentPlanId,
-        name: newTabTitle,
+        title: newTabTitle,
       };
 
-      try {
-        const response = await createNewTab(requestBody);
-        // eslint-disable-next-line
-        console.log(response);
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log(error);
-      }
-
-      // const newTab: ITab = {
-      //   id: (plan?.tabs.length || 0) + 1,
-      //   title: newTabTitle,
-      // };
-
-      // setPlan((prev) => {
-      //   if (!prev) {
-      //     return prev;
-      //   }
-      //   return { ...plan, tabs: [...plan.tabs, newTab], tabOrder: [...plan.tabOrder, newTab.id] };
-      // });
+      createTabMutate(requestBody);
 
       // TODO: 서버에서 받아온 id로 변환해야함
       const newTabId = plan?.tabs.length || 0 + 1;
@@ -225,17 +199,7 @@ function Plan() {
   };
 
   const handleDeleteTab = async (tabId: number) => {
-    try {
-      const response = await deleteTab(tabId, currentPlanId);
-
-      if (response.status === 204) {
-        // eslint-disable-next-line no-alert
-        window.alert('탭이 삭제되었습니다.');
-      }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error, '탭이 삭제가 되지 않았습니다.');
-    }
+    deleteTabMutate({ planId: currentPlanId, tabId });
   };
 
   const handleChangeLabel = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -255,10 +219,6 @@ function Plan() {
       }
       return [...prev, memberId];
     });
-  };
-
-  const handleSaveTabTitle = async (title: string) => {
-    return title;
   };
 
   const onDragEnd = (result: IDragDropResult) => {
@@ -379,7 +339,6 @@ function Plan() {
                     title={item.title}
                     onDeleteTab={() => handleDeleteTab(item.id)}
                     tasks={tasksByTab[item.id]}
-                    onSaveTitle={handleSaveTabTitle}
                     onAddTask={setTasks}
                     onRemoveTask={handleDeleteTask}
                     onEditTask={handleEditTask}
