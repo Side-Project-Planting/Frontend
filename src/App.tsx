@@ -1,7 +1,9 @@
 import React from 'react';
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import { RecoilRoot } from 'recoil';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Header from '@components/Header';
 import CreatePlan from '@pages/CreatePlan';
@@ -94,6 +96,17 @@ function App() {
       <RecoilRoot>
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
+          <ToastContainer
+            position="top-right"
+            autoClose={1000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </RecoilRoot>
