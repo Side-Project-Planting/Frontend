@@ -143,6 +143,16 @@ export const deleteTask = async (taskId: number) => {
   return response;
 };
 
+export const dragTask = async (requestBody: {
+  planId: number;
+  targetTabId: number;
+  targetId: number;
+  newPrevId: number | null;
+}) => {
+  const response = await api.put('api/tasks/change-order', requestBody);
+  return response;
+};
+
 /* Label */
 export const createLabel = async (planId: number, name: string) => {
   const { headers } = await api.post('/api/labels', { planId, name });
