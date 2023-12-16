@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
 import { useRecoilValue } from 'recoil';
-import { IAddTaskModal, ILabel, ISelectOption, ITask } from 'types';
+import { IAddTaskModal, ILabel, ISelectOption } from 'types';
 
-import { createTask } from '@apis';
 import DateRange from '@components/DateRange';
 import LabelInput from '@components/LabelInput';
 import {
@@ -16,6 +15,7 @@ import {
 } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
 import useModal from '@hooks/useModal';
+import { useUpdateTask } from '@hooks/useUpdateTask';
 import { currentPlanIdState, membersState, modalDataState } from '@recoil/atoms';
 
 export default function AddTaskModal() {
@@ -27,6 +27,7 @@ export default function AddTaskModal() {
   const modalData = useRecoilValue(modalDataState) as IAddTaskModal;
   const currentPlanId = useRecoilValue(currentPlanIdState);
   const { closeModal } = useModal();
+  const { createTaskMutate } = useUpdateTask(currentPlanId);
 
   const options = members.map((member) => {
     return { id: member.id, name: member.name };
@@ -35,7 +36,6 @@ export default function AddTaskModal() {
   const submitAddTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    let newTaskId: number = -1;
     const startDate = dateRange ? dateRange[0] : null;
     const endDate = dateRange ? dateRange[1] : null;
     const requestBody = {
@@ -49,30 +49,8 @@ export default function AddTaskModal() {
       labels: selectedLabels.map((label) => label.id),
     };
 
-    try {
-      const response = await createTask(requestBody);
-      const splitLocation = response.headers.location.split('/');
-      newTaskId = +splitLocation[splitLocation.length - 1];
-      // eslint-disable-next-line
-      console.log(response);
-    } catch (error) {
-      // eslint-disable-next-line
-      alert('할 일을 추가하지 못했어요 :(');
-    }
+    createTaskMutate(requestBody);
 
-    const newTask: ITask = {
-      ...requestBody,
-      id: newTaskId,
-    };
-    // Plan 페이지 tasks 상태에 반영
-    modalData.addTaskHandler((prev) => {
-      const newTasks = { ...prev };
-      const currentTabId = modalData.tabId;
-      if (!newTasks[currentTabId]) newTasks[currentTabId] = [];
-      newTasks[modalData.tabId].push(newTask);
-      return newTasks;
-    });
-    // 모달 닫기
     closeModal();
   };
 

@@ -63,9 +63,9 @@ function Plan() {
     tasks: [],
   };
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+  const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
   const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
-  const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
@@ -175,14 +175,8 @@ function Plan() {
     }
   };
 
-  const handleDeleteTask = (tabId: number, taskId: number) => {
-    if (tasks) {
-      setTasks((prev) => {
-        const newTasks = { ...prev };
-        newTasks[tabId] = newTasks[tabId].filter((task) => task.id !== taskId);
-        return newTasks;
-      });
-    }
+  const handleDeleteTab = async (tabId: number) => {
+    deleteTabMutate({ planId: currentPlanId, tabId });
   };
 
   const handleEditTask = (tabId: number, taskId: number, editedTask: ITask) => {
@@ -197,30 +191,6 @@ function Plan() {
       });
     }
   };
-
-  const handleDeleteTab = async (tabId: number) => {
-    deleteTabMutate({ planId: currentPlanId, tabId });
-  };
-
-  const handleChangeLabel = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const clickedLabel = Number(e.target.value);
-    setSelectedLabel((prev) => {
-      if (prev.includes(clickedLabel)) {
-        return prev.filter((item) => item !== clickedLabel);
-      }
-      return [...prev, clickedLabel];
-    });
-  };
-
-  const handleChangeMember = async (memberId: number) => {
-    setSelectedMembers((prev) => {
-      if (prev.includes(memberId)) {
-        return prev.filter((item) => item !== memberId);
-      }
-      return [...prev, memberId];
-    });
-  };
-
   const onDragEnd = (result: IDragDropResult) => {
     const { destination, source } = result;
 
@@ -259,6 +229,25 @@ function Plan() {
         [destination.droppableId]: newFinish,
       };
       return newTasks;
+    });
+  };
+
+  const handleChangeLabel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const clickedLabel = Number(e.target.value);
+    setSelectedLabel((prev) => {
+      if (prev.includes(clickedLabel)) {
+        return prev.filter((item) => item !== clickedLabel);
+      }
+      return [...prev, clickedLabel];
+    });
+  };
+
+  const handleChangeMember = async (memberId: number) => {
+    setSelectedMembers((prev) => {
+      if (prev.includes(memberId)) {
+        return prev.filter((item) => item !== memberId);
+      }
+      return [...prev, memberId];
     });
   };
 
@@ -340,7 +329,7 @@ function Plan() {
                     onDeleteTab={() => handleDeleteTab(item.id)}
                     tasks={tasksByTab[item.id]}
                     onAddTask={setTasks}
-                    onRemoveTask={handleDeleteTask}
+                    // onRemoveTask={handleDeleteTask}
                     onEditTask={handleEditTask}
                   />
                 );

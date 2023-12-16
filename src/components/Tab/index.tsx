@@ -10,7 +10,6 @@ import { INormalModal, ITask } from 'types';
 
 import { Wrapper, Header, EditableTitle, Container, TaskList, Interactions, AddButton, TabDragBar } from './styles';
 
-// import { updateTabTitle } from '@apis';
 import Dropdown from '@components/Dropdown';
 import TaskItem from '@components/TaskItem';
 import useModal from '@hooks/useModal';
@@ -24,7 +23,6 @@ interface ITabProps {
   tasks: ITask[];
   onDeleteTab: () => void;
   onAddTask: Dispatch<SetStateAction<Record<number, ITask[]>>>;
-  onRemoveTask: (tabId: number, taskId: number) => void;
   onEditTask?: (tabId: number, taskId: number, editedTask: ITask) => void;
 }
 
@@ -39,7 +37,6 @@ interface ITaskContainerProps {
   id?: number;
   tasks?: ITask[];
   onAddTask?: Dispatch<SetStateAction<Record<number, ITask[]>>>;
-  onRemoveTask?: (tabId: number, taskId: number) => void;
   onEditTask?: (tabId: number, taskId: number, editedTask: ITask) => void; // TODO: ITask 타입 통일 필요
 }
 
@@ -112,7 +109,7 @@ function TabHeader({ id, initialTitle, onDeleteTab }: ITabHeaderProps) {
   );
 }
 
-export function TasksContainer({ id, tasks, onAddTask, onRemoveTask, onEditTask }: ITaskContainerProps) {
+export function TasksContainer({ id, tasks, onAddTask, onEditTask }: ITaskContainerProps) {
   const { openModal } = useModal();
   const setModalData = useSetRecoilState(modalDataState);
 
@@ -134,13 +131,7 @@ export function TasksContainer({ id, tasks, onAddTask, onRemoveTask, onEditTask 
             <TaskList {...provided.droppableProps} ref={provided.innerRef}>
               {tasks?.map((task, index) => (
                 // TODO: void 함수를 주는 것 외에 다른 방식을 생각해볼 필요가 있음
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  index={index}
-                  onRemoveTask={onRemoveTask || (() => {})}
-                  onEditTask={onEditTask || (() => {})}
-                />
+                <TaskItem key={task.id} task={task} index={index} onEditTask={onEditTask || (() => {})} />
               ))}
               {provided.placeholder}
             </TaskList>
@@ -159,11 +150,11 @@ export function TasksContainer({ id, tasks, onAddTask, onRemoveTask, onEditTask 
   );
 }
 
-export function Tab({ id, index, title, tasks, onDeleteTab, onAddTask, onRemoveTask, onEditTask }: ITabProps) {
+export function Tab({ id, index, title, tasks, onDeleteTab, onAddTask, onEditTask }: ITabProps) {
   return (
     <Wrapper className="dnd-tab" data-index={index} data-id={id}>
       <TabHeader id={id} initialTitle={title} onDeleteTab={onDeleteTab} />
-      <TasksContainer id={id} tasks={tasks} onAddTask={onAddTask} onRemoveTask={onRemoveTask} onEditTask={onEditTask} />
+      <TasksContainer id={id} tasks={tasks} onAddTask={onAddTask} onEditTask={onEditTask} />
     </Wrapper>
   );
 }
