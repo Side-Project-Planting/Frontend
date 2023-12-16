@@ -10,10 +10,11 @@ import { INormalModal, ITask } from 'types';
 
 import { Wrapper, Header, EditableTitle, Container, TaskList, Interactions, AddButton, TabDragBar } from './styles';
 
-import { updateTabTitle } from '@apis';
+// import { updateTabTitle } from '@apis';
 import Dropdown from '@components/Dropdown';
 import TaskItem from '@components/TaskItem';
 import useModal from '@hooks/useModal';
+import { useUpdateTab } from '@hooks/useUpdateTab';
 import { modalDataState, currentPlanIdState } from '@recoil/atoms';
 
 interface ITabProps {
@@ -22,7 +23,6 @@ interface ITabProps {
   title: string;
   tasks: ITask[];
   onDeleteTab: () => void;
-  onSaveTitle: (title: string) => void;
   onAddTask: Dispatch<SetStateAction<Record<number, ITask[]>>>;
   onRemoveTask: (tabId: number, taskId: number) => void;
   onEditTask?: (tabId: number, taskId: number, editedTask: ITask) => void;
@@ -33,7 +33,6 @@ interface ITabHeaderProps {
   initialTitle: string;
   onDeleteTab: () => void;
   onClickHandler?: () => void;
-  onSaveTitle: (title: string) => void;
 }
 
 interface ITaskContainerProps {
@@ -44,7 +43,7 @@ interface ITaskContainerProps {
   onEditTask?: (tabId: number, taskId: number, editedTask: ITask) => void; // TODO: ITask 타입 통일 필요
 }
 
-function TabHeader({ id, initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderProps) {
+function TabHeader({ id, initialTitle, onDeleteTab }: ITabHeaderProps) {
   const tabEditOptions = [{ id: 1, label: '삭제', value: 'delete' }];
   const [title, setTitle] = useState(initialTitle);
   const [isEditing, setIsEditing] = useState(false);
@@ -52,6 +51,10 @@ function TabHeader({ id, initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderPro
   const { openModal } = useModal();
   const setModalData = useSetRecoilState(modalDataState);
   const currentPlanId = useRecoilValue(currentPlanIdState);
+  const { updateTabTitleMutate } = useUpdateTab(
+    // TODO: planId 리팩토링 필요
+    currentPlanId,
+  );
 
   const handleStartEditing = () => {
     setIsEditing(true);
@@ -68,20 +71,12 @@ function TabHeader({ id, initialTitle, onDeleteTab, onSaveTitle }: ITabHeaderPro
     if (title.trim() === '') {
       setTitle(initialTitle);
     }
-    // api 요청을 onSaveTitle에서 해야하는지 handleSave에서 해도 되는지 확실하지 않음
     const requestBody = {
       planId: currentPlanId,
+      tabId: id,
       title,
     };
-    try {
-      const response = await updateTabTitle(id, requestBody);
-      // eslint-disable-next-line no-console
-      console.log(response);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
-    }
-    onSaveTitle(title);
+    updateTabTitleMutate(requestBody);
   };
 
   const handleDeleteTab = () => {
@@ -164,20 +159,10 @@ export function TasksContainer({ id, tasks, onAddTask, onRemoveTask, onEditTask 
   );
 }
 
-export function Tab({
-  id,
-  index,
-  title,
-  tasks,
-  onDeleteTab,
-  onSaveTitle,
-  onAddTask,
-  onRemoveTask,
-  onEditTask,
-}: ITabProps) {
+export function Tab({ id, index, title, tasks, onDeleteTab, onAddTask, onRemoveTask, onEditTask }: ITabProps) {
   return (
     <Wrapper className="dnd-tab" data-index={index} data-id={id}>
-      <TabHeader id={id} initialTitle={title} onDeleteTab={onDeleteTab} onSaveTitle={onSaveTitle} />
+      <TabHeader id={id} initialTitle={title} onDeleteTab={onDeleteTab} />
       <TasksContainer id={id} tasks={tasks} onAddTask={onAddTask} onRemoveTask={onRemoveTask} onEditTask={onEditTask} />
     </Wrapper>
   );
