@@ -3,10 +3,10 @@ import { ILabel, IMember } from 'types';
 
 import { labelsState, membersState } from '@recoil/atoms';
 
-export const memberSelector = selectorFamily<IMember, number>({
+export const memberSelector = selectorFamily<IMember, number | undefined>({
   key: 'filteredMember',
   get:
-    (memberId: number) =>
+    (memberId: number | undefined) =>
     ({ get }) =>
       get(membersState).find((member) => member.id === memberId)!,
 });

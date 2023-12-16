@@ -24,12 +24,13 @@ interface Props {
 
 export default function TaskItem({ task, index, onEditTask }: Props) {
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
-  const assignee = useRecoilValue(memberSelector(task.assigneeId!));
+  const assignee = useRecoilValue(memberSelector(task.assigneeId));
   const setModalData = useSetRecoilState(modalDataState);
   const { openModal } = useModal();
   const currentPlanId = useRecoilValue(currentPlanIdState);
   const { deleteTaskMutate } = useUpdateTask(currentPlanId);
-  if (!task.assigneeId) return null;
+
+  // if (!task.assigneeId) return null;
 
   const removeTaskHandler = () => {
     const requestAPI = async () => {
@@ -82,7 +83,7 @@ export default function TaskItem({ task, index, onEditTask }: Props) {
                   </div>
                 )}
               </DateField>
-              <div>{assignee.name}</div>
+              <div>{assignee ? assignee.name : ''}</div>
             </InfoField>
           </ItemContainer>
           <TaskRemoveButton className="task-remove-button" type="button" onClick={removeTaskHandler}>
