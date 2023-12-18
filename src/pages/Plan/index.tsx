@@ -23,7 +23,6 @@ import {
   TabContainer,
   EmptyPlanContainer,
   EmptyPlanContents,
-  // TabContainer,
 } from './styles';
 
 import { getAllPlanTitles } from '@apis';
@@ -37,8 +36,6 @@ import { usePlan } from '@hooks/usePlan';
 import { useUpdateTab } from '@hooks/useUpdateTab';
 import { currentPlanIdState, planTitlesState, accessTokenState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
-// import registDND, { IDropEvent } from '@utils/drag';
-// import { IDropEvent } from '@utils/drag';
 
 interface IDragDropResult {
   source: {
@@ -117,32 +114,6 @@ function Plan() {
     }
   }, [planId, planTitles]);
 
-  // const handleDrag = ({ source, destination }: IDropEvent) => {
-  //   if (!destination) return;
-  //   if (source.index === destination.index) return;
-
-  //   if (!plan) return;
-  //   const newTabOrder = [...plan.tabOrder];
-  //   const draggedTabIndex = newTabOrder.indexOf(source.id);
-  //   const targetTabIndex = newTabOrder.indexOf(destination.id);
-  //   newTabOrder.splice(draggedTabIndex, 1);
-  //   newTabOrder.splice(targetTabIndex, 0, source.id);
-
-  //   const prevIndex = newTabOrder.indexOf(source.id) - 1;
-  //   const requestData = {
-  //     planId: plan.id,
-  //     targetId: source.id,
-  //     newPrevId: prevIndex === -1 ? null : newTabOrder[prevIndex],
-  //   };
-
-  //   dragTabMutate(requestData);
-  // };
-
-  // useEffect(() => {
-  //   const clear = registDND(handleDrag);
-  //   return () => clear();
-  // }, [tasksByTab]); // Adjust the dependencies based on your use case
-
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
     setNewTabTitle('');
@@ -202,16 +173,18 @@ function Plan() {
   const onDragEnd = (result: IDragDropResult) => {
     const { destination, source, draggableId } = result;
 
-    // console.log(source, destination, draggableId);
     const sourceType = source.droppableId.split('-')[0];
 
-    // console.log(sourceType, dragTabMutate);
-
     if (sourceType === 'tab') {
-      const newTabOrder = [...plan.tabOrder];
-      newTabOrder.splice(source.index, 1);
-      newTabOrder.splice(destination.index, 0, Number(draggableId.split('-')[1]));
+      const newSortedTabs = [...sortedTabs];
+      newSortedTabs.splice(source.index, 1);
+      newSortedTabs.splice(
+        destination.index,
+        0,
+        sortedTabs.find((tab) => tab.id === Number(draggableId.split('-')[1])) as ITab,
+      );
 
+      const newTabOrder = newSortedTabs.map((tab) => tab.id);
       const prevIndex = newTabOrder.indexOf(Number(draggableId.split('-')[1])) - 1;
       const requestData = {
         planId: plan.id,
@@ -219,11 +192,8 @@ function Plan() {
         newPrevId: prevIndex === -1 ? null : newTabOrder[prevIndex],
       };
 
-      // setSortedTabs(newTabOrder);
-
-      console.log(prevIndex, requestData);
       dragTabMutate(requestData);
-      console.log(dragTabMutate);
+      setSortedTabs(newSortedTabs);
     }
 
     if (sourceType === 'task') {
@@ -234,7 +204,6 @@ function Plan() {
       const start = tasks[+Number(source.droppableId.split('-')[1])];
       const finish = tasks[+Number(destination.droppableId.split('-')[1])] || [];
       const updatedTask = start[source.index];
-      // console.log(start, finish, updatedTask);
 
       start.splice(source.index, 1);
       if (start === finish) {
@@ -346,7 +315,6 @@ function Plan() {
             </div>
           </UtilContainer>
         </TopContainer>
-        {/* <TabGroup data-droppable-id={1} className="droppable"> */}
         <TabContainer>
           <DragDropContext onDragEnd={onDragEnd as OnDragEndResponder}>
             <Droppable direction="horizontal" droppableId="tab" type="tab">
