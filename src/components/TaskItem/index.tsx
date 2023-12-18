@@ -49,7 +49,7 @@ export default function TaskItem({ task, index, onEditTask }: Props) {
   };
 
   return (
-    <Draggable draggableId={task.id.toString()} index={index}>
+    <Draggable draggableId={`task-${task.id}`} index={index}>
       {(provided) => (
         <ItemWrapper>
           <ItemContainer

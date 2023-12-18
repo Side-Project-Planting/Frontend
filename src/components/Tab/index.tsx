@@ -4,7 +4,7 @@
 
 import React, { useState, useRef, Dispatch, SetStateAction } from 'react';
 
-import { Droppable } from 'react-beautiful-dnd';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { INormalModal, ITask } from 'types';
 
@@ -126,7 +126,7 @@ export function TasksContainer({ id, tasks, onAddTask, onEditTask }: ITaskContai
   return (
     <Container>
       {id ? (
-        <Droppable droppableId={id.toString()}>
+        <Droppable droppableId={`task-${id}`}>
           {(provided) => (
             <TaskList {...provided.droppableProps} ref={provided.innerRef}>
               {tasks?.map((task, index) => (
@@ -152,9 +152,19 @@ export function TasksContainer({ id, tasks, onAddTask, onEditTask }: ITaskContai
 
 export function Tab({ id, index, title, tasks, onDeleteTab, onAddTask, onEditTask }: ITabProps) {
   return (
-    <Wrapper className="dnd-tab" data-index={index} data-id={id}>
-      <TabHeader id={id} initialTitle={title} onDeleteTab={onDeleteTab} />
-      <TasksContainer id={id} tasks={tasks} onAddTask={onAddTask} onEditTask={onEditTask} />
-    </Wrapper>
+    // <Wrapper className="dnd-tab" data-index={index} data-id={id}>
+    <Draggable draggableId={`tab-${id}`} key={`tab-${id}`} index={index}>
+      {(provided) => (
+        <Wrapper
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          // isDragging={snapshot.isDragging}
+        >
+          <TabHeader id={id} initialTitle={title} onDeleteTab={onDeleteTab} />
+          <TasksContainer id={id} tasks={tasks} onAddTask={onAddTask} onEditTask={onEditTask} />
+        </Wrapper>
+      )}
+    </Draggable>
   );
 }
