@@ -101,6 +101,11 @@ export const deleteTab = async (tabId: number, currentPlanId: number) => {
   return response;
 };
 
+export const dragTab = async (requestBody: { planId: number; targetId: number; newPrevId: number }) => {
+  const response = await api.post('api/tabs/change-order', requestBody);
+  return response;
+};
+
 /* Task */
 export const createTask = async (requestBody: {
   planId: number;
@@ -135,6 +140,16 @@ export const updateTask = async (
 
 export const deleteTask = async (taskId: number) => {
   const response = await api.delete(`/api/tasks/${taskId}`);
+  return response;
+};
+
+export const dragTask = async (requestBody: {
+  planId: number;
+  targetTabId: number;
+  targetId: number;
+  newPrevId: number | null;
+}) => {
+  const response = await api.put('api/tasks/change-order', requestBody);
   return response;
 };
 

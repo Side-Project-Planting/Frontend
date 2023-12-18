@@ -10,39 +10,31 @@ import { IEditTaskModal, INormalModal, ITask } from 'types';
 
 import { ItemWrapper, ItemContainer, LabelField, LabelItem, InfoField, DateField, TaskRemoveButton } from './styles';
 
-import { deleteTask } from '@apis';
 import useModal from '@hooks/useModal';
-import { modalDataState } from '@recoil/atoms';
+import { useUpdateTask } from '@hooks/useUpdateTask';
+import { modalDataState, currentPlanIdState } from '@recoil/atoms';
 import { filteredLabelsSelector, memberSelector } from '@recoil/selectors';
 import { hashStringToColor } from '@utils';
 
 interface Props {
   task: ITask;
   index: number;
-  onRemoveTask: (tabId: number, taskId: number) => void;
   onEditTask: (tabId: number, taskId: number, editedTask: ITask) => void;
 }
 
-export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Props) {
+export default function TaskItem({ task, index, onEditTask }: Props) {
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
-  const assignee = useRecoilValue(memberSelector(task.assigneeId!));
+  const assignee = useRecoilValue(memberSelector(task.assigneeId));
   const setModalData = useSetRecoilState(modalDataState);
   const { openModal } = useModal();
+  const currentPlanId = useRecoilValue(currentPlanIdState);
+  const { deleteTaskMutate } = useUpdateTask(currentPlanId);
 
-  if (!task.assigneeId) return null;
+  // if (!task.assigneeId) return null;
 
   const removeTaskHandler = () => {
     const requestAPI = async () => {
-      // TODO: 서버에 태스크 삭제 요청
-      try {
-        const response = await deleteTask(task.id);
-        // eslint-disable-next-line
-        console.log(response);
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log(error);
-      }
-      onRemoveTask(task.tabId, task.id);
+      deleteTaskMutate({ taskId: task.id });
     };
     setModalData({ information: `"${task.title}"을 삭제할까요?`, requestAPI } as INormalModal);
     openModal('normal');
@@ -91,7 +83,7 @@ export default function TaskItem({ task, index, onRemoveTask, onEditTask }: Prop
                   </div>
                 )}
               </DateField>
-              <div>{assignee.name}</div>
+              <div>{assignee ? assignee.name : ''}</div>
             </InfoField>
           </ItemContainer>
           <TaskRemoveButton className="task-remove-button" type="button" onClick={removeTaskHandler}>

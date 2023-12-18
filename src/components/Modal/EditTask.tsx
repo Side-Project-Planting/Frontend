@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-import { IEditTaskModal, ILabel, ISelectOption, ITask } from 'types';
+import { IEditTaskModal, ILabel, ISelectOption } from 'types';
 
-import { updateTask } from '@apis';
 import DateRange from '@components/DateRange';
 import LabelInput from '@components/LabelInput';
 import {
@@ -17,6 +16,7 @@ import {
 } from '@components/Modal/CommonModalStyles';
 import SelectBox from '@components/SelectBox';
 import useModal from '@hooks/useModal';
+import { useUpdateTask } from '@hooks/useUpdateTask';
 import { currentPlanIdState, membersState, modalDataState } from '@recoil/atoms';
 import { filteredLabelsSelector, memberSelector } from '@recoil/selectors';
 
@@ -53,11 +53,12 @@ const ButtonContainer = styled.div`
 `;
 
 function EditTaskModal() {
-  const { task, requestAPI } = useRecoilValue(modalDataState) as IEditTaskModal;
+  const { task } = useRecoilValue(modalDataState) as IEditTaskModal;
   const filteredLabels = useRecoilValue(filteredLabelsSelector(task.labels));
   const members = useRecoilValue(membersState);
   const filteredMember = task.assigneeId ? useRecoilValue(memberSelector(task.assigneeId)) : null;
   const currentPlanId = useRecoilValue(currentPlanIdState);
+  const { updateTaskMutate } = useUpdateTask(currentPlanId);
 
   const [taskTitle, setTaskTitle] = useState<string>(task.title);
   const [assignee, setAssignee] = useState<ISelectOption>(
@@ -78,6 +79,7 @@ function EditTaskModal() {
     const startDate = dateRange ? dateRange[0] : null;
     const endDate = dateRange ? dateRange[1] : null;
     const requestBody = {
+      taskId: task.id,
       planId: currentPlanId,
       tabId: task.tabId,
       assigneeId: assignee.id!,
@@ -87,19 +89,8 @@ function EditTaskModal() {
       endDate,
       labels: selectedLabels.map((label) => label.id),
     };
+    updateTaskMutate(requestBody);
 
-    try {
-      const response = await updateTask(task.id, requestBody);
-      const updatedTask: ITask = { ...requestBody, id: task.id };
-      requestAPI(updatedTask);
-      // eslint-disable-next-line
-      console.log(response);
-    } catch (error) {
-      // eslint-disable-next-line
-      console.log(error);
-    }
-
-    // TODO: 수정된 할 일을 Plan 페이지의 상태에 저장해야 함
     closeModal();
   };
 
