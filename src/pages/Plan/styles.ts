@@ -99,16 +99,15 @@ export const UtilContainer = styled.div`
   }
 `;
 
-export const TabGroup = styled.ul`
+export const TabContainer = styled.div`
   width: calc(100vw - 22rem);
   height: calc(100% - 4rem);
   display: flex;
 `;
 
-export const TabContainer = styled.div`
+export const TabGroup = styled.ul`
   display: flex;
   gap: 1.5rem;
-  overflow-x: auto;
 `;
 
 export const AddTabButton = styled.button`

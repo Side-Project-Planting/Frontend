@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useState, useRef } from 'react';
 
-import { DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
+import { Droppable, DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
@@ -36,7 +36,6 @@ import { usePlan } from '@hooks/usePlan';
 import { useUpdateTab } from '@hooks/useUpdateTab';
 import { currentPlanIdState, planTitlesState, accessTokenState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
-import registDND, { IDropEvent } from '@utils/drag';
 
 interface IDragDropResult {
   source: {
@@ -63,6 +62,7 @@ function Plan() {
     tasks: [],
   };
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+  const [sortedTabs, setSortedTabs] = useState<{ id: number; title: string; taskOrder?: number[] }[]>([]);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
   const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
@@ -73,14 +73,25 @@ function Plan() {
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
+  const { plan, tasksByTab } = usePlan(currentPlanId, selectedLabels, selectedMembers);
   const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(
     // TODO: planId 리팩토링 필요
-    planId === undefined ? -1 : Number(planId),
+    Number(plan.id),
   );
 
   const navigate = useNavigate();
 
-  const { plan, tasksByTab } = usePlan(currentPlanId, selectedLabels, selectedMembers);
+  useEffect(() => {
+    setTasks(tasksByTab);
+    const tabById: Record<number, ITab> = {};
+    plan.tabs.forEach((tab) => {
+      tabById[tab.id] = tab;
+    });
+    const newSortedTabs = plan.tabOrder.map((tabId) => {
+      return tabById[tabId];
+    });
+    setSortedTabs(newSortedTabs);
+  }, [plan]);
 
   useEffect(() => {
     const getPlanTitles = async () => {
@@ -102,38 +113,6 @@ function Plan() {
       setCurrentPlanId(planTitles[0].id);
     }
   }, [planId, planTitles]);
-
-  const handleDrag = ({ source, destination }: IDropEvent) => {
-    if (!destination) return;
-    if (source.index === destination.index) return;
-
-    if (!plan) return;
-    const newTabOrder = [...plan.tabOrder];
-    const draggedTabIndex = newTabOrder.indexOf(source.id);
-    const targetTabIndex = newTabOrder.indexOf(destination.id);
-    newTabOrder.splice(draggedTabIndex, 1);
-    newTabOrder.splice(targetTabIndex, 0, source.id);
-
-    const prevIndex = newTabOrder.indexOf(source.id) - 1;
-    const requestData = {
-      planId: plan.id,
-      targetId: source.id,
-      newPrevId: prevIndex === -1 ? null : newTabOrder[prevIndex],
-    };
-
-    dragTabMutate(requestData);
-  };
-
-  useEffect(() => {
-    const clear = registDND(handleDrag);
-    return () => clear();
-  }, [tasksByTab]); // Adjust the dependencies based on your use case
-
-  const tabById: Record<number, ITab> = {};
-  plan.tabs.forEach((tab) => {
-    tabById[tab.id] = tab;
-  });
-  const sortedTabs = plan.tabOrder.map((tabId) => tabById[tabId]);
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -192,44 +171,64 @@ function Plan() {
     }
   };
   const onDragEnd = (result: IDragDropResult) => {
-    const { destination, source } = result;
+    const { destination, source, draggableId } = result;
 
-    if (!destination) return;
+    const sourceType = source.droppableId.split('-')[0];
 
-    if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+    if (sourceType === 'tab') {
+      const newSortedTabs = [...sortedTabs];
+      newSortedTabs.splice(source.index, 1);
+      newSortedTabs.splice(
+        destination.index,
+        0,
+        sortedTabs.find((tab) => tab.id === Number(draggableId.split('-')[1])) as ITab,
+      );
 
-    const start = tasks[+source.droppableId];
-    const finish = tasks[+destination.droppableId];
+      const newTabOrder = newSortedTabs.map((tab) => tab.id);
+      const prevIndex = newTabOrder.indexOf(Number(draggableId.split('-')[1])) - 1;
+      const requestData = {
+        planId: plan.id,
+        targetId: Number(draggableId.split('-')[1]),
+        newPrevId: prevIndex === -1 ? null : newTabOrder[prevIndex],
+      };
 
-    const updatedTask = start[source.index];
-    start.splice(source.index, 1);
-
-    if (start === finish) {
-      start.splice(destination.index, 0, updatedTask);
-
-      setTasks((prev) => {
-        const newTasks = { ...prev };
-        newTasks[+source.droppableId] = [...start];
-        return newTasks;
-      });
-      return;
+      dragTabMutate(requestData);
+      setSortedTabs(newSortedTabs);
     }
 
-    updatedTask.tabId = +destination.droppableId;
-    finish.splice(destination.index, 0, updatedTask);
+    if (sourceType === 'task') {
+      if (!destination) return;
 
-    // TODO: order가 추가될 수 있음
-    const newStart = [...start];
-    const newFinish = [...finish];
+      if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
-    setTasks((prev) => {
-      const newTasks = {
-        ...prev,
-        [source.droppableId]: newStart,
-        [destination.droppableId]: newFinish,
-      };
-      return newTasks;
-    });
+      const start = tasks[+Number(source.droppableId.split('-')[1])];
+      const finish = tasks[+Number(destination.droppableId.split('-')[1])] || [];
+      const updatedTask = start[source.index];
+
+      start.splice(source.index, 1);
+      if (start === finish) {
+        start.splice(destination.index, 0, updatedTask);
+        setTasks((prev) => {
+          const newTasks = { ...prev };
+          newTasks[+Number(source.droppableId.split('-')[1])] = [...start];
+          return newTasks;
+        });
+        return;
+      }
+      updatedTask.tabId = +Number(destination.droppableId.split('-')[1]);
+      finish.splice(destination.index, 0, updatedTask);
+      // TODO: order가 추가될 수 있음
+      const newStart = [...start];
+      const newFinish = [...finish];
+      setTasks((prev) => {
+        const newTasks = {
+          ...prev,
+          [Number(source.droppableId.split('-')[1])]: newStart,
+          [Number(destination.droppableId.split('-')[1])]: newFinish,
+        };
+        return newTasks;
+      });
+    }
   };
 
   const handleChangeLabel = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -316,44 +315,52 @@ function Plan() {
             </div>
           </UtilContainer>
         </TopContainer>
-        <TabGroup data-droppable-id={1} className="droppable">
+        <TabContainer>
           <DragDropContext onDragEnd={onDragEnd as OnDragEndResponder}>
-            <TabContainer>
-              {sortedTabs.map((item, index) => {
-                return (
-                  <Tab
-                    id={item.id}
-                    key={item.id}
-                    index={index}
-                    title={item.title}
-                    onDeleteTab={() => handleDeleteTab(item.id)}
-                    tasks={tasksByTab[item.id]}
-                    onAddTask={setTasks}
-                    // onRemoveTask={handleDeleteTask}
-                    onEditTask={handleEditTask}
-                  />
-                );
-              })}
-
-              {isAddingTab && (
-                <TabWrapper>
-                  <input
-                    type="text"
-                    ref={inputRef}
-                    value={newTabTitle}
-                    onChange={(e) => setNewTabTitle(e.target.value)}
-                    onBlur={handleAddTab}
-                    onKeyDown={handleInputKeyDown}
-                  />
-                  <TasksContainer />
-                </TabWrapper>
+            <Droppable direction="horizontal" droppableId="tab" type="tab">
+              {(provided) => (
+                <TabGroup
+                  ref={provided.innerRef}
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...provided.droppableProps}
+                >
+                  {sortedTabs.map((item, index) => {
+                    return (
+                      <Tab
+                        id={item.id}
+                        key={item.id}
+                        index={index}
+                        title={item.title}
+                        onDeleteTab={() => handleDeleteTab(item.id)}
+                        tasks={tasks[item.id] || []}
+                        onAddTask={setTasks}
+                        // onRemoveTask={handleDeleteTask}
+                        onEditTask={handleEditTask}
+                      />
+                    );
+                  })}
+                  {isAddingTab && (
+                    <TabWrapper>
+                      <input
+                        type="text"
+                        ref={inputRef}
+                        value={newTabTitle}
+                        onChange={(e) => setNewTabTitle(e.target.value)}
+                        onBlur={handleAddTab}
+                        onKeyDown={handleInputKeyDown}
+                      />
+                      <TasksContainer />
+                    </TabWrapper>
+                  )}
+                  {provided.placeholder}
+                </TabGroup>
               )}
-            </TabContainer>
+            </Droppable>
           </DragDropContext>
           <AddTabButton>
             <SlPlus size={35} color="#8993A1" onClick={handleStartAddingTab} />
           </AddTabButton>
-        </TabGroup>
+        </TabContainer>
       </MainContainer>
       <Modal />
     </Wrapper>
