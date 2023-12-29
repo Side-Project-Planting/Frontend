@@ -20,7 +20,6 @@ import {
   TabGroup,
   TabWrapper,
   AddTabButton,
-  TabContainer,
   EmptyPlanContainer,
   EmptyPlanContents,
 } from './styles';
@@ -315,52 +314,50 @@ function Plan() {
             </div>
           </UtilContainer>
         </TopContainer>
-        <TabContainer>
-          <DragDropContext onDragEnd={onDragEnd as OnDragEndResponder}>
-            <Droppable direction="horizontal" droppableId="tab" type="tab">
-              {(provided) => (
-                <TabGroup
-                  ref={provided.innerRef}
-                  // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...provided.droppableProps}
-                >
-                  {sortedTabs.map((item, index) => {
-                    return (
-                      <Tab
-                        id={item.id}
-                        key={item.id}
-                        index={index}
-                        title={item.title}
-                        onDeleteTab={() => handleDeleteTab(item.id)}
-                        tasks={tasks[item.id] || []}
-                        onAddTask={setTasks}
-                        // onRemoveTask={handleDeleteTask}
-                        onEditTask={handleEditTask}
-                      />
-                    );
-                  })}
-                  {isAddingTab && (
-                    <TabWrapper>
-                      <input
-                        type="text"
-                        ref={inputRef}
-                        value={newTabTitle}
-                        onChange={(e) => setNewTabTitle(e.target.value)}
-                        onBlur={handleAddTab}
-                        onKeyDown={handleInputKeyDown}
-                      />
-                      <TasksContainer />
-                    </TabWrapper>
-                  )}
-                  {provided.placeholder}
-                </TabGroup>
-              )}
-            </Droppable>
-          </DragDropContext>
-          <AddTabButton>
-            <SlPlus size={35} color="#8993A1" onClick={handleStartAddingTab} />
-          </AddTabButton>
-        </TabContainer>
+        <DragDropContext onDragEnd={onDragEnd as OnDragEndResponder}>
+          <Droppable direction="horizontal" droppableId="tab" type="tab">
+            {(provided) => (
+              <TabGroup
+                ref={provided.innerRef}
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...provided.droppableProps}
+              >
+                {sortedTabs.map((item, index) => {
+                  return (
+                    <Tab
+                      id={item.id}
+                      key={item.id}
+                      index={index}
+                      title={item.title}
+                      onDeleteTab={() => handleDeleteTab(item.id)}
+                      tasks={tasks[item.id] || []}
+                      onAddTask={setTasks}
+                      // onRemoveTask={handleDeleteTask}
+                      onEditTask={handleEditTask}
+                    />
+                  );
+                })}
+                {isAddingTab && (
+                  <TabWrapper>
+                    <input
+                      type="text"
+                      ref={inputRef}
+                      value={newTabTitle}
+                      onChange={(e) => setNewTabTitle(e.target.value)}
+                      onBlur={handleAddTab}
+                      onKeyDown={handleInputKeyDown}
+                    />
+                    <TasksContainer />
+                  </TabWrapper>
+                )}
+                <AddTabButton>
+                  <SlPlus size={35} color="#8993A1" onClick={handleStartAddingTab} />
+                </AddTabButton>
+                {provided.placeholder}
+              </TabGroup>
+            )}
+          </Droppable>
+        </DragDropContext>
       </MainContainer>
       <Modal />
     </Wrapper>

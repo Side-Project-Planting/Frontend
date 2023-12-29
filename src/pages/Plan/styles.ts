@@ -74,6 +74,7 @@ export const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow-x: scroll;
 `;
 
 export const TopContainer = styled.div`
@@ -99,15 +100,10 @@ export const UtilContainer = styled.div`
   }
 `;
 
-export const TabContainer = styled.div`
-  width: calc(100vw - 22rem);
+export const TabGroup = styled.ul`
+  width: fit-content;
   height: calc(100% - 4rem);
   display: flex;
-`;
-
-export const TabGroup = styled.ul`
-  display: flex;
-  gap: 1.5rem;
 `;
 
 export const AddTabButton = styled.button`

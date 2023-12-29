@@ -8,7 +8,7 @@ import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { INormalModal, ITask } from 'types';
 
-import { Wrapper, Header, EditableTitle, Container, TaskList, Interactions, AddButton, TabDragBar } from './styles';
+import { Wrapper, Header, EditableTitle, Container, TaskList, AddButton } from './styles';
 
 import Dropdown from '@components/Dropdown';
 import TaskItem from '@components/TaskItem';
@@ -140,12 +140,10 @@ export function TasksContainer({ id, tasks, onAddTask, onEditTask }: ITaskContai
       ) : (
         <TaskList />
       )}
-      <Interactions>
-        <AddButton type="button" className="add" onClick={handleAddTask}>
-          Add Item
-        </AddButton>
-        <TabDragBar type="button" draggable className="dnd-item" />
-      </Interactions>
+
+      <AddButton type="button" className="add" onClick={handleAddTask}>
+        Add Item
+      </AddButton>
     </Container>
   );
 }
