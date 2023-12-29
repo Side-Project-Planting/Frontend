@@ -54,8 +54,8 @@ export const PlanCategory = styled.ul`
   background-color: #ffffff;
 
   li {
-    font-size: 1rem;
-    height: 3rem;
+    font-size: 0.9rem;
+    height: 2.5rem;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -65,7 +65,7 @@ export const PlanCategory = styled.ul`
 
     &.isSelected {
       background-color: #64d4ab;
-      border-radius: 0.6rem;
+      border-radius: 0.5rem;
       color: #ffffff;
     }
   }
@@ -113,22 +113,23 @@ export const AddTabButton = styled.button`
   margin-left: 5rem;
 `;
 
-// export const Wrapper = styled.li``;
-
 export const TabWrapper = styled.li`
-  width: 20rem;
+  width: 15rem;
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
 
   input {
     height: 2rem;
     background: none;
     padding: 0.2rem 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 14px;
+    outline: none;
 
     &:focus {
-      border: 2px solid #000000;
+      background-color: #ffffff;
+      border: 1.5px solid #efefef;
     }
   }
 `;
