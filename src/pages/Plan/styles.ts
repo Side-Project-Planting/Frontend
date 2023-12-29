@@ -3,9 +3,9 @@ import styled from 'styled-components';
 export const Wrapper = styled.main`
   width: 100vw;
   height: 100vh;
-  padding: 70px 40px;
+  padding: 70px 2rem 2rem;
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   background-color: #f5f5f7;
 `;
 
@@ -38,14 +38,14 @@ export const SideContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 1rem;
 `;
 
 export const PlanCategory = styled.ul`
-  width: 11rem;
+  width: 10rem;
   height: 50%;
-  border-radius: 1rem;
-  padding: 2.5rem 1rem;
+  border-radius: 0.8rem;
+  padding: 1rem;
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -54,6 +54,7 @@ export const PlanCategory = styled.ul`
   background-color: #ffffff;
 
   li {
+    font-size: 1rem;
     height: 3rem;
     width: 100%;
     display: flex;
@@ -78,7 +79,7 @@ export const MainContainer = styled.div`
 `;
 
 export const TopContainer = styled.div`
-  height: 3.5rem;
+  height: 3rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -90,8 +91,8 @@ export const UtilContainer = styled.div`
 
   .icon {
     background-color: #ffffff;
-    width: 2.8rem;
-    height: 2.8rem;
+    width: 2rem;
+    height: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;

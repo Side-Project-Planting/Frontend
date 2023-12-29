@@ -1,59 +1,61 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.li`
-  width: 20rem;
-  margin-right: 1.5rem;
+  width: 15rem;
+  margin-right: 1rem;
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
 `;
 
 export const Header = styled.div`
-  padding-inline: 0.8rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
 
   .planTitle {
+    width: 100%;
+    padding: 0.2rem 0.5rem;
     height: 2rem;
-    padding-block: 0.2rem;
-    width: calc(100% - 0.8rem);
+    font-size: 14px;
   }
 `;
 
 export const EditableTitle = styled.input`
+  width: 100%;
   height: 2rem;
   padding: 0.2rem 0.5rem;
-  border-radius: 6px;
+  border-radius: 0.5rem;
   background: none;
-  font-size: 1rem;
+  font-size: 0.8rem;
   outline: none;
-  width: 100%;
 
   &:focus {
-    border: 3px solid #000000;
+    background-color: #ffffff;
+    border: 1.5px solid #efefef;
   }
 `;
 
 export const TaskList = styled.ul`
-  border-radius: 1.1rem;
+  border-radius: 0.8rem;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   width: 100%;
   /* 태스크 droppable 영역 크기 리팩토링 필요함 */
   height: calc(100% - 6rem);
-  padding: 1rem;
+  padding: 0.8rem;
   overflow-y: auto;
 `;
 
 export const AddButton = styled.button`
   width: 100%;
-  height: 3rem;
+  height: 2.5rem;
   border-radius: 0.5rem;
+  margin-top: 0.5rem;
   background-color: #fafafa;
   color: #8993a1;
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 0.9rem;
 `;

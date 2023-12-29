@@ -23,7 +23,7 @@ export const ProfileImg = styled.img`
 
 export const EditButton = styled.button`
   position: absolute;
-  top: 0.2rem;
+  top: 0.4rem;
   right: 0;
 `;
 

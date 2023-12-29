@@ -20,8 +20,8 @@ export const MemberItem = styled.li`
 `;
 
 export const MemberImg = styled.img`
-  width: 3rem;
-  height: 3rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   &.selected {
     border: 3px solid #64d4ab;
@@ -32,8 +32,7 @@ export const Tooltip = styled.span`
   display: none;
   position: absolute;
   bottom: -1.2rem;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   width: 3.2rem;
   padding: 2px 5px;
   text-align: center;

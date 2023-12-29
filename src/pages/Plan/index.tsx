@@ -294,7 +294,7 @@ function Plan() {
           <MemberFilter selectedMember={selectedMembers} onClick={handleChangeMember} />
           <UtilContainer>
             <div className="icon">
-              <IoIosStarOutline size={25} />
+              <IoIosStarOutline size={18} />
             </div>
             <div
               className="icon"
@@ -310,7 +310,7 @@ function Plan() {
                 })
               }
             >
-              <CiSettings size={28} />
+              <CiSettings size={21} />
             </div>
           </UtilContainer>
         </TopContainer>
