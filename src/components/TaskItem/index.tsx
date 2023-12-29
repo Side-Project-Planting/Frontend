@@ -3,8 +3,7 @@
 import React from 'react';
 
 import { Draggable } from 'react-beautiful-dnd';
-import { IoClose, IoInfinite } from 'react-icons/io5';
-import { PiClockFill } from 'react-icons/pi';
+import { IoClose } from 'react-icons/io5';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { IEditTaskModal, INormalModal, ITask } from 'types';
 
@@ -29,8 +28,6 @@ export default function TaskItem({ task, index, onEditTask }: Props) {
   const { openModal } = useModal();
   const currentPlanId = useRecoilValue(currentPlanIdState);
   const { deleteTaskMutate } = useUpdateTask(currentPlanId);
-
-  // if (!task.assigneeId) return null;
 
   const removeTaskHandler = () => {
     const requestAPI = async () => {
@@ -58,7 +55,7 @@ export default function TaskItem({ task, index, onEditTask }: Props) {
             ref={provided.innerRef}
             onClick={editTaskHandler}
           >
-            <p id="task-title">{task.title}</p>
+            <p className="task-title">{task.title}</p>
             <LabelField>
               {filteredLabels.map((label) => (
                 <LabelItem key={label.id} color={hashStringToColor(label.value)}>
@@ -67,27 +64,18 @@ export default function TaskItem({ task, index, onEditTask }: Props) {
               ))}
             </LabelField>
             <InfoField>
+              <span className="assignee-id">{assignee ? assignee.name : ''}</span>
               <DateField>
                 {task.startDate && task.endDate ? (
-                  <>
-                    <PiClockFill size={16} color="#64D4AB" />
-                    <div>
-                      {`${task.startDate}`}
-                      <br />
-                      {` ~ ${task.endDate}`}
-                    </div>
-                  </>
+                  <p>{`${task.startDate} ~ ${task.endDate}`}</p>
                 ) : (
-                  <div className="date-infinity">
-                    <IoInfinite size={24} color="#1C2A4B" />
-                  </div>
+                  <p className="date-infinity">기한 없음</p>
                 )}
               </DateField>
-              <div>{assignee ? assignee.name : ''}</div>
             </InfoField>
           </ItemContainer>
           <TaskRemoveButton className="task-remove-button" type="button" onClick={removeTaskHandler}>
-            <IoClose size={20} />
+            <IoClose size={18} />
           </TaskRemoveButton>
         </ItemWrapper>
       )}
