@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.li`
+  width: 20rem;
+  margin-right: 1.5rem;
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  justify-content: space-between;
+  gap: 0.3rem;
 `;
 
 export const Header = styled.div`
@@ -18,7 +19,7 @@ export const Header = styled.div`
   .planTitle {
     height: 2rem;
     padding-block: 0.2rem;
-    width: calc(100% - 24px);
+    width: calc(100% - 0.8rem);
   }
 `;
 
@@ -36,41 +37,23 @@ export const EditableTitle = styled.input`
   }
 `;
 
-export const Container = styled.div`
-  width: 20rem;
-  height: calc(100% - 3rem);
-  margin-right: 1.5rem;
+export const TaskList = styled.ul`
   border-radius: 1.1rem;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-`;
-
-export const TaskList = styled.ul`
-  display: flex;
-  flex-direction: column;
   width: 100%;
   /* 태스크 droppable 영역 크기 리팩토링 필요함 */
-  min-height: 38rem;
+  height: calc(100% - 6rem);
+  padding: 1rem;
   overflow-y: auto;
 `;
 
 export const AddButton = styled.button`
   width: 100%;
   height: 3rem;
-  margin-top: 1rem;
   border-radius: 0.5rem;
   background-color: #fafafa;
   color: #8993a1;
   font-weight: 600;
-`;
-
-export const TabDragBar = styled.button`
-  width: 95%;
-  height: 0.5rem;
-  background-color: lightgray;
-  border-radius: 15px;
 `;

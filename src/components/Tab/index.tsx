@@ -8,7 +8,7 @@ import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { INormalModal, ITask } from 'types';
 
-import { Wrapper, Header, EditableTitle, Container, TaskList, AddButton } from './styles';
+import { Wrapper, Header, EditableTitle, TaskList, AddButton } from './styles';
 
 import Dropdown from '@components/Dropdown';
 import TaskItem from '@components/TaskItem';
@@ -36,7 +36,6 @@ interface ITabHeaderProps {
 interface ITaskContainerProps {
   id?: number;
   tasks?: ITask[];
-  onAddTask?: Dispatch<SetStateAction<Record<number, ITask[]>>>;
   onEditTask?: (tabId: number, taskId: number, editedTask: ITask) => void; // TODO: ITask 타입 통일 필요
 }
 
@@ -109,7 +108,24 @@ function TabHeader({ id, initialTitle, onDeleteTab }: ITabHeaderProps) {
   );
 }
 
-export function TasksContainer({ id, tasks, onAddTask, onEditTask }: ITaskContainerProps) {
+export function TasksContainer({ id, tasks, onEditTask }: ITaskContainerProps) {
+  return (
+    <Droppable droppableId={`task-${id}`}>
+      {(provided) => (
+        <TaskList {...provided.droppableProps} ref={provided.innerRef}>
+          {tasks?.map((task, index) => (
+            // TODO: void 함수를 주는 것 외에 다른 방식을 생각해볼 필요가 있음
+            <TaskItem key={task.id} task={task} index={index} onEditTask={onEditTask || (() => {})} />
+          ))}
+
+          {provided.placeholder}
+        </TaskList>
+      )}
+    </Droppable>
+  );
+}
+
+export function Tab({ id, index, title, tasks, onDeleteTab, onAddTask, onEditTask }: ITabProps) {
   const { openModal } = useModal();
   const setModalData = useSetRecoilState(modalDataState);
 
@@ -122,33 +138,6 @@ export function TasksContainer({ id, tasks, onAddTask, onEditTask }: ITaskContai
     });
     openModal('addTask');
   };
-
-  return (
-    <Container>
-      {id ? (
-        <Droppable droppableId={`task-${id}`}>
-          {(provided) => (
-            <TaskList {...provided.droppableProps} ref={provided.innerRef}>
-              {tasks?.map((task, index) => (
-                // TODO: void 함수를 주는 것 외에 다른 방식을 생각해볼 필요가 있음
-                <TaskItem key={task.id} task={task} index={index} onEditTask={onEditTask || (() => {})} />
-              ))}
-              {provided.placeholder}
-            </TaskList>
-          )}
-        </Droppable>
-      ) : (
-        <TaskList />
-      )}
-
-      <AddButton type="button" className="add" onClick={handleAddTask}>
-        Add Item
-      </AddButton>
-    </Container>
-  );
-}
-
-export function Tab({ id, index, title, tasks, onDeleteTab, onAddTask, onEditTask }: ITabProps) {
   return (
     // <Wrapper className="dnd-tab" data-index={index} data-id={id}>
     <Draggable draggableId={`tab-${id}`} key={`tab-${id}`} index={index}>
@@ -160,7 +149,11 @@ export function Tab({ id, index, title, tasks, onDeleteTab, onAddTask, onEditTas
           // isDragging={snapshot.isDragging}
         >
           <TabHeader id={id} initialTitle={title} onDeleteTab={onDeleteTab} />
-          <TasksContainer id={id} tasks={tasks} onAddTask={onAddTask} onEditTask={onEditTask} />
+
+          <TasksContainer id={id} tasks={tasks} onEditTask={onEditTask} />
+          <AddButton type="button" className="add" onClick={handleAddTask}>
+            Add Item
+          </AddButton>
         </Wrapper>
       )}
     </Draggable>

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Wrapper = styled.main`
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   padding: 110px 70px 40px;
   display: flex;
   gap: 2rem;
@@ -78,7 +78,7 @@ export const MainContainer = styled.div`
 `;
 
 export const TopContainer = styled.div`
-  height: 3rem;
+  height: 3.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -112,13 +112,14 @@ export const AddTabButton = styled.button`
   margin-left: 5rem;
 `;
 
+// export const Wrapper = styled.li``;
+
 export const TabWrapper = styled.li`
+  width: 20rem;
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  justify-content: space-between;
-  position: relative;
+  gap: 0.3rem;
 
   input {
     height: 2rem;
@@ -128,14 +129,5 @@ export const TabWrapper = styled.li`
     &:focus {
       border: 2px solid #000000;
     }
-  }
-
-  .cancelTab {
-    width: 100px;
-    background-color: yellow;
-    position: absolute;
-    top: 4rem;
-    left: 4rem;
-    z-index: 10;
   }
 `;
