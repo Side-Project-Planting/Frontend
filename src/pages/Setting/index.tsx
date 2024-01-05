@@ -7,13 +7,13 @@ import { IMember, INormalModal, ISelectOption } from 'types';
 
 import { Wrapper, Title, ManageTeamContainer, ImportantSetting, SettingItem, ButtonContainer, Button } from './styles';
 
-import { deletePlan, updatePlan } from '@apis';
 import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
 import Modal from '@components/Modal';
 import SelectBox from '@components/SelectBox';
 import ToggleSwitch from '@components/ToggleSwitch';
 import useModal from '@hooks/useModal';
+import { useUpdatePlan } from '@hooks/useUpdatePlan';
 import { modalDataState, planTitlesState, accessTokenState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
 
@@ -37,6 +37,7 @@ function Setting() {
   const setModalData = useSetRecoilState(modalDataState);
   const { openModal } = useModal();
   const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
+  const { deletePlanMutate, updatePlanInfoMutate } = useUpdatePlan(Number(state.id));
 
   const navigate = useNavigate();
 
@@ -88,22 +89,15 @@ function Setting() {
 
   const handleDeletePlan = () => {
     const requestAPI = async () => {
-      try {
-        const response = await deletePlan(state.id);
-
-        if (response.status === 204) {
-          // eslint-disable-next-line no-alert
-          window.alert(`플랜이 삭제되었습니다.`);
-          setPlanTitles(planTitles.filter((item) => item.id !== state.id));
-          // TODO: 플랜 페이지로 이동
-          navigate('/plan');
-        }
-      } catch (error) {
-        console.error('Error deleting plan:', error);
-        throw error;
-      }
+      deletePlanMutate({ planId: state.id });
+      setPlanTitles(planTitles.filter((item) => item.id !== state.id));
+      // TODO: 플랜 페이지로 이동
+      navigate('/plan');
     };
-    setModalData({ information: `플랜을 정말 삭제하시겠어요?`, requestAPI } as INormalModal);
+    setModalData({
+      information: `플랜을 정말 삭제하시겠어요?`,
+      requestAPI,
+    } as INormalModal);
     openModal('normal');
   };
 
@@ -116,13 +110,7 @@ function Setting() {
         invitedEmails: newMemberEmailList,
         kickingMemberIds: deletedExistMemberIdList,
       };
-      try {
-        const response = await updatePlan(state.id, requestBody);
-        return response;
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
+      updatePlanInfoMutate({ planId: state.id, requestBody });
     };
 
     setModalData({ information: `변경사항을 저장하시겠어요?`, requestAPI } as INormalModal);
