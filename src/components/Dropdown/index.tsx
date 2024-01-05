@@ -53,7 +53,7 @@ function Dropdown({ type, options, onClick }: DropdownProp) {
       )}
       {type === 'tab' && (
         <EditButton onClick={toggleDropdown}>
-          <IoIosMore size="24" />
+          <IoIosMore size="16" />
         </EditButton>
       )}
       {isOpen && (

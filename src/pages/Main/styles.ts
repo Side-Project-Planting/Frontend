@@ -1,34 +1,13 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.main`
-  width: 100dvw;
-  height: 100dvh;
-  padding: 70px 0 0 0;
-  background-clip: content-box;
-  background-color: #fafafa;
-`;
-
-export const Container = styled.div`
-  width: 100%;
-  height: 100%;
-  padding: 3rem 0;
+  width: 100vw;
+  height: 100vh;
+  padding: 70px 2rem 2rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-export const Plans = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
+  gap: 1rem;
   overflow-x: scroll;
-`;
-
-export const TeamPlanTabs = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: #f5f5f7;
 `;
 
 export const EmptyTeamPlanFrame = styled.div`

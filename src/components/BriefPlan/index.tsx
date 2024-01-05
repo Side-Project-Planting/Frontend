@@ -1,9 +1,9 @@
 import React from 'react';
 
+import { BiInfinite } from 'react-icons/bi';
 import { ITaskInfo } from 'types';
 
 import {
-  CustomLink,
   Wrapper,
   PlanName,
   TaskWrapper,
@@ -44,71 +44,39 @@ function BriefPlan({ planName, planId, tabName, tasks }: Props) {
   };
 
   return (
-    <CustomLink to={`/plan/${planId}`}>
-      <Wrapper>
-        <PlanName>
-          <div>
-            <p>{planName + planId}</p>
-          </div>
-        </PlanName>
-        <TaskWrapper>
-          {tasks.length === 0 ? (
-            <EmptyTaskFrame>
-              <div>
-                <p>아직 할 일이 추가되지 않았습니다.</p>
-              </div>
-              <div>
-                <NoData />
-              </div>
-            </EmptyTaskFrame>
-          ) : (
-            parseTasksByStatus(tasks, tabName).map((taskList, idx) => (
-              <TaskContainer key={`${planId}-${tabName[idx]}`}>
-                <TaskStatusName>
-                  <p>{`${tabName[idx]}(${taskList.length})`}</p>
-                </TaskStatusName>
-                <TaskFrame>
-                  {taskList.map((task: ITaskInfo) => (
-                    <Task key={task.id}>
-                      <div className="task-item">
-                        <div className="task-name">{task.name}</div>
-                      </div>
-                      <div className="task-item">
-                        <TaskDeadline color={hashStringToColor(changeDateToDday(task.deadline))}>
-                          {task.deadline.length > 0 ? (
-                            <span>{changeDateToDday(task.deadline)}</span>
-                          ) : (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="22"
-                              height="22"
-                              viewBox="0 0 22 22"
-                              fill="none"
-                            >
-                              <g clipPath="url(#clip0_28_675)">
-                                <path
-                                  d="M17.0243 5.5C11.5078 5.5 9.3115 14.6667 4.97658 14.6667C3.03875 14.6667 1.7875 13.2202 1.7875 11C1.7875 8.77983 3.03967 7.33333 4.97658 7.33333C6.50375 7.33333 7.60008 8.31325 8.65883 9.52875L9.79917 8.09783C8.42508 6.69258 7.00333 5.5 4.97658 5.5C2.046 5.5 0 7.75042 0 11C0 14.2496 2.046 16.5 4.97658 16.5C10.4793 16.5 12.683 7.33333 17.0243 7.33333C18.9613 7.33333 20.2134 8.77983 20.2134 11C20.2134 13.2202 18.9622 14.6667 17.0243 14.6667C15.499 14.6667 14.4027 13.6877 13.3439 12.474L12.2036 13.9049C13.5777 15.3083 14.9994 16.5 17.0243 16.5C19.9549 16.5 22 14.2496 22 11C22 7.75042 19.9549 5.5 17.0243 5.5Z"
-                                  fill="white"
-                                />
-                              </g>
-                              <defs>
-                                <clipPath id="clip0_28_675">
-                                  <rect width="22" height="22" fill="white" />
-                                </clipPath>
-                              </defs>
-                            </svg>
-                          )}
-                        </TaskDeadline>
-                      </div>
-                    </Task>
-                  ))}
-                </TaskFrame>
-              </TaskContainer>
-            ))
-          )}
-        </TaskWrapper>
-      </Wrapper>
-    </CustomLink>
+    <Wrapper>
+      <PlanName to={`/plan/${planId}`}>
+        <p>{planName}</p>
+      </PlanName>
+      <TaskWrapper>
+        {tasks.length === 0 ? (
+          <EmptyTaskFrame>
+            <p>할일을 추가해주세요</p>
+            <NoData />
+          </EmptyTaskFrame>
+        ) : (
+          parseTasksByStatus(tasks, tabName).map((taskList, idx) => (
+            <TaskContainer key={`${planId}-${tabName[idx]}`}>
+              <TaskStatusName>{`${tabName[idx]}(${taskList.length})`}</TaskStatusName>
+              <TaskFrame>
+                {taskList.map((task: ITaskInfo) => (
+                  <Task key={task.id}>
+                    <p>{task.name}</p>
+                    <TaskDeadline color={hashStringToColor(changeDateToDday(task.deadline))}>
+                      {task.deadline.length > 0 ? (
+                        <span>{changeDateToDday(task.deadline)}</span>
+                      ) : (
+                        <BiInfinite size="20" />
+                      )}
+                    </TaskDeadline>
+                  </Task>
+                ))}
+              </TaskFrame>
+            </TaskContainer>
+          ))
+        )}
+      </TaskWrapper>
+    </Wrapper>
   );
 }
 

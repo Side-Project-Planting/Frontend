@@ -49,7 +49,7 @@ function Header() {
         {navMenu.map((item) => (
           <NavItem key={item.id}>
             <NavLink to={item.link} selected={isSelected(item.value)} onClick={() => setSelectedMenu(item.value)}>
-              <item.icon size="30" color={`${isSelected(item.value) ? '#64d4ab' : '#999999 '}`} />
+              <item.icon size="20" color={`${isSelected(item.value) ? '#64d4ab' : '#999999 '}`} />
             </NavLink>
           </NavItem>
         ))}

@@ -7,11 +7,15 @@ export const Container = styled.div<{ type: string }>`
     position: absolute;
     right: 0.8rem;
   `}
+
+  height: 100%;
+  display: flex;
+  align-items: center;
 `;
 
 export const ProfileImg = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 2rem;
+  height: 2rem;
   aspect-ratio: 1/1;
   border-radius: 50%;
   cursor: pointer;
@@ -19,14 +23,14 @@ export const ProfileImg = styled.img`
 
 export const EditButton = styled.button`
   position: absolute;
-  top: -0.8rem;
+  top: 0.4rem;
   right: 0;
 `;
 
 export const DropdownList = styled.ul<{ type: string }>`
   position: absolute;
-  top: 80px;
-  right: 38px;
+  top: 3rem;
+  right: 2.8rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -45,7 +49,8 @@ export const DropdownList = styled.ul<{ type: string }>`
 
 export const DropdownItem = styled.li`
   width: 100%;
-  padding: 1rem;
+  padding: 0.5rem;
+  font-size: 0.8rem;
   text-align: center;
   cursor: pointer;
 

@@ -9,18 +9,19 @@ export const ItemWrapper = styled.div`
   }
 `;
 export const ItemContainer = styled.div`
-  padding: 1rem;
-  margin-bottom: 1rem;
-  width: 99%;
-  min-height: 8rem;
+  padding: 0.5rem;
+  margin-bottom: 0.8rem;
+  min-height: 4.5rem;
+  background-color: #fdfdfd;
+  border-radius: 0.5rem;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #fdfdfd;
-  border-radius: 10px;
-  box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.1);
+  gap: 0.2rem;
 
-  #task-title {
+  .task-title {
+    font-size: 14px;
     word-wrap: break-word;
   }
 
@@ -47,7 +48,7 @@ export const LabelField = styled.div`
 
 export const LabelItem = styled.div<{ color: string }>`
   padding: 0.1rem 0.5rem;
-  border-radius: 5px;
+  border-radius: 0.3rem;
   color: white;
   font-size: 0.7rem;
   text-align: center;
@@ -56,20 +57,17 @@ export const LabelItem = styled.div<{ color: string }>`
 
 export const InfoField = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+
+  .assignee-id {
+    font-size: 14px;
+    font-weight: 600;
+    color: #5b8b4f;
+  }
 `;
 
 export const DateField = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
   font-size: 0.7rem;
+  color: #939393;
   line-height: 110%;
-
-  .date-infinity {
-    width: 2rem;
-    display: flex;
-    justify-content: center;
-  }
 `;

@@ -2,8 +2,8 @@ import styled from 'styled-components';
 
 export const ToggleSwitchContainer = styled.label`
   cursor: pointer;
-  width: 64px;
-  height: 30px;
+  width: 50px;
+  height: 26px;
   background: #b8b8b8;
   display: block;
   border-radius: 100px;
@@ -12,10 +12,10 @@ export const ToggleSwitchContainer = styled.label`
   &::after {
     content: '';
     position: absolute;
-    top: 5px;
-    left: 5px;
-    width: 20px;
-    height: 20px;
+    top: 4px;
+    left: 4px;
+    width: 18px;
+    height: 18px;
     background-color: #ffffff;
     border-radius: 90px;
     transition: 0.2s ease-out;
@@ -40,7 +40,7 @@ export const ToggleCheckbox = styled.input`
     background: #64d4ab;
 
     &::after {
-      left: calc(100% - 5px);
+      left: calc(100% - 3px);
       transform: translateX(-100%);
     }
   }

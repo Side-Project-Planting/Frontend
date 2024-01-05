@@ -2,10 +2,10 @@ import styled from 'styled-components';
 
 export const Wrapper = styled.main`
   width: 100vw;
-  min-height: 100vh;
-  padding: 110px 70px 40px;
+  height: 100vh;
+  padding: 70px 2rem 2rem;
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   background-color: #f5f5f7;
 `;
 
@@ -38,14 +38,14 @@ export const SideContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 1rem;
 `;
 
 export const PlanCategory = styled.ul`
-  width: 11rem;
+  width: 10rem;
   height: 50%;
-  border-radius: 1rem;
-  padding: 2.5rem 1rem;
+  border-radius: 0.8rem;
+  padding: 1rem;
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -54,7 +54,8 @@ export const PlanCategory = styled.ul`
   background-color: #ffffff;
 
   li {
-    height: 3rem;
+    font-size: 0.9rem;
+    height: 2.5rem;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -64,7 +65,7 @@ export const PlanCategory = styled.ul`
 
     &.isSelected {
       background-color: #64d4ab;
-      border-radius: 0.6rem;
+      border-radius: 0.5rem;
       color: #ffffff;
     }
   }
@@ -74,6 +75,7 @@ export const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow-x: scroll;
 `;
 
 export const TopContainer = styled.div`
@@ -89,8 +91,8 @@ export const UtilContainer = styled.div`
 
   .icon {
     background-color: #ffffff;
-    width: 2.8rem;
-    height: 2.8rem;
+    width: 2rem;
+    height: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -99,15 +101,10 @@ export const UtilContainer = styled.div`
   }
 `;
 
-export const TabContainer = styled.div`
-  width: calc(100vw - 22rem);
+export const TabGroup = styled.ul`
+  width: fit-content;
   height: calc(100% - 4rem);
   display: flex;
-`;
-
-export const TabGroup = styled.ul`
-  display: flex;
-  gap: 1.5rem;
 `;
 
 export const AddTabButton = styled.button`
@@ -117,29 +114,22 @@ export const AddTabButton = styled.button`
 `;
 
 export const TabWrapper = styled.li`
+  width: 15rem;
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  justify-content: space-between;
-  position: relative;
 
   input {
     height: 2rem;
     background: none;
     padding: 0.2rem 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 14px;
+    outline: none;
 
     &:focus {
-      border: 2px solid #000000;
+      background-color: #ffffff;
+      border: 1.5px solid #efefef;
     }
-  }
-
-  .cancelTab {
-    width: 100px;
-    background-color: yellow;
-    position: absolute;
-    top: 4rem;
-    left: 4rem;
-    z-index: 10;
   }
 `;

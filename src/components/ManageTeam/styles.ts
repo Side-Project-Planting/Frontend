@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  width: 600px;
+  width: 100%;
   min-height: 17.5rem;
   background-color: #fafafa;
-  padding: 1rem;
+  padding: 0.5rem 0.3rem;
   border: 1px solid rgb(208, 215, 222);
   border-radius: 0.5rem;
   display: flex;
@@ -18,6 +18,7 @@ export const Container = styled.div`
 
 export const List = styled.div`
   .subTitle {
+    font-size: 13px;
     font-weight: 600;
   }
 
@@ -35,7 +36,8 @@ export const Item = styled.li`
   align-items: center;
 
   .invite {
-    color: #000;
+    color: #737373;
+    font-size: 13px;
   }
 
   .memberInfo {

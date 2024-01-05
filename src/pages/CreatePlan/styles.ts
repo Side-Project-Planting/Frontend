@@ -3,14 +3,14 @@ import styled from 'styled-components';
 export const Wrapper = styled.form`
   width: 100vw;
   min-height: 100vh;
-  padding: 110px 70px 40px;
+  padding: 70px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 `;
 
 export const Title = styled.h2`
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid rgb(216, 222, 228);
 `;
@@ -42,23 +42,24 @@ export const ManageTeamContainer = styled.div`
 
 export const Button = styled.button`
   align-self: center;
-  width: 10rem;
+  width: 8rem;
+  height: 2.5rem;
   font-size: 14px;
-  height: 2.4rem;
-  padding-inline: 1.5rem;
   border: none;
   border-radius: 0.5rem;
   color: #fff;
+  font-weight: 600;
   background-color: #64d4ab;
-  margin-top: 2rem;
 `;
 
 export const PublicContainer = styled.div`
   display: flex;
   align-items: center;
+  margin-left: -0.5rem;
 
   p {
-    margin-left: 1rem;
+    margin-left: 0.5rem;
+    font-size: 14px;
     color: gray;
   }
 `;

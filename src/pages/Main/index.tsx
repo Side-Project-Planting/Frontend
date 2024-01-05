@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ITaskInfo } from 'types';
 
-import { Wrapper, Container, Plans, EmptyTeamPlanFrame, TeamPlanTabs } from './styles';
+import { Wrapper, EmptyTeamPlanFrame } from './styles';
 
 import { ReactComponent as NoPlan } from '@assets/images/noPlan.svg';
 import BriefPlan from '@components/BriefPlan';
@@ -65,9 +65,6 @@ const plansDummy: IDummyPlan[] = [
     tasks: [],
   },
 ];
-// const plansDummy: IDummyPlan[] = [
-//   // 빈 플랜
-// ];
 
 function Main() {
   const [plans] = useState<IDummyPlan[]>(plansDummy);
@@ -75,34 +72,26 @@ function Main() {
 
   return (
     <Wrapper>
-      <Container>
-        <Plans>
-          <TeamPlanTabs>
-            {plans.length === 0 ? (
-              <EmptyTeamPlanFrame>
-                <div>
-                  <p>내가 속한 플랜이 없어요 😵</p>
-                  <NoPlan />
-                  <ModalButton
-                    type="button"
-                    onClick={() => {
-                      navigate('/create-plan');
-                    }}
-                  >
-                    새 플랜 만들기
-                  </ModalButton>
-                </div>
-              </EmptyTeamPlanFrame>
-            ) : (
-              plans.map((plan) => {
-                return (
-                  <BriefPlan key={plan.id} planName={plan.name} planId={plan.id} tabName={tabName} tasks={plan.tasks} />
-                );
-              })
-            )}
-          </TeamPlanTabs>
-        </Plans>
-      </Container>
+      {plans.length === 0 ? (
+        <EmptyTeamPlanFrame>
+          <div>
+            <p>내가 속한 플랜이 없어요 😵</p>
+            <NoPlan />
+            <ModalButton
+              type="button"
+              onClick={() => {
+                navigate('/create-plan');
+              }}
+            >
+              새 플랜 만들기
+            </ModalButton>
+          </div>
+        </EmptyTeamPlanFrame>
+      ) : (
+        plans.map((plan) => {
+          return <BriefPlan key={plan.id} planName={plan.name} planId={plan.id} tabName={tabName} tasks={plan.tasks} />;
+        })
+      )}
     </Wrapper>
   );
 }

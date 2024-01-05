@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export const Container = styled.header`
   width: 100%;
-  height: 70px;
+  height: 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -26,7 +26,7 @@ export const Nav = styled.ul`
 
 export const NavItem = styled.li`
   height: 100%;
-  width: 70px;
+  width: 3rem;
 `;
 
 export const NavLink = styled(Link)<{ selected: boolean }>`
@@ -44,8 +44,8 @@ export const NavLink = styled(Link)<{ selected: boolean }>`
     &::after {
       content: '';
       position: absolute;
-      width: 50px;
-      height: 50px;
+      width: 2.5rem;
+      height: 2.5rem;
       top: 50%;
       left: 50%;
       border-radius: 8px;

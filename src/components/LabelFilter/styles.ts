@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  width: 11rem;
+  width: 10rem;
   height: 50%;
-  border-radius: 1rem;
+  border-radius: 0.8rem;
   padding: 1rem;
   list-style: none;
   display: flex;

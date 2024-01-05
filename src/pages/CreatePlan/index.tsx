@@ -159,7 +159,6 @@ function CreatePlan() {
         <ToggleSwitch isPublic={isPublic} onChange={togglePublic} />
         <p> {isPublic ? '플랜을 공개합니다.' : '플랜을 공개하지 않습니다.'}</p>
       </PublicContainer>
-
       <Button type="button" onClick={handleSubmit}>
         생성하기
       </Button>
