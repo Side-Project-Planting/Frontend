@@ -6,7 +6,7 @@ import { Droppable, DragDropContext, OnDragEndResponder } from 'react-beautiful-
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { ITask, ITab } from 'types';
 
@@ -65,7 +65,6 @@ function Plan() {
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const [sortedTabs, setSortedTabs] = useState<{ id: number; title: string; taskOrder?: number[] }[]>([]);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
-  const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
@@ -73,12 +72,8 @@ function Plan() {
 
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
-  // const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
   const { plan, tasksByTab } = usePlan(currentPlanId, selectedLabels, selectedMembers);
-  const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(
-    // TODO: planId 리팩토링 필요
-    Number(plan.id),
-  );
+  const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(Number(plan.id));
 
   const queryClient = useQueryClient();
   const { allPlanTitles } = usePlanTitle();
@@ -118,10 +113,10 @@ function Plan() {
   }, [accessToken, setAccessToken]);
 
   useEffect(() => {
-    if (planId === undefined && allPlanTitles.length > 0) {
+    if (currentPlanId === -1 && allPlanTitles.length > 0) {
       setCurrentPlanId(allPlanTitles[0].id);
     }
-  }, [planId, allPlanTitles]);
+  }, [allPlanTitles]);
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);

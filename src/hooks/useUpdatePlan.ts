@@ -54,6 +54,7 @@ export function useUpdatePlan(planId: number | null) {
 
     onSuccess: (result) => {
       showToast('플랜이 추가되었습니다.', { type: 'success' });
+      queryClient.invalidateQueries({ queryKey: ['allPlanTitles'] });
       setCurrentPlanId(result.id);
       navigate(`/plan/${result.id}`);
     },
@@ -72,7 +73,7 @@ export function useUpdatePlan(planId: number | null) {
     mutationFn: (data: DeleteInfo) => deletePlan(data),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['plan', planId] });
+      queryClient.invalidateQueries({ queryKey: ['allPlanTitles'] });
       showToast('플랜이 삭제되었습니다.', { type: 'success' });
     },
   });

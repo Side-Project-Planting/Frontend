@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-// import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
 import {
@@ -13,7 +12,6 @@ import {
   Button,
 } from './styles';
 
-// import { createPlan } from '@apis';
 import boardIllust from '@assets/images/boardIllust.svg';
 import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
@@ -35,8 +33,6 @@ function CreatePlan() {
   });
   const [invitedEmails, setInvitedEmails] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState<boolean>(false);
-  // const navigate = useNavigate();
-  // const setCurrentPlanId = useSetRecoilState(currentPlanIdState);
   const { createPlanMutate } = useUpdatePlan(null);
 
   const changePlanInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
