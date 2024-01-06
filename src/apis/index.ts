@@ -57,8 +57,8 @@ export const getPlanInfo = async (planId: number) => {
 };
 
 export const getAllPlanTitles = async () => {
-  const response = await api.get('/api/plans/all');
-  return response;
+  const { data } = await api.get('/api/plans/all');
+  return data;
 };
 
 export const createPlan = async (requestBody: {

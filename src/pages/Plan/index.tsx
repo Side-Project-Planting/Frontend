@@ -32,6 +32,7 @@ import Modal from '@components/Modal';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { Tab, TasksContainer } from '@components/Tab';
 import { usePlan } from '@hooks/usePlan';
+// import { usePlanTitle } from '@hooks/usePlanTitle';
 import { useUpdateTab } from '@hooks/useUpdateTab';
 import { currentPlanIdState, planTitlesState, accessTokenState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
@@ -77,6 +78,8 @@ function Plan() {
     // TODO: planId 리팩토링 필요
     Number(plan.id),
   );
+  // const { allPlanTitles } = usePlanTitle();
+  // console.log(allPlanTitles);
 
   const navigate = useNavigate();
 
@@ -95,7 +98,7 @@ function Plan() {
   useEffect(() => {
     const getPlanTitles = async () => {
       try {
-        const { data } = await getAllPlanTitles();
+        const data = await getAllPlanTitles();
         setPlanTitles(data);
         if (currentPlanId === -1 && data.length > 0) setCurrentPlanId(data[0].id);
       } catch (error) {

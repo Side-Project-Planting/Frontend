@@ -8,7 +8,7 @@ interface UseMain {
 
 export function useMain(): UseMain {
   const commonOptions = {
-    staleTime: 300000,
+    staleTime: 0,
     cacheTime: 300000, // 5 minutes
   };
 
