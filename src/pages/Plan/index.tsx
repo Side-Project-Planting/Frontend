@@ -6,7 +6,7 @@ import { Droppable, DragDropContext, OnDragEndResponder } from 'react-beautiful-
 import { CiSettings } from 'react-icons/ci';
 import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { ITask, ITab } from 'types';
 
@@ -32,8 +32,10 @@ import Modal from '@components/Modal';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { Tab, TasksContainer } from '@components/Tab';
 import { usePlan } from '@hooks/usePlan';
+import { usePlanTitle } from '@hooks/usePlanTitle';
 import { useUpdateTab } from '@hooks/useUpdateTab';
-import { currentPlanIdState, planTitlesState, accessTokenState } from '@recoil/atoms';
+import { currentPlanIdState, accessTokenState } from '@recoil/atoms';
+import { useQueryClient } from '@tanstack/react-query';
 import { authenticate } from '@utils/auth';
 
 interface IDragDropResult {
@@ -63,7 +65,6 @@ function Plan() {
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const [sortedTabs, setSortedTabs] = useState<{ id: number; title: string; taskOrder?: number[] }[]>([]);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
-  const { planId } = useParams();
   const [currentPlanId, setCurrentPlanId] = useRecoilState(currentPlanIdState);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
@@ -71,12 +72,11 @@ function Plan() {
 
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
-  const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
   const { plan, tasksByTab } = usePlan(currentPlanId, selectedLabels, selectedMembers);
-  const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(
-    // TODO: planId 리팩토링 필요
-    Number(plan.id),
-  );
+  const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(Number(plan.id));
+
+  const queryClient = useQueryClient();
+  const { allPlanTitles } = usePlanTitle();
 
   const navigate = useNavigate();
 
@@ -93,25 +93,30 @@ function Plan() {
   }, [plan]);
 
   useEffect(() => {
-    const getPlanTitles = async () => {
+    const checkAccessTokenAndGetPlanTitles = async () => {
       try {
-        const { data } = await getAllPlanTitles();
-        setPlanTitles(data);
-        if (currentPlanId === -1 && data.length > 0) setCurrentPlanId(data[0].id);
+        await authenticate(accessToken, setAccessToken, async () => {
+          await queryClient.prefetchQuery({
+            queryKey: ['allPlanTitles'],
+            queryFn: getAllPlanTitles,
+            // prefetch는 data가 staleTime보다 오래되었을때만 만료된다.
+            staleTime: 60000,
+          });
+        });
       } catch (error) {
-        // eslint-disable-next-line
-        console.log(error);
+        // eslint-disable-next-line no-console
+        console.error(error);
       }
     };
 
-    authenticate(accessToken, setAccessToken, getPlanTitles);
-  }, []);
+    checkAccessTokenAndGetPlanTitles();
+  }, [accessToken, setAccessToken]);
 
   useEffect(() => {
-    if (planId === undefined && planTitles.length > 0) {
-      setCurrentPlanId(planTitles[0].id);
+    if (currentPlanId === -1 && allPlanTitles.length > 0) {
+      setCurrentPlanId(allPlanTitles[0].id);
     }
-  }, [planId, planTitles]);
+  }, [allPlanTitles]);
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -253,7 +258,7 @@ function Plan() {
     <Wrapper>
       <SideContainer>
         <PlanCategory>
-          {planTitles.map((item, idx) => (
+          {allPlanTitles.map((item, idx) => (
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
             <li
               className={

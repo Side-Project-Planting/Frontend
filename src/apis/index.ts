@@ -44,6 +44,12 @@ export const requestNewToken = async () => {
   return data;
 };
 
+// Main
+export const getMain = async () => {
+  const { data } = await api.get(`/api/plans/main`);
+  return data;
+};
+
 /* Plan */
 export const getPlanInfo = async (planId: number) => {
   const { data } = await api.get(`/api/plans/${planId}`);
@@ -51,8 +57,8 @@ export const getPlanInfo = async (planId: number) => {
 };
 
 export const getAllPlanTitles = async () => {
-  const response = await api.get('/api/plans/all');
-  return response;
+  const { data } = await api.get('/api/plans/all');
+  return data;
 };
 
 export const createPlan = async (requestBody: {
