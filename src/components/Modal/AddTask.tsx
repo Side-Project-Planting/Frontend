@@ -22,7 +22,7 @@ export default function AddTaskModal() {
   const members = useRecoilValue(membersState);
   const [taskTitle, setTaskTitle] = useState<string>('');
   const [assignee, setAssignee] = useState<ISelectOption>({ id: -1, name: '' });
-  const [dateRange, setDateRange] = useState<string[] | null>(null);
+  const [dateRange, setDateRange] = useState<string[]>(['', '']);
   const [selectedLabels, setSelectedLabels] = useState<ILabel[]>([]);
   const modalData = useRecoilValue(modalDataState) as IAddTaskModal;
   const currentPlanId = useRecoilValue(currentPlanIdState);
@@ -75,7 +75,7 @@ export default function AddTaskModal() {
             <div className="assignee-label">담당자</div>
             <SelectBox options={options} setValue={setAssignee} />
           </AssigneeField>
-          <DateRange setDateRange={setDateRange} />
+          <DateRange dateRange={dateRange} setDateRange={setDateRange} />
         </Fields>
         <InputField>
           <LabelInput alreadySelected={[]} selectedLabelsHandler={setSelectedLabels} />
