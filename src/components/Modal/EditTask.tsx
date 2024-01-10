@@ -64,7 +64,7 @@ function EditTaskModal() {
   const [assignee, setAssignee] = useState<ISelectOption>(
     filteredMember ? { id: task.assigneeId, name: filteredMember.name } : { id: -1, name: '' },
   );
-  const [dateRange, setDateRange] = useState<string[] | null>(null);
+  const [dateRange, setDateRange] = useState<string[]>([task.startDate || '', task.endDate || '']);
   const [selectedLabels, setSelectedLabels] = useState<ILabel[]>(filteredLabels);
   const [taskDescription, setTaskDescription] = useState<string>(task.description);
   const { closeModal } = useModal();
@@ -115,7 +115,7 @@ function EditTaskModal() {
             <div className="assignee-label">담당자</div>
             <SelectBox options={options} value={assignee} setValue={setAssignee} />
           </AssigneeField>
-          <DateRange setDateRange={setDateRange} />
+          <DateRange dateRange={dateRange} setDateRange={setDateRange} />
         </Fields>
         <InputField>
           <LabelInput alreadySelected={selectedLabels} selectedLabelsHandler={setSelectedLabels} />
