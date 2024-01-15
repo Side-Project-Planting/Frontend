@@ -50,6 +50,12 @@ export const getMain = async () => {
   return data;
 };
 
+// Invite
+export const acceptInvitation = async (uuid: string) => {
+  const response = await api.put(`/api/plans/invite/${uuid}`);
+  return response;
+};
+
 /* Plan */
 export const getPlanInfo = async (planId: number) => {
   const { data } = await api.get(`/api/plans/${planId}`);
