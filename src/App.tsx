@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Header from '@components/Header';
 import CreatePlan from '@pages/CreatePlan';
 import GoogleOauthCallback from '@pages/GoogleOauthCallback';
+import Invite from '@pages/Invite';
 import Main from '@pages/Main';
 import Plan from '@pages/Plan';
 import Setting from '@pages/Setting';
@@ -81,6 +82,14 @@ const router = createBrowserRouter([
     element: (
       <Layout>
         <Setting />,
+      </Layout>
+    ),
+  },
+  {
+    path: '/invite/:uuid',
+    element: (
+      <Layout>
+        <Invite />
       </Layout>
     ),
   },
