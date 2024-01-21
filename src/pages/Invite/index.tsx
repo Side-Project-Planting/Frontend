@@ -14,9 +14,8 @@ function Invite() {
 
   useEffect(() => {
     authenticate(accessToken, setAccessToken);
-  }, []);
+  }, [accessToken]);
 
-  console.log(accessToken);
   return (
     <Wrapper>
       <button
