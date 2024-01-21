@@ -5,8 +5,8 @@ import { ILabel } from 'types';
 
 import { LabelsWrapper, LabelsContainer, SearchedLabel } from './styles';
 
-import { createLabel } from '@apis';
 import LabelItem from '@components/LabelItem';
+import { useLabel } from '@hooks/useLabel';
 import { currentPlanIdState, labelsState } from '@recoil/atoms';
 
 interface Props {
@@ -15,34 +15,25 @@ interface Props {
 }
 
 export default function LabelInput({ alreadySelected, selectedLabelsHandler }: Props) {
-  const [labels, setLabels] = useRecoilState(labelsState);
-  let labelsClone = labels;
+  const [labels] = useRecoilState(labelsState);
   const labelInput = useRef<HTMLInputElement>(null);
   const searchWindowRef = useRef<HTMLDivElement>(null);
   const currentSearchedRef = useRef<HTMLButtonElement>(null);
-  const [searched, setSearched] = useState<ILabel[]>(labelsClone);
+  const [searched, setSearched] = useState<ILabel[]>(labels);
   const [selected, setSelected] = useState<ILabel[]>(alreadySelected);
   const [searchedIdx, setSearchedIdx] = useState<number>(-1);
   const [showSearchLabel, setShowSearchLabel] = useState<boolean>(false);
   const currentPlanId = useRecoilValue(currentPlanIdState);
+  const { createLabelMutate } = useLabel(currentPlanId);
 
-  const findLabelByValue = (labelValue: string) => {
-    return labelsClone.find((label) => label.value === labelValue);
-  };
-
-  const createNewLabel = async (labelValue: string) => {
-    const newId = await createLabel(currentPlanId, labelValue);
-    const newLabel: ILabel = { id: newId, value: labelValue };
-    setLabels([...labelsClone, newLabel]);
-    labelsClone = [...labelsClone, newLabel];
-    setSearched(labelsClone);
-    return newLabel;
-  };
+  // const findLabelByValue = (labelValue: string) => {
+  //   return labels.find((label) => label.value === labelValue);
+  // };
 
   const searchLabelName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchedIdx(-1);
-    if (e.currentTarget.value.length === 0) setSearched(labelsClone);
-    else setSearched(labelsClone.filter((label) => label.value.includes(e.currentTarget.value)));
+    if (e.currentTarget.value.length === 0) setSearched(labels);
+    else setSearched(labels.filter((label) => label.value.includes(e.currentTarget.value)));
   };
 
   const isIncludeIn = (labelArr: ILabel[], currentLabelId: number) => {
@@ -78,6 +69,13 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
     labelInput.current!.value = '';
   };
 
+  const createLabelAndSelect = async (inputValue: string) => {
+    createLabelMutate({ planId: currentPlanId, name: inputValue });
+    // TODO: 라벨 생성 직후 바로 선택
+    const currentLabel = labels.find((label) => label.value === inputValue);
+    selectLabel(currentLabel!);
+  };
+
   const onKeyDownInlabelInput = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.nativeEvent.isComposing === true) return;
     if (searched.length > 0) {
@@ -103,9 +101,7 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
 
       const inputValue = labelInput.current.value;
       if (searchedIdx < 0) {
-        let currentLabel = findLabelByValue(inputValue);
-        currentLabel = currentLabel || (await createNewLabel(inputValue));
-        selectLabel(currentLabel);
+        createLabelAndSelect(inputValue);
       } else {
         selectLabel(searched[searchedIdx]);
       }
@@ -161,7 +157,7 @@ export default function LabelInput({ alreadySelected, selectedLabelsHandler }: P
             {
               /* eslint-disable-next-line */
               labelInput.current?.value.length === 0 ? (
-                labelsClone.map((label, idx) => (
+                labels.map((label, idx) => (
                   <SearchedLabel
                     key={label.id}
                     id={label.id}
