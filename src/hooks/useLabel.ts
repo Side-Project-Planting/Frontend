@@ -23,7 +23,8 @@ export function useLabel(planId: number) {
       queryClient.invalidateQueries({ queryKey: ['plan', planId] });
       showToast('라벨이 추가되었습니다.', { type: 'success' });
 
-      //   TODO: 응답 헤더에서 라벨 id 가져올지 고민
+      //   TODO: 응답 헤더에서 라벨 id 가져와서 setLabels,
+      //   TODO: 지금 headers에서 location을 가져올 수 없다. 백에서 CORS설정이 필요한 것 같음
       //   if (headers && headers.location) {
       //     const splitLocation = headers.location.split('/');
       //     const labelId = splitLocation[splitLocation.length - 1];
