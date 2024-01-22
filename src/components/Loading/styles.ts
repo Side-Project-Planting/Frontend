@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 
-interface SpinnerContainerProps {
+interface SpinnerProps {
   display: string | undefined;
 }
 
@@ -13,14 +13,13 @@ const spinAnimation = keyframes`
   }
 `;
 
-export const SpinnerContainer = styled.div<SpinnerContainerProps>`
+export const Spinner = styled.div<SpinnerProps>`
   display: ${(props) => props.display};
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-`;
-
-export const Spinner = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
   width: 40px;
   height: 40px;
   border: 4px solid #4caf50;

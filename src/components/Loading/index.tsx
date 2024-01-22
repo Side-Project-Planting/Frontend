@@ -1,18 +1,14 @@
 import React from 'react';
 
-import { SpinnerContainer, Spinner } from './styles';
+import { Spinner } from './styles';
 
 import { useIsFetching } from '@tanstack/react-query';
 
 function LoadingSpinner() {
   const isFetching = useIsFetching();
-  const display = isFetching >= 1 ? 'flex' : 'none';
+  const display = isFetching ? 'block' : 'none';
 
-  return (
-    <SpinnerContainer display={display}>
-      <Spinner />
-    </SpinnerContainer>
-  );
+  return <Spinner display={display} />;
 }
 
 export default LoadingSpinner;
