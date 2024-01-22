@@ -58,6 +58,8 @@ export const acceptInvitation = async (uuid: string) => {
 
 /* Plan */
 export const getPlanInfo = async (planId: number) => {
+  if (planId === -1) return null;
+
   const { data } = await api.get(`/api/plans/${planId}`);
   return data;
 };
