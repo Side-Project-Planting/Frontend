@@ -35,6 +35,7 @@ import { Tab, TasksContainer } from '@components/Tab';
 import { usePlan } from '@hooks/usePlan';
 import { usePlanTitle } from '@hooks/usePlanTitle';
 import { useUpdateTab } from '@hooks/useUpdateTab';
+import { useUpdateTask } from '@hooks/useUpdateTask';
 import { currentPlanIdState, accessTokenState } from '@recoil/atoms';
 import { useQueryClient } from '@tanstack/react-query';
 import { authenticate } from '@utils/auth';
@@ -64,11 +65,23 @@ function Plan() {
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const { plan, tasksByTab } = usePlan(currentPlanId, selectedLabels, selectedMembers);
   const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(Number(plan.id));
+  const { dragTaskMutate } = useUpdateTask(Number(plan.id));
 
   const queryClient = useQueryClient();
   const { allPlanTitles } = usePlanTitle();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // console.log(currentPlanId, allPlanTitles);
+    // 플랜 삭제 후 남은 플랜이 없을 때 currentPlanId를 -1로 set함
+    if (allPlanTitles.length === 0) setCurrentPlanId(-1);
+    // 로그인 후 바로 들어왔을 때 속한 플랜은 있으나 currentPlanId는 -1인 경우
+    // allPlanTitles[0]로 setCurrentPlanId 해줌
+    if (currentPlanId === -1 && allPlanTitles.length !== 0) {
+      setCurrentPlanId(allPlanTitles[0].id);
+    }
+  }, [allPlanTitles]);
 
   useEffect(() => {
     setTasks(tasksByTab);
@@ -208,6 +221,7 @@ function Plan() {
       // TODO: order가 추가될 수 있음
       const newStart = [...start];
       const newFinish = [...finish];
+
       setTasks((prev) => {
         const newTasks = {
           ...prev,
@@ -216,6 +230,20 @@ function Plan() {
         };
         return newTasks;
       });
+
+      const prevIndex = newFinish.findIndex((item) => item.id === Number(draggableId.split('-')[1])) - 1;
+
+      const requestData = {
+        planId: plan.id,
+        targetTabId: Number(destination.droppableId.split('-')[1]),
+        targetId: Number(draggableId.split('-')[1]),
+        newPrevId: newFinish[prevIndex].id,
+      };
+
+      // TODO: 태스크 순서 변경이 받아온 데이터에서는 되있으나 화면상으로 안 됨
+      // console.log(requestData);
+
+      dragTaskMutate(requestData);
     }
   };
 
@@ -238,7 +266,7 @@ function Plan() {
     });
   };
 
-  if (currentPlanId === -1) {
+  if (allPlanTitles.length === 0 || (currentPlanId === -1 && allPlanTitles.length === 0)) {
     return (
       <EmptyPlanContainer>
         <EmptyPlanContents>

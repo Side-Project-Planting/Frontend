@@ -73,6 +73,9 @@ export function usePlan(planId: number, selectedLabels: number[], selectedMember
     return result;
   }, [filteredPlan]);
 
+  // TODO: tasksByTab이 2번 실행돼서 태스크 순서 변경이 안됨
+  // console.log(tasksByTab);
+
   return {
     plan: filteredPlan,
     tasksByTab,
