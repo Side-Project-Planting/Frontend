@@ -3,18 +3,19 @@ import React, { useState, useEffect } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSetRecoilState, useRecoilState } from 'recoil';
-import { IMember, INormalModal, ISelectOption } from 'types';
+import { IMember, INormalModal, ISelectOption, IPlanTitle } from 'types';
 
 import { Wrapper, Title, ManageTeamContainer, ImportantSetting, SettingItem, ButtonContainer, Button } from './styles';
 
 import InputField from '@components/InputField';
 import ManageTeam from '@components/ManageTeam';
 import Modal from '@components/Modal';
+import { queryClient } from '@components/react-query/queryClient';
 import SelectBox from '@components/SelectBox';
 import ToggleSwitch from '@components/ToggleSwitch';
 import useModal from '@hooks/useModal';
 import { useUpdatePlan } from '@hooks/useUpdatePlan';
-import { modalDataState, planTitlesState, accessTokenState } from '@recoil/atoms';
+import { currentPlanIdState, modalDataState, accessTokenState } from '@recoil/atoms';
 import { authenticate } from '@utils/auth';
 
 interface IPlanInfo {
@@ -36,7 +37,8 @@ function Setting() {
   const [isPublic, setIsPublic] = useState<boolean>(state.isPublic);
   const setModalData = useSetRecoilState(modalDataState);
   const { openModal } = useModal();
-  const [planTitles, setPlanTitles] = useRecoilState(planTitlesState);
+  const planTitles = queryClient.getQueryData<IPlanTitle[]>(['allPlanTitles']) || [];
+  const setCurrentPlanId = useSetRecoilState(currentPlanIdState);
   const { deletePlanMutate, updatePlanInfoMutate } = useUpdatePlan(Number(state.id));
 
   const navigate = useNavigate();
@@ -90,8 +92,9 @@ function Setting() {
   const handleDeletePlan = () => {
     const requestAPI = async () => {
       deletePlanMutate({ planId: state.id });
-      setPlanTitles(planTitles.filter((item) => item.id !== state.id));
-      // TODO: 플랜 페이지로 이동
+      const newPlanId = planTitles.length > 1 ? planTitles.filter((item) => item.id !== state.id)[0].id : -1;
+      setCurrentPlanId(newPlanId);
+      // TODO: 플랜 삭제 후 플랜이 없을 때 버그 수정 필요함
       navigate('/plan');
     };
     setModalData({

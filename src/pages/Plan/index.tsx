@@ -27,6 +27,7 @@ import {
 import { getAllPlanTitles } from '@apis';
 import { ReactComponent as EmptyPlan } from '@assets/images/emptyPlan.svg';
 import LabelFilter from '@components/LabelFilter';
+import LoadingSpinner from '@components/Loading';
 import MemberFilter from '@components/MemberFilter';
 import Modal from '@components/Modal';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
@@ -51,17 +52,6 @@ interface IDragDropResult {
 }
 
 function Plan() {
-  const initialState = {
-    id: 0,
-    title: '',
-    description: '',
-    public: false,
-    members: [],
-    tabOrder: [],
-    tabs: [],
-    labels: [],
-    tasks: [],
-  };
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const [sortedTabs, setSortedTabs] = useState<{ id: number; title: string; taskOrder?: number[] }[]>([]);
   const [tasks, setTasks] = useState<Record<number, ITask[]>>({});
@@ -111,12 +101,6 @@ function Plan() {
 
     checkAccessTokenAndGetPlanTitles();
   }, [accessToken, setAccessToken]);
-
-  useEffect(() => {
-    if (currentPlanId === -1 && allPlanTitles.length > 0) {
-      setCurrentPlanId(allPlanTitles[0].id);
-    }
-  }, [allPlanTitles]);
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -254,8 +238,29 @@ function Plan() {
     });
   };
 
+  if (currentPlanId === -1) {
+    return (
+      <EmptyPlanContainer>
+        <EmptyPlanContents>
+          <p>만들어진 플랜이 없어요 😵‍💫</p>
+          <EmptyPlan />
+          <ModalButton
+            type="button"
+            onClick={() => {
+              navigate('/create-plan');
+            }}
+          >
+            새 플랜 만들기
+          </ModalButton>
+        </EmptyPlanContents>
+      </EmptyPlanContainer>
+    );
+  }
+
   return (
     <Wrapper>
+      {/* TODO: 로딩 스피너 굳이 가져올때마다 보여줄 필요 없을것 같다. 오히려 방해되는 듯 */}
+      <LoadingSpinner />
       <SideContainer>
         <PlanCategory>
           {allPlanTitles.map((item, idx) => (
@@ -277,24 +282,6 @@ function Plan() {
         <LabelFilter selectedLabels={selectedLabels} onChange={handleChangeLabel} />
       </SideContainer>
       <MainContainer>
-        {plan === initialState && (
-          <Wrapper>
-            <EmptyPlanContainer>
-              <EmptyPlanContents>
-                <p>만들어진 플랜이 없어요 😵‍💫</p>
-                <EmptyPlan />
-                <ModalButton
-                  type="button"
-                  onClick={() => {
-                    navigate('/create-plan');
-                  }}
-                >
-                  새 플랜 만들기
-                </ModalButton>
-              </EmptyPlanContents>
-            </EmptyPlanContainer>
-          </Wrapper>
-        )}
         <TopContainer>
           <MemberFilter selectedMember={selectedMembers} onClick={handleChangeMember} />
           <UtilContainer>
