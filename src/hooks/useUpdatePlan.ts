@@ -53,8 +53,8 @@ export function useUpdatePlan(planId: number | null) {
     },
 
     onSuccess: (result) => {
-      showToast('플랜이 추가되었습니다.', { type: 'success' });
       queryClient.invalidateQueries({ queryKey: ['allPlanTitles'] });
+      showToast('플랜이 추가되었습니다.', { type: 'success' });
       setCurrentPlanId(result.id);
       navigate(`/plan/${result.id}`);
     },

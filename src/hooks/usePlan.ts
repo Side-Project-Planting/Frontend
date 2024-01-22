@@ -15,13 +15,8 @@ interface UsePlan {
 export function usePlan(planId: number, selectedLabels: number[], selectedMembers: number[]): UsePlan {
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
-  //   const queryClient = useQueryClient();
 
-  const commonOptions = {
-    staleTime: 0,
-    cacheTime: 300000, // 5 minutes
-  };
-
+  // TODO: 폴백 데이터에 id가 0이어도 되나?
   const fallback = {
     id: 0,
     title: '',
@@ -37,11 +32,7 @@ export function usePlan(planId: number, selectedLabels: number[], selectedMember
   const { data: plan = fallback } = useQuery<IPlan, Error>({
     queryKey: ['plan', planId],
     queryFn: () => getPlanInfo(planId),
-    ...commonOptions,
-    refetchOnMount: true,
-    refetchOnReconnect: true,
-    refetchOnWindowFocus: true,
-    refetchInterval: 60000, // 60 seconds
+    refetchInterval: 60000, // 60초
   });
 
   const filteredPlan = useMemo(() => {

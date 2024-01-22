@@ -10,11 +10,8 @@ function errorHandler(type: 'query' | 'mutation', errorMsg: string) {
 export const queryClientConfig: QueryClientConfig = {
   defaultOptions: {
     queries: {
-      // staleTime: 600000, // 10 minutes
-      // // staleTime이 gcTime보다 긴 것은 말이 안 된다.
-      // gcTime: 1800000, // 30 minutes
-      // refetchOnWindowFocus: false,
-      // refetchOnReconnect: false,
+      // 리패치 옵션을 넣어주세요
+      // 현재 refetchOn은 모두 true, staleTime: 0, gcTime: 300000(5분)
     },
   },
 
