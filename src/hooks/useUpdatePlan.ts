@@ -3,42 +3,9 @@ import { useSetRecoilState } from 'recoil';
 
 import useToast from './useToast';
 
-import { api } from '@apis';
+import { createNewPlan, updatePlanInfo, deletePlan, PlanInfo, UpdatePlanInfo, DeleteInfo } from '@apis/index';
 import { currentPlanIdState } from '@recoil/atoms';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-interface PlanInfo {
-  requestBody: { title: string; intro: string; invitedEmails: string[]; isPublic: boolean };
-}
-
-interface UpdatePlanInfo {
-  planId: number;
-  requestBody: {
-    isPublic: boolean;
-    ownerId: number | undefined;
-    invitedEmails: string[];
-    kickingMemberIds: number[];
-    title: string;
-    intro: string;
-  };
-}
-
-interface DeleteInfo {
-  planId: number;
-}
-
-export const createNewPlan = async (params: PlanInfo) => {
-  const { data } = await api.post('/api/plans', params.requestBody);
-  return data;
-};
-
-export const updatePlanInfo = async (params: UpdatePlanInfo) => {
-  await api.put(`/api/plans/update/${params.planId}`, params.requestBody);
-};
-
-export const deletePlan = async (params: { planId: number }) => {
-  await api.delete(`/api/plans/${params.planId}`);
-};
 
 export function useUpdatePlan(planId: number | null) {
   const navigate = useNavigate();

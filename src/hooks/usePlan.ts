@@ -32,7 +32,8 @@ export function usePlan(planId: number, selectedLabels: number[], selectedMember
   const { data: plan = fallback } = useQuery<IPlan, Error>({
     queryKey: ['plan', planId],
     queryFn: () => getPlanInfo(planId),
-    refetchInterval: 60000, // 60초
+    // TODO: 추후 60초로 간격으로 폴링 하도록 변경할 것
+    refetchInterval: 3000000,
   });
 
   const filteredPlan = useMemo(() => {

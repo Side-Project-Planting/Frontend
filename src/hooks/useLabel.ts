@@ -1,16 +1,7 @@
 import useToast from './useToast';
 
-import { api } from '@apis';
+import { createNewLabel, LabelInfo } from '@apis/index';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-interface LabelInfo {
-  planId: number;
-  name: string;
-}
-
-export const createNewLabel = async (params: { planId: number; name: string }): Promise<void> => {
-  await api.post('/api/labels', params);
-};
 
 export function useLabel(planId: number) {
   const queryClient = useQueryClient();

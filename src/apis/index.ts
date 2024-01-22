@@ -50,7 +50,7 @@ export const getMain = async () => {
   return data;
 };
 
-// Invite
+/* Invite */
 export const acceptInvitation = async (uuid: string) => {
   const response = await api.put(`/api/plans/invite/${uuid}`);
   return response;
@@ -69,18 +69,12 @@ export const getAllPlanTitles = async () => {
   return data;
 };
 
-export const createPlan = async (requestBody: {
-  title: string;
-  intro: string;
-  invitedEmails: string[];
-  isPublic: boolean;
-}) => {
-  const response = await api.post('/api/plans', requestBody);
-  return response;
-};
+export interface PlanInfo {
+  requestBody: { title: string; intro: string; invitedEmails: string[]; isPublic: boolean };
+}
 
-export const updatePlan = async (
-  id: number,
+export interface UpdatePlanInfo {
+  planId: number;
   requestBody: {
     isPublic: boolean;
     ownerId: number | undefined;
@@ -88,40 +82,45 @@ export const updatePlan = async (
     kickingMemberIds: number[];
     title: string;
     intro: string;
-  },
-) => {
-  const response = await api.put(`/api/plans/update/${id}`, requestBody);
-  return response;
+  };
+}
+
+export interface DeleteInfo {
+  planId: number;
+}
+
+export const createNewPlan = async (params: PlanInfo) => {
+  const { data } = await api.post('/api/plans', params.requestBody);
+  return data;
 };
 
-export const deletePlan = async (id: number) => {
-  const response = await api.delete(`/api/plans/${id}`);
-  return response;
+export const updatePlanInfo = async (params: UpdatePlanInfo) => {
+  await api.put(`/api/plans/update/${params.planId}`, params.requestBody);
+};
+
+export const deletePlan = async (params: DeleteInfo) => {
+  await api.delete(`/api/plans/${params.planId}`);
 };
 
 /* Tab */
-export const createNewTab = async (requestBody: { planId: number; name: string }) => {
-  const response = await api.post('/api/tabs', requestBody);
-  return response;
+export const createNewTab = async (params: { planId: number; title: string }): Promise<void> => {
+  await api.post('/api/tabs', params);
 };
 
-export const updateTabTitle = async (id: number, requestBody: { planId: number; title: string }) => {
-  const response = await api.patch(`/api/tabs/${id}/title`, requestBody);
-  return response;
+export const updateTabTitle = async (params: { planId: number; tabId: number; title: string }) => {
+  await api.patch(`/api/tabs/${params.tabId}/title`, { planId: params.planId, title: params.title });
 };
 
-export const deleteTab = async (tabId: number, currentPlanId: number) => {
-  const response = await axios.delete(`/api/tabs/${tabId}?planId=${currentPlanId}`);
-  return response;
+export const deleteTab = async (params: { planId: number; tabId: number }) => {
+  await api.delete(`/api/tabs/${params.tabId}?planId=${params.planId}`);
 };
 
-export const dragTab = async (requestBody: { planId: number; targetId: number; newPrevId: number }) => {
-  const response = await api.post('api/tabs/change-order', requestBody);
-  return response;
+export const dragTab = async (params: { planId: number; targetId: number; newPrevId: number | null }) => {
+  await api.post('api/tabs/change-order', params);
 };
 
 /* Task */
-export const createTask = async (requestBody: {
+export interface TaskInfo {
   planId: number;
   tabId: number;
   assigneeId: number | undefined;
@@ -130,48 +129,58 @@ export const createTask = async (requestBody: {
   startDate: string | null;
   endDate: string | null;
   labels: number[];
-}) => {
-  const response = await api.post('/api/tasks', requestBody);
-  return response;
-};
+}
+export interface UpdateTaskInfo extends TaskInfo {
+  taskId: number;
+}
 
-export const updateTask = async (
-  taskId: number,
-  requestBody: {
-    planId: number;
-    tabId: number;
-    assigneeId: number | undefined;
-    title: string;
-    description: string;
-    startDate: string | null;
-    endDate: string | null;
-    labels: number[];
-  },
-) => {
-  const response = await api.put(`/api/tasks/${taskId}`, requestBody);
-  return response;
-};
-
-export const deleteTask = async (taskId: number) => {
-  const response = await api.delete(`/api/tasks/${taskId}`);
-  return response;
-};
-
-export const dragTask = async (requestBody: {
+export interface DragInfo {
   planId: number;
   targetTabId: number;
   targetId: number;
   newPrevId: number | null;
-}) => {
-  const response = await api.put('api/tasks/change-order', requestBody);
+}
+
+export const createNewTask = async (params: TaskInfo): Promise<void> => {
+  await api.post('/api/tasks', params);
+};
+
+export const updateTask = async (params: UpdateTaskInfo) => {
+  await api.put(`/api/tasks/${params.taskId}`, {
+    planId: params.planId,
+    tabId: params.tabId,
+    assigneeId: params.assigneeId,
+    title: params.title,
+    description: params.description,
+    startDate: params.startDate,
+    endDate: params.endDate,
+    labels: params.labels,
+  });
+};
+
+export const deleteTask = async (params: { taskId: number }) => {
+  await api.delete(`/api/tasks/${params.taskId}`);
+};
+
+export const dragTask = async (params: DragInfo) => {
+  const response = await api.put('api/tasks/change-order', params);
   return response;
 };
 
 /* Label */
-export const createLabel = async (planId: number, name: string) => {
-  const { headers } = await api.post('/api/labels', { planId, name });
-  if (headers === undefined) return -1;
-  const splitLocation = headers.location.split('/');
-  const lableId = splitLocation[splitLocation.length - 1];
-  return lableId;
+export interface LabelInfo {
+  planId: number;
+  name: string;
+}
+
+export const createNewLabel = async (params: { planId: number; name: string }): Promise<void> => {
+  await api.post('/api/labels', params);
 };
+
+// export const createLabel = async (planId: number, name: string) => {
+//   const { headers } = await api.post('/api/labels', { planId, name });
+//   if (headers === undefined) return -1;
+//   const splitLocation = headers.location.split('/');
+//   const lableId = splitLocation[splitLocation.length - 1];
+//   return lableId;
+// };
