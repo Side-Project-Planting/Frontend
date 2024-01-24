@@ -1,6 +1,6 @@
 import useToast from './useToast';
 
-import { api } from '@apis';
+import { createNewTab, updateTabTitle, deleteTab, dragTab } from '@apis/index';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface PlanInfo {
@@ -22,22 +22,6 @@ interface TabOrderInfo {
   targetId: number;
   newPrevId: number | null;
 }
-
-export const createNewTab = async (params: { planId: number; title: string }): Promise<void> => {
-  await api.post('/api/tabs', params);
-};
-
-export const updateTabTitle = async (params: { planId: number; tabId: number; title: string }) => {
-  await api.patch(`/api/tabs/${params.tabId}/title`, { planId: params.planId, title: params.title });
-};
-
-export const deleteTab = async (params: { planId: number; tabId: number }) => {
-  await api.delete(`/api/tabs/${params.tabId}?planId=${params.planId}`);
-};
-
-export const dragTab = async (params: { planId: number; targetId: number; newPrevId: number | null }) => {
-  await api.post('api/tabs/change-order', params);
-};
 
 export function useUpdateTab(planId: number) {
   const queryClient = useQueryClient();
