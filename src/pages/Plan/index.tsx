@@ -73,17 +73,6 @@ function Plan() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // console.log(currentPlanId, allPlanTitles);
-    // 플랜 삭제 후 남은 플랜이 없을 때 currentPlanId를 -1로 set함
-    if (allPlanTitles.length === 0) setCurrentPlanId(-1);
-    // 로그인 후 바로 들어왔을 때 속한 플랜은 있으나 currentPlanId는 -1인 경우
-    // allPlanTitles[0]로 setCurrentPlanId 해줌
-    if (currentPlanId === -1 && allPlanTitles.length !== 0) {
-      setCurrentPlanId(allPlanTitles[0].id);
-    }
-  }, [allPlanTitles]);
-
-  useEffect(() => {
     setTasks(tasksByTab);
     const tabById: Record<number, ITab> = {};
     plan.tabs.forEach((tab) => {

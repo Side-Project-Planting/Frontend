@@ -16,9 +16,8 @@ export function usePlan(planId: number, selectedLabels: number[], selectedMember
   const setMembers = useSetRecoilState(membersState);
   const setLabels = useSetRecoilState(labelsState);
 
-  // TODO: 폴백 데이터에 id가 0이어도 되나?
   const fallback = {
-    id: 0,
+    id: -1,
     title: '',
     description: '',
     public: false,
