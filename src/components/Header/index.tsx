@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 import { AiOutlineHome } from 'react-icons/ai';
-import { ImCompass2 } from 'react-icons/im';
 import { LuCalendarPlus, LuCalendarDays } from 'react-icons/lu';
 import { useLocation } from 'react-router-dom';
 
@@ -15,13 +14,9 @@ const navMenu = [
   { id: 1, value: 'main', icon: AiOutlineHome, link: '/main' },
   { id: 2, value: 'create-plan', icon: LuCalendarPlus, link: '/create-plan' },
   { id: 3, value: 'plan', icon: LuCalendarDays, link: '/plan' },
-  { id: 4, value: 'explore', icon: ImCompass2, link: '/#' },
 ];
 
-const dropdownOptions = [
-  { id: 1, label: '프로필 변경', value: 'profile' },
-  { id: 2, label: '로그아웃', value: 'logout' },
-];
+const dropdownOptions = [{ id: 1, label: '로그아웃', value: 'logout' }];
 
 function Header() {
   const [selectedMenu, setSelectedMenu] = useState<string>('main');

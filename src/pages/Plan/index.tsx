@@ -4,7 +4,6 @@ import React, { useEffect, useState, useRef } from 'react';
 
 import { Droppable, DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
-import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
@@ -36,6 +35,7 @@ import { usePlanTitle } from '@hooks/usePlanTitle';
 import { useUpdateTab } from '@hooks/useUpdateTab';
 import { useUpdateTask } from '@hooks/useUpdateTask';
 import { currentPlanIdState, accessTokenState } from '@recoil/atoms';
+import { useIsFetching } from '@tanstack/react-query';
 import { prefetchAndSetPlanId } from '@utils';
 import { authenticate } from '@utils/auth';
 
@@ -65,6 +65,7 @@ function Plan() {
   const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(currentPlanId);
   const { dragTaskMutate } = useUpdateTask(currentPlanId);
   const { allPlanTitles } = usePlanTitle();
+  const isFetching = useIsFetching();
 
   const navigate = useNavigate();
 
@@ -154,22 +155,17 @@ function Plan() {
 
     const getSourceType = (droppableId: string): 'tab' | 'task' => droppableId.split('-')[0] as 'tab' | 'task';
 
-    // 드래그 소스 및 타입 가져오기
     const sourceType = getSourceType(source.droppableId);
 
     if (sourceType === 'tab') {
-      // 탭 이동 처리
       const newSortedTabs = Array.from(sortedTabs);
       const movedTabId = Number(draggableId.split('-')[1]);
 
-      // 배열에서 이동한 탭 제거 및 목적지에 추가
       newSortedTabs.splice(source.index, 1);
       newSortedTabs.splice(destination.index, 0, sortedTabs.find((tab) => tab.id === movedTabId) as ITab);
 
-      // 탭 순서 갱신
       const newTabOrder = newSortedTabs.map((tab) => tab.id);
 
-      // 이동한 탭의 이전 탭 ID 계산
       const prevIndex = newTabOrder.indexOf(movedTabId) - 1;
 
       const requestData = {
@@ -183,34 +179,26 @@ function Plan() {
     }
 
     if (sourceType === 'task' && destination) {
-      // 태스크 이동 처리
       const startTabId = Number(source.droppableId.split('-')[1]);
       const finishTabId = Number(destination.droppableId.split('-')[1]);
 
-      // 시작 및 도착하는 탭의 태스크 배열 가져오기
       const start = tasks[startTabId];
       const finish = tasks[finishTabId] || [];
 
-      // 드래그 중인 태스크 가져오기
       let updatedTask = start[source.index];
 
-      // 시작 탭에서 드래그 된 태스크 제거
       start.splice(source.index, 1);
 
-      // 같은 탭에서 이동하는 경우
       if (start === finish) {
         start.splice(destination.index, 0, updatedTask);
         setTasks((prev) => ({ ...prev, [startTabId]: [...start] }));
       } else {
-        // 다른 탭으로 이동하는 경우
         updatedTask = { ...updatedTask, tabId: finishTabId };
         finish.splice(destination.index, 0, updatedTask);
 
-        // 시작 및 도착 탭의 새로운 배열 생성
         const newStart = [...start];
         const newFinish = [...finish];
 
-        // 태스크 이동 결과 갱신
         setTasks((prev) => ({
           ...prev,
           [startTabId]: newStart,
@@ -218,7 +206,6 @@ function Plan() {
         }));
       }
 
-      // 이동한 태스크의 이전 태스크 인덱스 계산
       const prevIndex = finish.findIndex((item) => item.id === Number(draggableId.split('-')[1])) - 1;
 
       const requestData = {
@@ -251,7 +238,7 @@ function Plan() {
     });
   };
 
-  if (allPlanTitles.length === 0) {
+  if (!isFetching && allPlanTitles.length === 0) {
     return (
       <EmptyPlanContainer>
         <EmptyPlanContents>
@@ -298,9 +285,6 @@ function Plan() {
         <TopContainer>
           <MemberFilter selectedMember={selectedMembers} onClick={handleChangeMember} />
           <UtilContainer>
-            <div className="icon">
-              <IoIosStarOutline size={18} />
-            </div>
             <div
               className="icon"
               onClick={() =>
