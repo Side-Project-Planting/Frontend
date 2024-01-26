@@ -1,9 +1,14 @@
+import { useEffect } from 'react';
+
 import { useSetRecoilState } from 'recoil';
 import { IPlanTitle } from 'types';
 
+import { currentPlanIdState } from '../recoil/atoms';
+
 import { getAllPlanTitles } from '@apis';
-import { currentPlanIdState } from '@recoil/atoms';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryClient } from '@components/react-query/queryClient';
+import { useQuery } from '@tanstack/react-query';
+import { prefetchAndSetPlanId } from '@utils';
 
 interface UsePlanTitle {
   allPlanTitles: IPlanTitle[];
@@ -24,12 +29,8 @@ export function usePlanTitle(): UsePlanTitle {
 
 export function usePrefetchPlanTitles(): void {
   const setCurrentPlanId = useSetRecoilState(currentPlanIdState);
-  const queryClient = useQueryClient();
-  queryClient.prefetchQuery({ queryKey: ['allPlanTitles'], queryFn: getAllPlanTitles });
 
-  const { data: cachedPlanTitles } = useQuery<IPlanTitle[]>({ queryKey: ['allPlanTitles'] });
-
-  if (cachedPlanTitles && cachedPlanTitles.length !== 0) {
-    setCurrentPlanId(cachedPlanTitles[0].id);
-  }
+  useEffect(() => {
+    prefetchAndSetPlanId(setCurrentPlanId);
+  }, [queryClient, setCurrentPlanId]);
 }

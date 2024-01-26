@@ -1,4 +1,7 @@
-import { ITaskInfo } from 'types';
+import { ITaskInfo, IPlanTitle } from 'types';
+
+import { getAllPlanTitles } from '@apis';
+import { queryClient } from '@components/react-query/queryClient';
 
 export const parseTasksByStatus = (tasks: ITaskInfo[], statusName: string[]) => {
   const parsedTasks = [];
@@ -36,4 +39,18 @@ export const hashStringToColor = (id: string) => {
   const lightness = 50 + ((hash >> 1) % 20); // eslint-disable-line no-bitwise
 
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+};
+
+// TODO: 어느 파일에 둬야할지 고민
+export const prefetchAndSetPlanId = async (
+  setCurrentPlanId: (value: number | ((currVal: number) => number)) => void,
+) => {
+  // 프리패치
+  await queryClient.prefetchQuery({ queryKey: ['allPlanTitles'], queryFn: getAllPlanTitles });
+
+  // 프리패치가 완료된 후에 데이터를 가져와서 처리
+  const allPlanTitles = queryClient.getQueryData<IPlanTitle[]>(['allPlanTitles']);
+  if (allPlanTitles && allPlanTitles.length > 0) {
+    setCurrentPlanId(allPlanTitles[0].id);
+  }
 };

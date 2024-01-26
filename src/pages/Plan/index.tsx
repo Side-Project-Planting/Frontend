@@ -24,7 +24,6 @@ import {
   EmptyPlanContents,
 } from './styles';
 
-import { getAllPlanTitles } from '@apis';
 import { ReactComponent as EmptyPlan } from '@assets/images/emptyPlan.svg';
 import LabelFilter from '@components/LabelFilter';
 import LoadingSpinner from '@components/Loading';
@@ -37,7 +36,7 @@ import { usePlanTitle } from '@hooks/usePlanTitle';
 import { useUpdateTab } from '@hooks/useUpdateTab';
 import { useUpdateTask } from '@hooks/useUpdateTask';
 import { currentPlanIdState, accessTokenState } from '@recoil/atoms';
-import { useQueryClient } from '@tanstack/react-query';
+import { prefetchAndSetPlanId } from '@utils';
 import { authenticate } from '@utils/auth';
 
 interface IDragDropResult {
@@ -60,14 +59,11 @@ function Plan() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
-
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const { plan, tasksByTab } = usePlan(currentPlanId, selectedLabels, selectedMembers);
   const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(Number(plan.id));
   const { dragTaskMutate } = useUpdateTask(Number(plan.id));
-
-  const queryClient = useQueryClient();
   const { allPlanTitles } = usePlanTitle();
 
   const navigate = useNavigate();
@@ -87,14 +83,7 @@ function Plan() {
   useEffect(() => {
     const checkAccessTokenAndGetPlanTitles = async () => {
       try {
-        await authenticate(accessToken, setAccessToken, async () => {
-          await queryClient.prefetchQuery({
-            queryKey: ['allPlanTitles'],
-            queryFn: getAllPlanTitles,
-            // prefetch는 data가 staleTime보다 오래되었을때만 만료된다.
-            staleTime: 60000,
-          });
-        });
+        await authenticate(accessToken, setAccessToken, () => prefetchAndSetPlanId(setCurrentPlanId));
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error);
@@ -102,7 +91,7 @@ function Plan() {
     };
 
     checkAccessTokenAndGetPlanTitles();
-  }, [accessToken, setAccessToken]);
+  }, [accessToken]);
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
