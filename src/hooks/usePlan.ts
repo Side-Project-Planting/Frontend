@@ -56,27 +56,28 @@ export function usePlan(planId: number, selectedLabels: number[], selectedMember
       setMembers(members);
       setLabels(labels);
     }
-  }, [plan, setMembers, setLabels]);
+  }, [plan]);
 
   const tasksByTab = useMemo(() => {
     const result: Record<number, ITask[]> = {};
 
     if (filteredPlan) {
-      filteredPlan.tasks.forEach((task) => {
-        const { tabId } = task;
-        result[tabId] = result[tabId] || [];
-        result[tabId].push(task);
+      filteredPlan.tabs.forEach((tab) => {
+        const { id } = tab;
+        result[id] = [];
+        tab.taskOrder!.forEach((order) => {
+          const foundTask = filteredPlan.tasks.find((item) => item.id === order);
+          if (foundTask) {
+            result[id].push(foundTask);
+          }
+        });
       });
     }
-
     return result;
   }, [filteredPlan]);
 
-  // TODO: tasksByTab이 2번 실행돼서 태스크 순서 변경이 안됨
-  // console.log(tasksByTab);
-
   return {
-    plan: filteredPlan,
+    plan,
     tasksByTab,
   };
 }

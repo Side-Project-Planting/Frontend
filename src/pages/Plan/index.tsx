@@ -62,8 +62,8 @@ function Plan() {
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const { plan, tasksByTab } = usePlan(currentPlanId, selectedLabels, selectedMembers);
-  const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(Number(plan.id));
-  const { dragTaskMutate } = useUpdateTask(Number(plan.id));
+  const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(currentPlanId);
+  const { dragTaskMutate } = useUpdateTask(currentPlanId);
   const { allPlanTitles } = usePlanTitle();
 
   const navigate = useNavigate();
@@ -194,7 +194,9 @@ function Plan() {
         });
         return;
       }
-      updatedTask.tabId = +Number(destination.droppableId.split('-')[1]);
+      // TODO: tabId가 readonly로 선언되었다는데 어디인지 찾아야함
+      const notread = { ...updatedTask };
+      notread.tabId = +Number(destination.droppableId.split('-')[1]);
       finish.splice(destination.index, 0, updatedTask);
       // TODO: order가 추가될 수 있음
       const newStart = [...start];
@@ -217,10 +219,6 @@ function Plan() {
         targetId: Number(draggableId.split('-')[1]),
         newPrevId: newFinish[prevIndex].id,
       };
-
-      // TODO: 태스크 순서 변경이 받아온 데이터에서는 되있으나 화면상으로 안 됨
-      // console.log(requestData);
-
       dragTaskMutate(requestData);
     }
   };
