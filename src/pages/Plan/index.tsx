@@ -79,7 +79,7 @@ function Plan() {
       return tabById[tabId];
     });
     setSortedTabs(newSortedTabs);
-  }, [plan]);
+  }, [plan, selectedLabels, selectedMembers]);
 
   useEffect(() => {
     const checkAccessTokenAndGetPlanTitles = async () => {
