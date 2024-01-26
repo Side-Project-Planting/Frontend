@@ -8,6 +8,7 @@ import { ReactComponent as NoPlan } from '@assets/images/noPlan.svg';
 import BriefPlan from '@components/BriefPlan';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { useMain } from '@hooks/useMain';
+import { usePrefetchPlanTitles } from '@hooks/usePlanTitle';
 
 export interface ITask {
   taskId: number;
@@ -30,8 +31,8 @@ export interface IPlan {
 }
 
 function Main() {
+  usePrefetchPlanTitles();
   const { main } = useMain();
-
   const navigate = useNavigate();
 
   return (
