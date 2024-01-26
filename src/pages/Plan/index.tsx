@@ -71,10 +71,10 @@ function Plan() {
   useEffect(() => {
     setTasks(tasksByTab);
     const tabById: Record<number, ITab> = {};
-    plan.tabs.forEach((tab) => {
+    plan?.tabs.forEach((tab) => {
       tabById[tab.id] = tab;
     });
-    const newSortedTabs = plan.tabOrder.map((tabId) => {
+    const newSortedTabs = plan?.tabOrder.map((tabId) => {
       return tabById[tabId];
     });
     setSortedTabs(newSortedTabs);
@@ -327,7 +327,7 @@ function Plan() {
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...provided.droppableProps}
               >
-                {sortedTabs.map((item, index) => {
+                {sortedTabs?.map((item, index) => {
                   return (
                     <Tab
                       id={item.id}
@@ -337,7 +337,6 @@ function Plan() {
                       onDeleteTab={() => handleDeleteTab(item.id)}
                       tasks={tasks[item.id] || []}
                       onAddTask={setTasks}
-                      // onRemoveTask={handleDeleteTask}
                       onEditTask={handleEditTask}
                     />
                   );
@@ -351,6 +350,7 @@ function Plan() {
                       onChange={(e) => setNewTabTitle(e.target.value)}
                       onBlur={handleAddTab}
                       onKeyDown={handleInputKeyDown}
+                      required
                     />
                     <TasksContainer />
                   </TabWrapper>

@@ -140,6 +140,10 @@ export interface DragInfo {
   targetId: number;
   newPrevId: number | null;
 }
+export const getTask = async (taskId: number) => {
+  const { data } = await api.get(`/api/tasks/${taskId}`);
+  return data;
+};
 
 export const createNewTask = async (params: TaskInfo): Promise<void> => {
   await api.post('/api/tasks', params);

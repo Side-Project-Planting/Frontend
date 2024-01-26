@@ -88,6 +88,7 @@ function TabHeader({ id, initialTitle, onDeleteTab }: ITabHeaderProps) {
       {isEditing ? (
         <EditableTitle
           type="text"
+          required
           ref={inputRef}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
