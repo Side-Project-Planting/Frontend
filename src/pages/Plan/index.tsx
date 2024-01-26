@@ -244,7 +244,7 @@ function Plan() {
     });
   };
 
-  if (allPlanTitles.length === 0 || (currentPlanId === -1 && allPlanTitles.length === 0)) {
+  if (allPlanTitles.length === 0) {
     return (
       <EmptyPlanContainer>
         <EmptyPlanContents>

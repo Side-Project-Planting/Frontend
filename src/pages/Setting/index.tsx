@@ -94,7 +94,6 @@ function Setting() {
       deletePlanMutate({ planId: state.id });
       const newPlanId = planTitles.length > 1 ? planTitles.filter((item) => item.id !== state.id)[0].id : -1;
       setCurrentPlanId(newPlanId);
-      // TODO: 플랜 삭제 후 플랜이 없을 때 버그 수정 필요함
       navigate('/plan');
     };
     setModalData({
