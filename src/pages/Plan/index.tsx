@@ -152,22 +152,29 @@ function Plan() {
   const onDragEnd = (result: IDragDropResult) => {
     const { destination, source, draggableId } = result;
 
-    const sourceType = source.droppableId.split('-')[0];
+    const getSourceType = (droppableId: string): 'tab' | 'task' => droppableId.split('-')[0] as 'tab' | 'task';
+
+    // 드래그 소스 및 타입 가져오기
+    const sourceType = getSourceType(source.droppableId);
 
     if (sourceType === 'tab') {
-      const newSortedTabs = [...sortedTabs];
-      newSortedTabs.splice(source.index, 1);
-      newSortedTabs.splice(
-        destination.index,
-        0,
-        sortedTabs.find((tab) => tab.id === Number(draggableId.split('-')[1])) as ITab,
-      );
+      // 탭 이동 처리
+      const newSortedTabs = Array.from(sortedTabs);
+      const movedTabId = Number(draggableId.split('-')[1]);
 
+      // 배열에서 이동한 탭 제거 및 목적지에 추가
+      newSortedTabs.splice(source.index, 1);
+      newSortedTabs.splice(destination.index, 0, sortedTabs.find((tab) => tab.id === movedTabId) as ITab);
+
+      // 탭 순서 갱신
       const newTabOrder = newSortedTabs.map((tab) => tab.id);
-      const prevIndex = newTabOrder.indexOf(Number(draggableId.split('-')[1])) - 1;
+
+      // 이동한 탭의 이전 탭 ID 계산
+      const prevIndex = newTabOrder.indexOf(movedTabId) - 1;
+
       const requestData = {
         planId: plan.id,
-        targetId: Number(draggableId.split('-')[1]),
+        targetId: movedTabId,
         newPrevId: prevIndex === -1 ? null : newTabOrder[prevIndex],
       };
 
@@ -175,50 +182,52 @@ function Plan() {
       setSortedTabs(newSortedTabs);
     }
 
-    if (sourceType === 'task') {
-      if (!destination) return;
+    if (sourceType === 'task' && destination) {
+      // 태스크 이동 처리
+      const startTabId = Number(source.droppableId.split('-')[1]);
+      const finishTabId = Number(destination.droppableId.split('-')[1]);
 
-      if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+      // 시작 및 도착하는 탭의 태스크 배열 가져오기
+      const start = tasks[startTabId];
+      const finish = tasks[finishTabId] || [];
 
-      const start = tasks[+Number(source.droppableId.split('-')[1])];
-      const finish = tasks[+Number(destination.droppableId.split('-')[1])] || [];
-      const updatedTask = start[source.index];
+      // 드래그 중인 태스크 가져오기
+      let updatedTask = start[source.index];
 
+      // 시작 탭에서 드래그 된 태스크 제거
       start.splice(source.index, 1);
+
+      // 같은 탭에서 이동하는 경우
       if (start === finish) {
         start.splice(destination.index, 0, updatedTask);
-        setTasks((prev) => {
-          const newTasks = { ...prev };
-          newTasks[+Number(source.droppableId.split('-')[1])] = [...start];
-          return newTasks;
-        });
-        return;
-      }
-      // TODO: tabId가 readonly로 선언되었다는데 어디인지 찾아야함
-      const notread = { ...updatedTask };
-      notread.tabId = +Number(destination.droppableId.split('-')[1]);
-      finish.splice(destination.index, 0, updatedTask);
-      // TODO: order가 추가될 수 있음
-      const newStart = [...start];
-      const newFinish = [...finish];
+        setTasks((prev) => ({ ...prev, [startTabId]: [...start] }));
+      } else {
+        // 다른 탭으로 이동하는 경우
+        updatedTask = { ...updatedTask, tabId: finishTabId };
+        finish.splice(destination.index, 0, updatedTask);
 
-      setTasks((prev) => {
-        const newTasks = {
+        // 시작 및 도착 탭의 새로운 배열 생성
+        const newStart = [...start];
+        const newFinish = [...finish];
+
+        // 태스크 이동 결과 갱신
+        setTasks((prev) => ({
           ...prev,
-          [Number(source.droppableId.split('-')[1])]: newStart,
-          [Number(destination.droppableId.split('-')[1])]: newFinish,
-        };
-        return newTasks;
-      });
+          [startTabId]: newStart,
+          [finishTabId]: newFinish,
+        }));
+      }
 
-      const prevIndex = newFinish.findIndex((item) => item.id === Number(draggableId.split('-')[1])) - 1;
+      // 이동한 태스크의 이전 태스크 인덱스 계산
+      const prevIndex = finish.findIndex((item) => item.id === Number(draggableId.split('-')[1])) - 1;
 
       const requestData = {
         planId: plan.id,
-        targetTabId: Number(destination.droppableId.split('-')[1]),
+        targetTabId: finishTabId,
         targetId: Number(draggableId.split('-')[1]),
-        newPrevId: newFinish[prevIndex].id,
+        newPrevId: prevIndex === -1 ? null : finish[prevIndex].id,
       };
+
       dragTaskMutate(requestData);
     }
   };
