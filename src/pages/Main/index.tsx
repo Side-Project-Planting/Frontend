@@ -6,8 +6,11 @@ import { Wrapper, EmptyTeamPlanFrame } from './styles';
 
 import { ReactComponent as NoPlan } from '@assets/images/noPlan.svg';
 import BriefPlan from '@components/BriefPlan';
+import LoadingSpinner from '@components/Loading';
 import { ModalButton } from '@components/Modal/CommonModalStyles';
 import { useMain } from '@hooks/useMain';
+import { usePrefetchPlanTitles } from '@hooks/usePlanTitle';
+import { useIsFetching } from '@tanstack/react-query';
 
 export interface ITask {
   taskId: number;
@@ -30,13 +33,15 @@ export interface IPlan {
 }
 
 function Main() {
+  usePrefetchPlanTitles();
   const { main } = useMain();
-
   const navigate = useNavigate();
+  const isFetching = useIsFetching();
 
   return (
     <Wrapper>
-      {main.length === 0 ? (
+      <LoadingSpinner />
+      {!isFetching && main.length === 0 ? (
         <EmptyTeamPlanFrame>
           <div>
             <p>내가 속한 플랜이 없어요 😵</p>

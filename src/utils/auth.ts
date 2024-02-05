@@ -4,15 +4,19 @@ import { requestNewToken, setAuthorizationHeader } from '@apis';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const refreshAccessToken = async (setAccessToken: any) => {
+  let accessToken;
   try {
     const data = await requestNewToken();
-    setAccessToken(data.accessToken);
+    accessToken = data.accessToken;
+    setAccessToken(accessToken);
+    setAuthorizationHeader(accessToken);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error refreshing access token:', error);
     // TODO: 배포 URL로 수정
     window.location.href = 'http://localhost:3000';
   }
+  return accessToken;
 };
 
 export const getTokenExpirationTime = (token: string) => {
@@ -33,14 +37,11 @@ export const authenticate = async (
   apiRequest?: () => Promise<void>,
 ) => {
   if (!accessToken || isAccessTokenExpired(accessToken)) {
-    await refreshAccessToken(setAccessToken);
-  }
-
-  if (accessToken) setAuthorizationHeader(accessToken);
-
-  // refresh token 발급 직후 api 요청을 날려야 하는 경우 순서 보장을 위해 필요함
-  //  api 요청 필요 없는 경우를 분리
-  if (apiRequest) {
-    await apiRequest();
+    const newAccessToken = await refreshAccessToken(setAccessToken);
+    if (newAccessToken && apiRequest) {
+      // refresh token 발급 직후 api 요청을 날려야 하는 경우 순서 보장을 위해 필요함
+      //  api 요청 필요 없는 경우를 분리
+      await apiRequest();
+    }
   }
 };

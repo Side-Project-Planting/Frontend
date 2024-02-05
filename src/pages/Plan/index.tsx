@@ -4,7 +4,6 @@ import React, { useEffect, useState, useRef } from 'react';
 
 import { Droppable, DragDropContext, OnDragEndResponder } from 'react-beautiful-dnd';
 import { CiSettings } from 'react-icons/ci';
-import { IoIosStarOutline } from 'react-icons/io';
 import { SlPlus } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
@@ -24,7 +23,6 @@ import {
   EmptyPlanContents,
 } from './styles';
 
-import { getAllPlanTitles } from '@apis';
 import { ReactComponent as EmptyPlan } from '@assets/images/emptyPlan.svg';
 import LabelFilter from '@components/LabelFilter';
 import LoadingSpinner from '@components/Loading';
@@ -37,7 +35,8 @@ import { usePlanTitle } from '@hooks/usePlanTitle';
 import { useUpdateTab } from '@hooks/useUpdateTab';
 import { useUpdateTask } from '@hooks/useUpdateTask';
 import { currentPlanIdState, accessTokenState } from '@recoil/atoms';
-import { useQueryClient } from '@tanstack/react-query';
+import { useIsFetching } from '@tanstack/react-query';
+import { prefetchAndSetPlanId } from '@utils';
 import { authenticate } from '@utils/auth';
 
 interface IDragDropResult {
@@ -60,52 +59,32 @@ function Plan() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [newTabTitle, setNewTabTitle] = useState<string>('');
   const [isAddingTab, setIsAddingTab] = useState<boolean>(false);
-
   const [selectedLabels, setSelectedLabel] = useState<number[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const { plan, tasksByTab } = usePlan(currentPlanId, selectedLabels, selectedMembers);
-  const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(Number(plan.id));
-  const { dragTaskMutate } = useUpdateTask(Number(plan.id));
-
-  const queryClient = useQueryClient();
+  const { createTabMutate, deleteTabMutate, dragTabMutate } = useUpdateTab(currentPlanId);
+  const { dragTaskMutate } = useUpdateTask(currentPlanId);
   const { allPlanTitles } = usePlanTitle();
+  const isFetching = useIsFetching();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // console.log(currentPlanId, allPlanTitles);
-    // 플랜 삭제 후 남은 플랜이 없을 때 currentPlanId를 -1로 set함
-    if (allPlanTitles.length === 0) setCurrentPlanId(-1);
-    // 로그인 후 바로 들어왔을 때 속한 플랜은 있으나 currentPlanId는 -1인 경우
-    // allPlanTitles[0]로 setCurrentPlanId 해줌
-    if (currentPlanId === -1 && allPlanTitles.length !== 0) {
-      setCurrentPlanId(allPlanTitles[0].id);
-    }
-  }, [allPlanTitles]);
-
-  useEffect(() => {
     setTasks(tasksByTab);
     const tabById: Record<number, ITab> = {};
-    plan.tabs.forEach((tab) => {
+    plan?.tabs.forEach((tab) => {
       tabById[tab.id] = tab;
     });
-    const newSortedTabs = plan.tabOrder.map((tabId) => {
+    const newSortedTabs = plan?.tabOrder.map((tabId) => {
       return tabById[tabId];
     });
     setSortedTabs(newSortedTabs);
-  }, [plan]);
+  }, [plan, selectedLabels, selectedMembers]);
 
   useEffect(() => {
     const checkAccessTokenAndGetPlanTitles = async () => {
       try {
-        await authenticate(accessToken, setAccessToken, async () => {
-          await queryClient.prefetchQuery({
-            queryKey: ['allPlanTitles'],
-            queryFn: getAllPlanTitles,
-            // prefetch는 data가 staleTime보다 오래되었을때만 만료된다.
-            staleTime: 60000,
-          });
-        });
+        await authenticate(accessToken, setAccessToken, () => prefetchAndSetPlanId(setCurrentPlanId));
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error);
@@ -113,7 +92,7 @@ function Plan() {
     };
 
     checkAccessTokenAndGetPlanTitles();
-  }, [accessToken, setAccessToken]);
+  }, [accessToken]);
 
   const handleStartAddingTab = () => {
     setIsAddingTab(true);
@@ -174,22 +153,24 @@ function Plan() {
   const onDragEnd = (result: IDragDropResult) => {
     const { destination, source, draggableId } = result;
 
-    const sourceType = source.droppableId.split('-')[0];
+    const getSourceType = (droppableId: string): 'tab' | 'task' => droppableId.split('-')[0] as 'tab' | 'task';
+
+    const sourceType = getSourceType(source.droppableId);
 
     if (sourceType === 'tab') {
-      const newSortedTabs = [...sortedTabs];
+      const newSortedTabs = Array.from(sortedTabs);
+      const movedTabId = Number(draggableId.split('-')[1]);
+
       newSortedTabs.splice(source.index, 1);
-      newSortedTabs.splice(
-        destination.index,
-        0,
-        sortedTabs.find((tab) => tab.id === Number(draggableId.split('-')[1])) as ITab,
-      );
+      newSortedTabs.splice(destination.index, 0, sortedTabs.find((tab) => tab.id === movedTabId) as ITab);
 
       const newTabOrder = newSortedTabs.map((tab) => tab.id);
-      const prevIndex = newTabOrder.indexOf(Number(draggableId.split('-')[1])) - 1;
+
+      const prevIndex = newTabOrder.indexOf(movedTabId) - 1;
+
       const requestData = {
         planId: plan.id,
-        targetId: Number(draggableId.split('-')[1]),
+        targetId: movedTabId,
         newPrevId: prevIndex === -1 ? null : newTabOrder[prevIndex],
       };
 
@@ -197,51 +178,42 @@ function Plan() {
       setSortedTabs(newSortedTabs);
     }
 
-    if (sourceType === 'task') {
-      if (!destination) return;
+    if (sourceType === 'task' && destination) {
+      const startTabId = Number(source.droppableId.split('-')[1]);
+      const finishTabId = Number(destination.droppableId.split('-')[1]);
 
-      if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+      const start = tasks[startTabId];
+      const finish = tasks[finishTabId] || [];
 
-      const start = tasks[+Number(source.droppableId.split('-')[1])];
-      const finish = tasks[+Number(destination.droppableId.split('-')[1])] || [];
-      const updatedTask = start[source.index];
+      let updatedTask = start[source.index];
 
       start.splice(source.index, 1);
+
       if (start === finish) {
         start.splice(destination.index, 0, updatedTask);
-        setTasks((prev) => {
-          const newTasks = { ...prev };
-          newTasks[+Number(source.droppableId.split('-')[1])] = [...start];
-          return newTasks;
-        });
-        return;
-      }
-      updatedTask.tabId = +Number(destination.droppableId.split('-')[1]);
-      finish.splice(destination.index, 0, updatedTask);
-      // TODO: order가 추가될 수 있음
-      const newStart = [...start];
-      const newFinish = [...finish];
+        setTasks((prev) => ({ ...prev, [startTabId]: [...start] }));
+      } else {
+        updatedTask = { ...updatedTask, tabId: finishTabId };
+        finish.splice(destination.index, 0, updatedTask);
 
-      setTasks((prev) => {
-        const newTasks = {
+        const newStart = [...start];
+        const newFinish = [...finish];
+
+        setTasks((prev) => ({
           ...prev,
-          [Number(source.droppableId.split('-')[1])]: newStart,
-          [Number(destination.droppableId.split('-')[1])]: newFinish,
-        };
-        return newTasks;
-      });
+          [startTabId]: newStart,
+          [finishTabId]: newFinish,
+        }));
+      }
 
-      const prevIndex = newFinish.findIndex((item) => item.id === Number(draggableId.split('-')[1])) - 1;
+      const prevIndex = finish.findIndex((item) => item.id === Number(draggableId.split('-')[1])) - 1;
 
       const requestData = {
         planId: plan.id,
-        targetTabId: Number(destination.droppableId.split('-')[1]),
+        targetTabId: finishTabId,
         targetId: Number(draggableId.split('-')[1]),
-        newPrevId: newFinish[prevIndex].id,
+        newPrevId: prevIndex === -1 ? null : finish[prevIndex].id,
       };
-
-      // TODO: 태스크 순서 변경이 받아온 데이터에서는 되있으나 화면상으로 안 됨
-      // console.log(requestData);
 
       dragTaskMutate(requestData);
     }
@@ -266,7 +238,7 @@ function Plan() {
     });
   };
 
-  if (allPlanTitles.length === 0 || (currentPlanId === -1 && allPlanTitles.length === 0)) {
+  if (!isFetching && allPlanTitles.length === 0) {
     return (
       <EmptyPlanContainer>
         <EmptyPlanContents>
@@ -313,9 +285,6 @@ function Plan() {
         <TopContainer>
           <MemberFilter selectedMember={selectedMembers} onClick={handleChangeMember} />
           <UtilContainer>
-            <div className="icon">
-              <IoIosStarOutline size={18} />
-            </div>
             <div
               className="icon"
               onClick={() =>
@@ -342,7 +311,7 @@ function Plan() {
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...provided.droppableProps}
               >
-                {sortedTabs.map((item, index) => {
+                {sortedTabs?.map((item, index) => {
                   return (
                     <Tab
                       id={item.id}
@@ -352,7 +321,6 @@ function Plan() {
                       onDeleteTab={() => handleDeleteTab(item.id)}
                       tasks={tasks[item.id] || []}
                       onAddTask={setTasks}
-                      // onRemoveTask={handleDeleteTask}
                       onEditTask={handleEditTask}
                     />
                   );
@@ -366,6 +334,7 @@ function Plan() {
                       onChange={(e) => setNewTabTitle(e.target.value)}
                       onBlur={handleAddTab}
                       onKeyDown={handleInputKeyDown}
+                      required
                     />
                     <TasksContainer />
                   </TabWrapper>

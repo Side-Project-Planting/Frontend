@@ -47,7 +47,7 @@ export interface IMember {
 export interface ITab {
   id: number;
   title: string;
-  taskOrde?: number[];
+  taskOrder?: number[];
 }
 
 export interface IPlanTitle {
