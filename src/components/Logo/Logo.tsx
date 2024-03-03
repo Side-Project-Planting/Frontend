@@ -5,7 +5,7 @@ import { styled } from 'styled-components';
 
 const LogoLink = styled(Link)`
   text-decoration: none;
-  font-family: 'itim';
+  font-family: 'Itim';
   font-size: 1.5rem;
   color: #64d4ab;
 `;
