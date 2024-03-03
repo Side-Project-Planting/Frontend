@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // TODO: API 서버 배포 후 설정 필요
-const API_URL = 'https://115.85.183.173/';
+const API_URL = 'https://teamplanting.shop';
 
 export const api = axios.create({
   baseURL: API_URL,
